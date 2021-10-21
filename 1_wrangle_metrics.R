@@ -127,6 +127,8 @@ head(n_subplots)
 
 # 1. gamma of treatments within each (10 x 10) plot = (9 sub plots/plot  = 4.5 x 4.5 m)
 
+
+
 gamma_forbs_plot_prep <- cover_rel %>% left_join(n_subplots) %>%
   filter(!species %in% c("graminoid")) %>% 
   group_by(plot, block, treatment,nutrients, invasion, Grass.forbs,  n_plot, species) %>%
@@ -213,6 +215,9 @@ doub_check
 
 sampled_dat <- cover_rel %>% filter(!treatment == "0_l_b") %>%
   bind_rows(samps)
+
+write.csv(sampled_dat, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/sampled_dat.csv")
+
 
 
 head(sampled_dat)
@@ -348,101 +353,6 @@ gamma_treat_dat <- sampled_dat %>% select(nutrients, invasion, Grass.forbs, trea
 head(gamma_treat_dat, n= 12)
 
 write.csv(gamma_treat_dat, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/gamma_treat_composition.csv")
-
-
-####################################
-# Presence Data:
-# the species presence data (walk around checklist of every plot)
-# again, the same 3 gamma's; plot, block, treat
-
-head(pres)
-
-pres_long <- pres %>% group_by(plot) %>%
-  gather(species, pres, graminoid:Lindera.benzoin) %>%
-  filter(!pres %in% c("0")) %>% # remove 0 values
-  arrange(plot)
-
-head(pres_long)
-nrow(pres_long)
-
-# use only sampled dat for blocks and site level data
-head(sampled_dat)
-
-sampled_pres <- sampled_dat %>%
-  select(plot,treatment, block) %>% distinct() %>%
-  left_join(pres_long)
-
-nrow(sampled_pres)
-head(sampled_pres)
-
-# extract plot treatment and block info
-plot_dat <- cover_long %>% ungroup() %>%
-  select( plot, block, treatment, nutrients, invasion, Grass.forbs) %>%
-  distinct()
-
-head(plot_dat)
-
-pres_dat <- plot_dat %>% left_join(pres_long) %>% ungroup()
-
-head(pres_dat)
-
-plot_pres_rich <- pres_dat %>%  filter(!species %in% c("graminoid")) %>% 
-  group_by(plot, treatment, block) %>%
-  summarise(pres_gamma_forb_plot_rich = n_distinct(species)) %>%
-  left_join(plot_dat)
-
-head(plot_pres_rich)
-
-write.csv(plot_pres_rich, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/gamma_plot_pres.csv")
-
-
-sampled_pres_dat <- sampled_pres %>% left_join(pres_long) %>% ungroup()
-
-head(sampled_pres_dat)
-
-block_pres_rich <- sampled_pres_dat %>%  filter(!species %in% c("graminoid")) %>% 
-  group_by(treatment, block) %>%
-  summarise(pres_gamma_forb_block_rich = n_distinct(species)) 
-
-head(block_pres_rich)
-
-write.csv(block_pres_rich, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/gamma_block_pres.csv")
-
-
-treat_pres_rich <- sampled_pres_dat %>%  filter(!species %in% c("graminoid")) %>% 
-  group_by(treatment,) %>%
-  summarise(pres_gamma_forb_treat_rich = n_distinct(species)) 
-
-head(treat_pres_rich)
-
-write.csv(treat_pres_rich, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/gamma_treat_pres.csv")
-
-
-# Combine Composition and Presence Species Lists
-
-head(cover_rel)
-
-head(pres_dat)
-
-
-comp <- cover_rel %>% select(plot, block, nutrients, invasion, Grass.forbs, treatment, species) %>%
-  distinct() %>%
-  mutate( source = "composition")
-
-
-head(comp)
-
-pres <- cover_rel %>% select(plot, block, nutrients, invasion, Grass.forbs, treatment, species) %>%
-  distinct() %>%
-  mutate( source = "presence")
-
-head(pres)
-
-
-# species_list_combo <- pres %>% full_join(comp, by = c("plot", "block", "nutrients", "invasion", "Grass.forbs", "treatment", "species")) %>%
-#   arrange(plot, block, treatment, species)
-# 
-# View(species_list_combo)
 
 
 
