@@ -78,23 +78,34 @@ head(sub_plots)
 
 presence_dat <- sub_plots %>% bind_rows(site_pres)
 
-head(presence_dat)
+View(presence_dat)
 
-invasion.wide <- presence_dat %>% #select(plot, block, invasion, species, pres) %>%
+trts.wide <- presence_dat %>% #select(plot, block, invasion, species, pres) %>%
   as_tibble() %>% 
   mutate(species2 = paste0('sp_', species)) %>% 
   group_by(block, plot, subplot, nutrients, invasion, Grass.forbs, Treatments, species2) %>% 
   summarise(pres = n_distinct(pres)) %>%
-  spread(species2, pres, fill = 0)
+  spread(species2, pres, fill = 0) %>% ungroup()
 
-head(invasion.wide)
+head(trts.wide)
 
 
 # select certain columns from data
 plot.info <- presence_dat %>% 
-  select(plot, block, invasion) %>% distinct()
+  select(subplot, plot, block, nutrients, invasion, Grass.forbs,Treatments) %>% distinct()
 
-head(plot.info)
+View(plot.info)
+
+site <- trts.wide %>% filter(Treatments == "site") %>% select(-c(block, plot, subplot, nutrients, invasion, Grass.forbs, Treatments)) %>%
+  mutate(Treatments = "treatments") %>% left_join(plot.info) %>% select(-Treatments) %>%  mutate(Treatments = "site")
+
+colnames(site)
+
+trts.wide <- trts.wide %>% filter(Treatments == "treatments") %>%
+  bind_rows(site)
+
+View(trts.wide)
+
 
 beta_pairs <- function(x){
   # function to return the dissimilarities (turnover and nestedness component)
@@ -103,26 +114,26 @@ beta_pairs <- function(x){
   # return dataframe with dissimilarities and the treatment magnitude (seed.rich)
   
   # separate out the control and treatment plots
-  early.plots = x %>% 
-    filter(invasion == 'e')
+  site.pres = x %>% 
+    filter(Treatments == 'site' )
   
   # fix for treatment labels
- late.plots = x %>% 
-    filter(invasion == 'l' )
+   trt.plots = x %>% 
+    filter(Treatments == 'treatments')
   
   out <- tibble()
-  if(nrow(early.plots)>0){
-    for(i in 1:nrow(early.plots)){
-      beta = beta.pair(bind_rows(early.plots %>% 
+  if(nrow(site.pres)>0){
+    for(i in 1:nrow(site.pres)){
+      beta = beta.pair(bind_rows(site.pres %>% 
                                    slice(i) %>% 
-                                   select(-c(invasion)), 
-                                 early.plots %>% 
-                                   select(-c(invasion) )),
+                                   select(-c(Treatments)), 
+                                 trt.plots %>% 
+                                   select(-c(Treatments) )),
                        index.family = 'jaccard')
       # buid the data we want for analysis
       out <- bind_rows(out,
                        tibble(
-                         invasion = late.plots$invasion,
+                         #Treatments = site.pres$Treatments,
                          jtu = as.matrix(beta$beta.jtu)[-1,1],
                          jne = as.matrix(beta$beta.jne)[-1,1],
                          group = i)
@@ -132,7 +143,7 @@ beta_pairs <- function(x){
   # escape for no controls
   else{
     out = tibble(
-      invasion = NA,
+     # Treatments = NA,
       jtu = NA,
       jne = NA,
       group = NA)
@@ -142,46 +153,149 @@ beta_pairs <- function(x){
 
 head(invasion.wide)
 
-wide.invasion <- bind_rows(
-  left_join(invasion.wide, plot.info, 
-            by = c('plot', 'block', 'invasion') ) %>% 
-    group_by(block) %>% 
-    nest_legacy(starts_with('sp_'), invasion)
+wide.trt <- bind_rows(
+  left_join(trts.wide, plot.info, 
+            by = c('subplot','plot', 'block', 'Treatments') ) %>% 
+    group_by(subplot, plot, block) %>% 
+    nest_legacy(starts_with('sp_'), Treatments )
 )
   
-View(wide.invasion)
+View(wide.trt)
 
 # calculate the beta components
-wide.invasion <- wide.invasion %>% 
+wide.trt <- wide.trt %>% 
   mutate(beta = purrr::map(data, ~ beta_pairs(.x)))
 
 
-View(wide.invasion)
+View(wide.trt)
 
-beta.invasion.df = wide.invasion %>% 
+beta.trt.df = wide.trt %>% 
   unnest_legacy(beta) %>%
   unite(col = pw_beta_group,
-        c( block, invasion), sep = '_', remove = F) %>% 
-  select(-group)
+        c(subplot, plot, block), sep = '_', remove = F) %>% 
+  select(-group, -data, -jtu)
 
-head(beta.invasion.df)
-
-write.csv(beta.invasion.df,"./Data/beta.invasion.df.csv")
+View(beta.trt.df)
 
 
 
-turnover.invade <- brm(jtu ~  invasion +   ( 1  | block),
-                         family = zero_one_inflated_beta(),
-                         data = beta.invasion.df,
-                         inits = '0',
-                         cores = 4, chains = 4)
+#write.csv(beta.trt.df,"./Data/beta.trt.df.csv")
 
+head(beta.trt.df)
 
+nesting <- beta.trt.df %>% left_join(plot.info) %>%
+  mutate( Nutrients = case_when(nutrients == "0" ~ "Control",
+                                nutrients == "1" ~ "Nutrients"),
+          Invasion = case_when(invasion == "e" ~ "Early",
+                               invasion == "l" ~ "Late"),
+          Assembly = case_when( Grass.forbs == "g" ~ "Grass first",
+                                Grass.forbs == "f" ~ "Forbs first",
+                                Grass.forbs == "b" ~ "Both first")
+  )  
 
-nested.invade <- brm(jne ~  invasion +   ( 1  | block),
+View(nesting)
+ 
+nested.priority <- brm(jne ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion * Assembly | block/plot),
                       family = zero_inflated_beta(),
-                      data = beta,
+                      data = nesting,
                       inits = '0',
                       cores = 4, chains = 4)
 
+
+ save(nested.priority, file = '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Model_Fits/nested.Rdata')
+#load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Model_Fits/nested.Rdata')
+
+
+summary(nested.priority)
+
+#plot(conditional_effects(alpha_rich), ask = FALSE)
+nest_nut <- conditional_effects(nested.priority, effects = 'Nutrients', re_formula = NA, method = 'fitted')  # conditional effects
+
+nest_invasion <- conditional_effects(nested.priority, effects = 'Invasion', re_formula = NA, method = 'fitted')  # conditional effects
+
+nest_assembly <- conditional_effects(nested.priority, effects = 'Assembly', re_formula = NA, method = 'fitted')  # conditional effects
+
+piratepal(palette = "all")
+piratepal(palette = "basel")
+
+fig_nest_nuts <- ggplot() + 
+  geom_point(data = nesting,
+             aes(x = Nutrients, y = jne, colour = "#C0C0C0"), 
+             size = 0.75, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
+  geom_point(data = nest_nut$Nutrients,
+             aes(x = Nutrients, y = estimate__, colour = Nutrients), size = 3) +
+  geom_errorbar(data = nest_nut$Nutrients,
+                aes(x = Nutrients, ymin = lower__, ymax = upper__, colour = Nutrients),
+                size = 1, width = 0) +
+  labs(x = '',
+       y='') +
+  scale_color_manual(values =  c(	"#C0C0C0", "#969696FF", "#FB9F53FF" ))  + 
+  theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                               #axis.text.x = element_blank(),
+                               plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
+                               plot.title=element_text(size=18, hjust=0.5),
+                               strip.background = element_blank(),legend.position = "none") +
+  #coord_flip() +
+  labs( subtitle= 'a) Nutrients'
+  ) + ylab("jnu")  
+
+
+fig_nest_nuts
+
+
+fig_nest_inv <- ggplot() + 
+  geom_point(data = nesting,
+             aes(x = Invasion, y = jne, colour = "#C0C0C0"), 
+             size = 0.75, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
+  geom_point(data = nest_invasion$Invasion,
+             aes(x = Invasion, y = estimate__, colour = Invasion), size = 3) +
+  geom_errorbar(data = nest_invasion$Invasion,
+                aes(x = Invasion, ymin = lower__, ymax = upper__, colour = Invasion),
+                size = 1, width = 0) +
+  labs(x = '',
+       y='') +
+  scale_color_manual(values =  c(	"#C0C0C0", "#EE0011FF","#0C5BB0FF"))  + 
+  theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                               #axis.text.x = element_blank(),
+                               plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
+                               plot.title=element_text(size=18, hjust=0.5),
+                               strip.background = element_blank(),legend.position = "none") +
+  #coord_flip() +
+  labs( subtitle= 'c) Invasion'
+  ) + ylab("")  
+
+
+fig_nest_inv
+
+
+fig_nest_ass <- ggplot() + 
+  geom_point(data = nesting,
+             aes(x = Assembly, y = jne, colour = "#C0C0C0"), 
+             size = 0.75, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
+  geom_point(data = nest_assembly$Assembly,
+             aes(x = Assembly, y = estimate__, colour = Assembly), size = 3) +
+  geom_errorbar(data = nest_assembly$Assembly,
+                aes(x = Assembly, ymin = lower__, ymax = upper__, colour = Assembly),
+                size = 1, width = 0) +
+  labs(x = '',
+       y='') +
+  scale_color_manual(values =  c(	"#C0C0C0","#EC579AFF","#5A5895FF", "#15983DFF"))  + 
+  ggtitle( expression(atop(paste(italic(alpha),'-scale'),  paste('subplot = (0.25', m^2 , ')' ) )) )+
+  theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                               #axis.text.x = element_blank(),
+                               plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
+                               plot.title=element_text(size=18, hjust=0.5),
+                               strip.background = element_blank(),legend.position = "none") +
+  #coord_flip() +
+  labs( subtitle= 'b) Assembly'
+  ) + ylab("")  
+
+
+fig_nest_ass
+
+
+fig_nest <- (fig_nest_nuts  + fig_nest_ass + fig_nest_inv)
+
+
+fig_nest
   
