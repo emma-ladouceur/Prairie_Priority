@@ -117,3 +117,5 @@ for_try <- sp_match %>% spread(name,id) %>% slice(1)
 head(for_try)
 
 write.csv(for_try, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/TRY/species.txt")
+
+
