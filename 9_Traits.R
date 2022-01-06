@@ -125,7 +125,7 @@ trait_abund %>% summarise(mean(n))
 
 write.csv(sp_trait_means, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/trait_means.csv")
 
-# method 1: impute traits with a pca
+# produce species trait matrix
 colnames(sp_trait_means)
 
 trait_wide <- sp_trait_means %>% select(-c(mean_OrigValueStr, UnitName)) %>%
@@ -133,6 +133,10 @@ trait_wide <- sp_trait_means %>% select(-c(mean_OrigValueStr, UnitName)) %>%
 
 View(trait_wide)
 
+write.csv(trait_wide, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/trait_matrix.csv")
+
+
+# method 1: impute traits with a pca
 nb_dim  <- missMDA::estim_ncpPCA(trait_wide[, 3:12], ncp.min=3, ncp.max=5, 
                                    scale= T, method.cv="loo", nbsim=9, verbose=FALSE) #E stimate the number of dimensions for the Principal Component Analysis by cross-validation
 
@@ -158,5 +162,5 @@ autoplot(pca_res,
 
 
 
-# method 2
+# method 2: see 11_Impute
 
