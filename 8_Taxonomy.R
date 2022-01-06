@@ -88,6 +88,7 @@ species <- sp_fixed %>% filter(morphotype == "no") %>%
 nrow(species)
 head(species)
 
+# write species list submitted to TRY
 write.csv(species, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/species_TRY.csv")
 
 
