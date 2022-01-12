@@ -157,4 +157,4 @@ Trait_imputed <- best_LA %>% left_join( best_LDMC, by="species")%>%   # traits i
 
 View(Trait_imputed)
 
-write.csv(Trait_imputed, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/data/imputed_trait_matrix.csv")
+write.csv(Trait_imputed, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/imputed_trait_matrix.csv",  row.names=FALSE)
