@@ -1,6 +1,6 @@
 
 library(ape)
-library(dplyr)
+library(tidyverse)
 library(ggplot2)
 library(reshape2)
 library(ggpubr)
@@ -11,93 +11,106 @@ library(iNEXT.3D)
 setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data")
 
 # cover species data
-sp <- read.csv("sampled_dat.csv", row.names = 1, header= TRUE)
+sp <- read.csv("pres_and_cover_plot.csv", header= TRUE)
+corrected_sp_list <- read.csv("species_corrected_complete.csv", row.names = 1, header= TRUE)
 
-# wrangle species data to be presence matrix
-head(sp)
 
- sp_matrix_prep <- sp %>% 
-   #unite("samp_id", subplot, plot, block, treatment)  %>%
-   mutate( Nutrients = case_when(nutrients == "0" ~ "Control",
-                                 nutrients == "1" ~ "Nutrients"),
-           Invasion = case_when(invasion == "e" ~ "Early",
-                                invasion == "l" ~ "Late"),
-           Assembly = case_when( Grass.forbs == "g" ~ "Grass first",
-                                 Grass.forbs == "f" ~ "Forbs first",
-                                 Grass.forbs == "b" ~ "Both first")
-   )   %>% unite("treat_id" , Nutrients, Invasion, Assembly, remove= FALSE) %>%
-   unite("samp_id", treat_id, subplot, plot, block, remove = FALSE) %>%
-   mutate(species = str_replace_all(species, 
-                                 pattern = "\\.", replacement = "_"))
+# correct species  names  in cover data
+head(corrected_sp_list)
 
- head(sp_matrix_prep)
- 
- # species sample matrix with relative cover
- sp_matrix <- sp_matrix_prep %>% 
-   select(species, relative_cover, samp_id ) %>%
-   spread(samp_id, relative_cover) %>%
-   mutate_all(funs(replace_na(.,0))) #%>% 
-  # filter(!species == "graminoid")
+new_sp <- corrected_sp_list %>% mutate(species = old_name,
+                             corrected_sp = name) %>%
+  select(-c(old_name, name, morphotype))
 
-View(sp_matrix)
+head(new_sp)
 
-sp_list <- sp_matrix %>% select(species)
+correct_sp <- sp %>% 
+  mutate(species = str_replace_all(species, 
+                                   pattern = "\\.", replacement = " ")) %>%
+  left_join(new_sp) %>%
+  mutate(orig_species = species) %>% select(-species) %>%
+  mutate_all(na_if,"") %>%
+  mutate(species =
+           ifelse(!is.na(corrected_sp),
+                  corrected_sp,
+                  orig_species)) 
 
+head(correct_sp)
+
+# match traits and corrected species list from cover data
 traits <- read.csv("imputed_trait_matrix.csv",  header= TRUE)
 
-sp_traits <- traits %>% select(species)
+sp_traits <- traits %>% select(species) %>%
+  mutate(traits_sp = species) %>% 
+  mutate(species = str_replace_all(species, 
+                                   pattern = "\\_", replacement = " "))
+
+head(sp_traits)
+
+nrow(sp_traits)
 
 
-sp_match <- sp_list %>% full_join(sp_traits)
+sp_match <- sp_list %>% full_join(sp_traits)  %>% 
+  select(species, traits_sp) %>%
+  arrange(species) %>% filter(!is.na(traits_sp))
 
 View(sp_match)
 
+#  prep data for analysis
+head(correct_sp)
 
- write.csv(sp_matrix, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/rel_sp_matrix.csv", row.names=FALSE)
- 
- 
- # change all non-0's to 1 for an incidence based matrix
- 
+ sp_matrix_prep <- correct_sp %>% 
+     unite("treat_id" , Nutrients, Invasion, Assembly, remove= FALSE) %>%
+   unite("samp_id",  plot, subplot, block, sep="_", remove = FALSE) 
+   # mutate(species = str_replace_all(species, 
+   #                               pattern = "\\.", replacement = "_"))
 
- inc_sp_matrix <- sp_matrix %>% mutate_if(is.numeric, ~1 * (. != 0))
+ head(sp_matrix_prep)
+ View(sp_matrix_prep)
+ 
+ 
+ #wrangle data into wide format  species vs plot matrix
+ # species sample matrix with relative cover
+ sp_matrix <- sp_matrix_prep %>% 
+   select(species, pres, samp_id ) %>%
+   spread(samp_id, pres) %>%
+   mutate_all(funs(replace_na(.,0))) %>% 
+  filter(!species == "graminoid")
+
+View(sp_matrix)
 
 
- View(inc_sp_matrix) 
+ write.csv(sp_matrix, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/inc_sp_matrix.csv", row.names=FALSE)
  
- write.csv(inc_sp_matrix, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/inc_sp_matrix.csv",  row.names=FALSE)
+# number of samps per plot
+ # but make sure  it matches the matrix, or else the treatments get messed up
+ #gather and spread mess this up too because of how r treats numbers as factors- so we need to be creative with the order
+matrix_id <- read.csv("inc_sp_matrix.csv",  header= FALSE)
  
+View(matrix_id)
  
- # number of samps per treat
- head(sp)
- 
-treats <- sp %>% 
-   unite("samp_id", subplot, plot, block, treatment)  %>%
-   mutate( Nutrients = case_when(nutrients == "0" ~ "Control",
-                                 nutrients == "1" ~ "Nutrients"),
-           Invasion = case_when(invasion == "e" ~ "Early",
-                                invasion == "l" ~ "Late"),
-           Assembly = case_when( Grass.forbs == "g" ~ "Grass first",
-                                 Grass.forbs == "f" ~ "Forbs first",
-                                 Grass.forbs == "b" ~ "Both first")
-   )   %>% unite("treat_id" , Nutrients, Invasion, Assembly, remove= FALSE)
- 
-head(treats)
+plot_samps <- matrix_id %>% slice_head() %>% 
+  gather(col, samp_id) %>% select(samp_id) %>%
+  slice(-1) %>% separate(samp_id, c( "plot", "subplot", "block"), remove = FALSE)
+  
 
-treat_samps <- treats %>% select(samp_id, treat_id) %>%
-  distinct() %>% group_by(treat_id) %>%
-  summarise(n_samps = n_distinct(samp_id)) %>%
-  spread(treat_id, n_samps)
- 
-View(treat_samps)
+samp_sum <- plot_samps %>% 
+  select(plot, subplot) %>% group_by(plot) %>%
+  summarise(n_samps = n_distinct(subplot)) %>%
+  spread(plot, n_samps)
 
-write.csv(treat_samps, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/treat_samps.csv")
+
+View(samp_sum)
+ncol(samp_sum)
+
+write.csv(samp_sum, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/plot_samps.csv")
 
  
  # OK now we are ready
  # species matrix
  Inci_raw <- read.csv("inc_sp_matrix.csv",  row.names = 1, header= TRUE)
  # nt for incidence samps
- nT <- read.csv('treat_samps.csv', row.names = 1)
+ nT <- read.csv('plot_samps.csv', row.names = 1)
  # phylo tree
  tree <- read.tree("phylo.tree.txt")
  #imputed trait matrix
@@ -123,15 +136,19 @@ TD_est <- estimate3D(data = Inci_raw, diversity = 'TD', q = c(0, 1, 2), datatype
 TD_obs <- obs3D(data = Inci_raw, diversity = 'TD', q = c(0, 1, 2), datatype = 'incidence_raw', nboot = 0, nT = nT)
 TD_asy <- asy3D(data = Inci_raw, diversity = 'TD', q = c(0, 1, 2), datatype = 'incidence_raw', nboot = 0, nT = nT)
 
+View(TD_est)
 
-out_TD <- rbind(TD_est %>% select(Assemblage, Order.q, qD, goalSC), 
-                TD_obs %>% select(Assemblage, Order.q, qD) %>% mutate(goalSC = 'Observed'), 
-                TD_asy %>% select(Assemblage, Order.q, qD) %>% mutate(goalSC = 'Asymptotic'))
-fig_1_or_3(out_TD, y_label = 'Taxonomic diversity')
+out_TD <- rbind(TD_est %>% select(Assemblage, Order.q, qD, goalSC) #, 
+               # TD_obs %>% select(Assemblage, Order.q, qD) %>% mutate(goalSC = 'Observed'), 
+                #TD_asy %>% select(Assemblage, Order.q, qD) %>% mutate(goalSC = 'Asymptotic')
+                )
+#fig_1_or_3(out_TD, y_label = 'Taxonomic diversity')
 
 View(out_TD)
 View(TD_obs)
 
+
+# now need an incidence matrix, phylo tree and func div species list that matches perfectly for this to work
 
 # ========================================================================================================== #
 # Figure 3 - Phylogenetic diversity
