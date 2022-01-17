@@ -15,12 +15,20 @@ library(V.PhyloMaker)
 library(stdnames) 
 
 # read in corrected sp list
-new_sps <- read.csv("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/species_corrected_complete.csv")
+three_d_prep <- read.csv("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/3D_prep.csv")
 
-head(new_sps)
+head(three_d_prep)
+nrow(three_d_prep)
+
+three_d_prep <- three_d_prep %>% select(-c(corrected_sp, orig_species)) %>%
+  mutate(orig_species = species)
+
+head(three_d_prep)
 
 # Flag infraspecies
-new_sps <- new_sps %>%
+new_sps <- three_d_prep %>% select(species, orig_species) %>%
+  distinct() %>%
+  mutate(name = species) %>% select(-species) %>%
   separate(name, into = c("genus", "species", 
                           "type", "infra_name"
                           ),
@@ -47,17 +55,17 @@ for(i in 1:nrow(new_sps)) {
   new_sps$species[i]    <- new_sps$species[i]
   new_sps$sub_type[i]   <- new_sps$type[i]
   new_sps$name[i]       <- new_sps$infra_name[i]
-  
+  new_sps$orig_species[i]       <- new_sps$orig_species[i]
 }
 
 # have a look at output
-head(new_sps, n= 30)
+head(new_sps, n = 30)
 View(new_sps)
 colnames(new_sps)
 
 # clean the list, put into format for phylo maker
 clean_sps <- new_sps %>% 
-  select( genus, species, type, infra_name, family,  group, order,   morphotype) %>%
+  select( orig_species, genus, species, type, infra_name, family,  group, order) %>%
   mutate(type = ifelse(is.na(type), "", type),
          infra_name = ifelse(is.na(infra_name), "", infra_name)) %>%
   unite( "species", genus, species, type, infra_name, remove=FALSE) %>%
@@ -68,6 +76,13 @@ clean_sps <- new_sps %>%
 head(clean_sps, n = 30)
 
 View(clean_sps)
+
+phylo_prep <- three_d_prep %>% select(-species) %>% left_join(clean_sps)
+
+View(phylo_prep)
+
+write.csv(phylo_prep, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/phylo_prep.csv", row.names=FALSE)
+
 
 # how to make a phylo tree from existing plant list
 # https://vimeo.com/470373338#
