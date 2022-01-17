@@ -1,4 +1,5 @@
 
+library(viridis)
 library(ape)
 library(tidyverse)
 library(ggplot2)
@@ -75,17 +76,59 @@ View(prairie.matrix.list)
 
 # ========================================================================================================== #
 #  Taxonomic diversity
-# TD_est <- estimate3D(data = prairie.matrix.list, diversity = 'TD', q = c(0,1,2), datatype = 'incidence_raw', base = 'size',
-#                       level = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20), nboot = 0)
-# 
-# View(TD_est)
+
 
 TD_out <- iNEXT3D(data = prairie.matrix.list, diversity = 'TD', q = c(0,1,2), datatype = 'incidence_raw', #base = 'size',
                   size = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20), nboot = 0)
 
-View(TD_out)
+TD_out
 
 save(TD_out, file = "TD_out.Rdata")
+
+load(file = "TD_out")
+
+#$iNextEst$size_based
+prairie.TD.df <- TD_out %>% 
+  purrr::pluck("iNextEst", "size_based")
+
+View(prairie.TD.df)
+
+head(prairie.prep)
+
+prairie_info <- prairie.prep %>% select(plot,  block, Nutrients, Invasion, Assembly) %>%
+distinct() %>% mutate(Assemblage = as.character(plot))
+
+
+prairie.hill.TD <- prairie.TD.df %>% left_join(prairie_info)
+
+View(prairie.hill.TD)
+
+write.csv(prairie.hill.TD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/prairie.hill.TD.csv", row.names=FALSE)
+
+# I will change treatment grouping for species area curves...
+# but just as an initial sneak peak (and keep the code for later)
+prairie.avg <- prairie.hill.TD %>% filter(Order.q == "0") %>%
+  group_by(Assemblage, nt, qD, Nutrients, Invasion, Assembly) %>%
+  gather(Treatment, Treatment_Level, Nutrients: Assembly)
+
+head(prairie.avg)
+
+prairie.avg.fig <- ggplot(prairie.avg, aes(x = nt, y = qD,  group = Assemblage, color = Treatment_Level)) +
+  facet_wrap(~Treatment)+
+  geom_line(aes(), lwd=1, data = prairie.avg) +
+  labs(x="Number of sampling units", y = "Species richness",title="") +
+  scale_color_viridis(discrete = T, option="C")  + 
+  theme_classic()+
+  theme(legend.position = "none",
+        legend.title=element_blank(),
+        text=element_text(size=10))# + 
+  #labs(subtitle='c) Old field')
+#xlim(0,20)+ 
+
+prairie.avg.fig
+
+
+
 
 
 # ========================================================================================================== #
@@ -125,10 +168,25 @@ PD_out <- iNEXT3D(data = phylo.matrix.list, diversity = 'PD', q = c(0, 1, 2), da
                   # OR  # endpoint = 20, knots = 1,
                   nboot = 0,  PDtree = tree, PDtype = "PD") 
 
-View(PD_out)
+PD_out
 
 
 save(PD_out, file = "PD_out.Rdata")
+
+load(file = "PD_out")
+
+#$PDiNextEst$size_based
+prairie.PD.df <- PD_out %>% 
+  purrr::pluck("PDiNextEst", "size_based")
+
+View(prairie.PD.df)
+
+prairie.hill.PD <- prairie.PD.df %>% left_join(prairie_info)
+
+
+write.csv(prairie.hill.PD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/prairie.hill.PD.csv", row.names=FALSE)
+
+
 
 # ========================================================================================================== #
 #  Functional diversity
@@ -205,6 +263,21 @@ FD_out <- iNEXT3D(data = trait.matrix.list, diversity = 'FD', q = c(0, 1, 2), da
                   endpoint = 20, #knots = 1,
                   nboot = 0,  FDdistM = distM)
 
-View(FD_out)
+FD_out
 
 save(FD_out, file = "FD_out.Rdata")
+
+
+load(file = "FD_out")
+
+#$AUCiNextEst$size_based
+prairie.FD.df <- FD_out %>% 
+  purrr::pluck("AUCiNextEst", "size_based")
+
+View(prairie.FD.df)
+
+prairie.hill.FD <- prairie.FD.df %>% left_join(prairie_info)
+
+
+write.csv(prairie.hill.FD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/prairie.hill.FD.csv", row.names=FALSE)
+
