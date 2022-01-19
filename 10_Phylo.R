@@ -23,18 +23,20 @@ nrow(three_d_prep)
 three_d_prep <- three_d_prep %>% select(-c(corrected_sp, orig_species)) %>%
   mutate(orig_species = species)
 
-head(three_d_prep)
-
 # Flag infraspecies
-new_sps <- three_d_prep %>% select(species, orig_species) %>%
+new_sps <- three_d_prep %>% select(orig_species, species) %>%
   distinct() %>%
+  mutate(species = str_replace_all(species, 
+                                   pattern = "\\_", replacement = " ")) %>%
   mutate(name = species) %>% select(-species) %>%
   separate(name, into = c("genus", "species", 
                           "type", "infra_name"
                           ),
            remove = FALSE)
 
+nrow(new_sps)
 head(new_sps, n=30)
+View(new_sps)
 
 # fill in taxonomy- this takes a minute
 for(i in 1:nrow(new_sps)) {
@@ -56,10 +58,11 @@ for(i in 1:nrow(new_sps)) {
   new_sps$sub_type[i]   <- new_sps$type[i]
   new_sps$name[i]       <- new_sps$infra_name[i]
   new_sps$orig_species[i]       <- new_sps$orig_species[i]
+  
 }
 
 # have a look at output
-head(new_sps, n = 30)
+head(new_sps, n= 30)
 View(new_sps)
 colnames(new_sps)
 
@@ -71,15 +74,17 @@ clean_sps <- new_sps %>%
   unite( "species", genus, species, type, infra_name, remove=FALSE) %>%
   mutate(species = str_replace(species, "__", ""),
          species = str_replace(species, "Capsella_bursa_pastoris_", "Capsella_bursa_pastoris")) %>%
-  select(-c(type, infra_name))
+  select(-c(type, infra_name)) %>% arrange(species)
 
 head(clean_sps, n = 30)
 
 View(clean_sps)
 
-phylo_prep <- three_d_prep %>% select(-species) %>% left_join(clean_sps)
+head(three_d_prep)
 
-View(phylo_prep)
+ phylo_prep <- three_d_prep %>% select(-species) %>% left_join(clean_sps)
+ 
+ head(phylo_prep)
 
 write.csv(phylo_prep, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/phylo_prep.csv", row.names=FALSE)
 
