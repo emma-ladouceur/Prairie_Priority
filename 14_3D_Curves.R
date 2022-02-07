@@ -7,7 +7,7 @@ library(reshape2)
 library(ggpubr)
 library(gg.gap)
 library(iNEXT.3D)
-
+library(patchwork)
 
 setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data")
 
@@ -87,7 +87,7 @@ TD_treat_out
 
 save(TD_treat_out, file = "TD_treat_out.Rdata")
 
-load(file = "TD_treat_out")
+load(file = "TD_treat_out.Rdata")
 
 #$iNextEst$size_based
 prairie.TD.df <- TD_treat_out %>% 
@@ -111,6 +111,7 @@ View(prairie.hill.TD)
 
 write.csv(prairie.hill.TD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/prairie.hill.treats.TD.csv", row.names=FALSE)
 
+prairie.hill.TD <- read.csv("prairie.hill.treats.TD.csv",  header= TRUE)
 
 
 prairie.TD.SAD <- ggplot(prairie.hill.TD, aes(x = nt, y = qD,  group = Assemblage, color = Assemblage)) +
@@ -138,19 +139,11 @@ prairie.TD.fig <- ggplot(prairie.hill.TD, aes(x = nt, y = qD,   color = Assembla
   facet_wrap(~Order.q)+
   geom_point(aes(), shape = 1, size=2, data = df.point) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.line) +
-  # geom_ribbon(aes(ymin = y.lwr, ymax = y.upr,
-  #                 fill = site, colour=NULL), alpha=0.2) +
-  # facet_wrap(~YSA)+
-  #geom_point(aes(shape=Field), size=4, data=df.point.all) +
-  #geom_line(aes(), lwd=1, data=ccr.all.df.avg) +
-  # geom_ribbon(aes(ymin=y.lwr, ymax=y.upr,
-  #                 fill=YSA, colour=NULL), alpha=0.2) +
   labs(x="Number of sampling units", y="Taxonomic Diversity",title="") +
-  scale_color_viridis(discrete = T)  + 
-  # scale_fill_manual(values =  c("#E7B800", "#972C8DFF" ,"#00AFBB", "#15983DFF","#E7B800", "#FC4E07"))  + 
-  labs(title='a) Taxonomic Diversity', color="Treatment")+
+  scale_color_viridis(discrete = T, option="C")  + 
+  labs(title='a) Taxonomic Diversity', color="Treatment", x= "")+
   #xlim(0,20)+ 
-  theme_classic() +   theme(legend.direction = "horizontal",legend.position = "bottom") +
+  theme_classic() +   theme(legend.direction = "horizontal",legend.position = "none") +
   guides(col = guide_legend(ncol = 15))
 
 
@@ -191,9 +184,9 @@ PD_treat_out <- iNEXT3D(data = phylo.matrix.list, diversity = 'PD', q = c(0, 1, 
 PD_treat_out
 
 
-save(PD_out, file = "PD_treat_out.Rdata")
+save(PD_treat_out, file = "PD_treat_out.Rdata")
 
-load(file = "PD_treat_out")
+load(file = "PD_treat_out.Rdata")
 
 #$PDiNextEst$size_based
 prairie.PD.df <- PD_treat_out %>% 
@@ -209,6 +202,29 @@ prairie.hill.PD <- prairie.PD.df %>% left_join(prairie_info)%>%
 
 write.csv(prairie.hill.PD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/prairie.hill.treats.PD.csv", row.names=FALSE)
 
+prairie.hill.PD <- read.csv("prairie.hill.treats.PD.csv",  header= TRUE)
+
+head(prairie.hill.PD)
+
+df.point <- prairie.hill.PD[which(prairie.hill.PD$Method=="Observed"),]
+df.line <- prairie.hill.PD[which(prairie.hill.PD$Method!="Observed"),]
+df.line$Method <- factor(df.line$Method, 
+                         c("Rarefaction", "Extrapolation"))
+
+# make an iNext style plot
+prairie.PD.fig <- ggplot(prairie.hill.PD, aes(x = nt, y = qPD,   color = Assemblage)) +
+  facet_wrap(~Order.q)+
+  geom_point(aes(), shape = 1, size=2, data = df.point) +
+  geom_line(aes(linetype = Method), lwd=1.5, data = df.line) +
+  labs(x="Number of sampling units", y="Phylogenetic Diversity",title="") +
+  scale_color_viridis(discrete = T, option="C")  + 
+  labs(title='b) Phylogenetic Diversity', color = "Treatment", x = "")+
+  #xlim(0,20)+ 
+  theme_classic() +   theme(legend.direction = "horizontal",legend.position = "right") +
+  guides(col = guide_legend(ncol = 2))
+
+
+prairie.PD.fig
 
 
 
@@ -256,7 +272,7 @@ write.csv(traits_fixed, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Pri
 
 # full species list, for taxonomic diversity
 trait.list <- trait.prep %>%
-  split(.$plot)
+  split(.$treat_id)
 
 trait.matrix.list <- purrr::map(trait.list, ~ .x %>% 
                                   select(species, samp_id, pres) %>%
@@ -278,32 +294,92 @@ for (i in 1:ncol(traits)) {
 distM <- cluster::daisy(x = traits, metric = "gower") %>% as.matrix()
 
 
-# FD_est <- estimate3D(data = trait.matrix.list, diversity = 'FD', q = c(0, 1, 2), datatype = 'incidence_raw', base = 'size',
-#                      #level = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20), 
-#                       nboot = 0,  FDdistM = distM)
-# 
-# View(FD_est)
 
-FD_out <- iNEXT3D(data = trait.matrix.list, diversity = 'FD', q = c(0, 1, 2), datatype = 'incidence_raw', #base = 'size',
-                  # size = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20), 
-                  endpoint = 20, #knots = 1,
-                  nboot = 0,  FDdistM = distM)
+FD_treat_out <- iNEXT3D(data = trait.matrix.list, diversity = 'FD', q = c(0, 1, 2), datatype = 'incidence_raw', #base = 'size',
+                  #size = c(1:188), 
+                  endpoint = 188, #knots = 1,
+                  nboot = 0,  FDdistM = distM, FDtype = 'tau_values', 
+                  FDtau = NULL)
 
-FD_out
+FD_treat_out
 
-save(FD_out, file = "FD_out.Rdata")
+save(FD_treat_out, file = "FD_treat_out.Rdata")
 
 
-load(file = "FD_out")
+load(file = "FD_treat_out.Rdata")
 
 #$AUCiNextEst$size_based
-prairie.FD.df <- FD_out %>% 
-  purrr::pluck("AUCiNextEst", "size_based")
+prairie.FD.df <- FD_treat_out %>% 
+  purrr::pluck("FDiNextEst", "size_based")
 
 View(prairie.FD.df)
 
-prairie.hill.FD <- prairie.FD.df %>% left_join(prairie_info)
+prairie.hill.FD <- prairie.FD.df %>% left_join(prairie_info) %>%
+  mutate( Order.q  = case_when(Order.q  == "0" ~ "q = 0",
+                               Order.q == "1" ~ "q = 1",
+                               Order.q == "2" ~ "q = 2") )
 
 
-write.csv(prairie.hill.FD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/prairie.hill.FD.csv", row.names=FALSE)
+write.csv(prairie.hill.FD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/prairie.hill.treats.FD.csv", row.names=FALSE)
 
+
+prairie.hill.FD <- read.csv("prairie.hill.treats.FD.csv",  header= TRUE)
+
+
+head(prairie.hill.FD)
+
+is.numeric(prairie.hill.FD$Assemblage)
+
+df.point <- prairie.hill.FD[which(prairie.hill.FD$Method=="Observed"),]
+df.line <- prairie.hill.FD[which(prairie.hill.FD$Method!="Observed"),]
+df.line$Method <- factor(df.line$Method, 
+                         c("Rarefaction", "Extrapolation"))
+
+# make an iNext style plot
+prairie.FD.fig <- ggplot(prairie.hill.FD, aes(x = nt, y = qFD,   color = Assemblage)) +
+  facet_wrap(~Order.q)+
+  geom_point(aes(), shape = 1, size=2, data = df.point) +
+  geom_line(aes(linetype = Method), lwd=1.5, data = df.line) +
+  labs(x="Number of sampling units", y="Functional Diversity",title="") +
+  scale_color_viridis(discrete = T, option="C")  + 
+  labs(title='c) Functional Trait Diversity', color="Treatment")+
+  theme_classic() +   theme(legend.direction = "horizontal",legend.position = "none") +
+  guides(col = guide_legend(ncol = 15))
+
+
+prairie.FD.fig
+
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)}
+
+prairie.hill.FD$Method <- factor(prairie.hill.FD$Method  , levels=c("Rarefaction", "Extrapolation"))
+
+# line types / method
+line.leg <- ggplot() +
+  geom_line(data=prairie.hill.FD %>% filter(Method == c("Rarefaction", "Extrapolation")), aes(x=nt, y=qFD,  linetype = Method), lwd=1) +
+  labs(x="Number of sampling units", y="Species richness",title="") +
+  #scale_color_viridis(discrete = T, option="A")  + 
+  scale_color_manual(values =  c("#5DC863FF"))  + 
+  labs(title='Species accumulation across scales', color="Reference Habitat", linetype="Inference Method")+
+  theme_classic(base_size=18) +   theme(legend.direction = "horizontal", legend.position = "bottom") 
+
+line.legend <- g_legend(line.leg)
+
+# olf field colors
+trt.leg <- ggplot() +
+  geom_line(data = prairie.hill.FD, aes(x = nt, y = qFD,   color = Assemblage), lwd = 1) +
+  labs(x="Number of sampling units", y="Species richness",title="") +
+  scale_color_viridis(discrete = T, option="C")  + 
+  labs(title='Multi-scale',subtitle="Average Accumulation for Year Since Abandonment", color="Restoration Treatments")+
+  theme_classic(base_size=18) +   theme(legend.direction = "horizontal",legend.position = "bottom") +
+  guides(col = guide_legend(ncol = 6))
+
+trt.legend <- g_legend(trt.leg)
+
+
+ prairie.div <- (prairie.TD.fig / prairie.PD.fig/ prairie.FD.fig  + plot_layout(heights = c(10,10,10))) 
+
+ prairie.div

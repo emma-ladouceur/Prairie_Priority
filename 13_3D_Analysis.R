@@ -23,14 +23,13 @@ div0.TD <- TD %>% filter(Order.q == "0",
 div2.TD <- TD %>% filter(Order.q == "2",
                          Method == "Observed") 
 
-head(rich.TD)
 
 TD_div0 <-  brm(qD ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion * Assembly | Assemblage),
                    data = div0.TD, family = student(), cores = 4, iter=3000, warmup=1000, chains = 4)
 
 
 save(TD_div0, file = '3D_Model_Fits/TD_div0.Rdata')
-load( '3D_Model_Fits/TD_div0.Rdata')
+load( '/3D_Model_Fits/TD_div0.Rdata')
 
 
 summary(TD_div0)
@@ -451,6 +450,8 @@ fig_PD
 
 # ========================================================================================================== #
 #  Functional  diversity
+
+
 head(FD)
 
 div0.FD <- FD %>% filter(Order.q == "0",
@@ -461,7 +462,7 @@ div2.FD <- FD %>% filter(Order.q == "2",
 
 head(div0.FD)
 
-FD_div0 <-  brm(qAUC ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion * Assembly | Assemblage),
+FD_div0 <-  brm(qFD ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion * Assembly | Assemblage),
                 data = div0.FD, family = student(), cores = 4, iter=3000, warmup=1000, chains = 4)
 
 
@@ -564,7 +565,7 @@ fig_FD_div0
 
 # q= 2
 
-FD_div2 <-  brm(qAUC ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion * Assembly | Assemblage),
+FD_div2 <-  brm(qFD ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion * Assembly | Assemblage),
                 data = div2.FD, family = student(), cores = 4, iter=3000, warmup=1000, chains = 4)
 
 

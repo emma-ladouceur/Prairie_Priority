@@ -79,7 +79,7 @@ View(prairie.matrix.list)
 
 
 TD_out <- iNEXT3D(data = prairie.matrix.list, diversity = 'TD', q = c(0,1,2), datatype = 'incidence_raw', #base = 'size',
-                  size = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20), nboot = 0)
+                  size = c(1:188), nboot = 0)
 
 TD_out
 
@@ -164,7 +164,7 @@ head(tree)
 # View(PD_est)
 
 PD_out <- iNEXT3D(data = phylo.matrix.list, diversity = 'PD', q = c(0, 1, 2), datatype = 'incidence_raw', #base = 'size',
-                  size = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20),
+                  size = c(1:188),
                   # OR  # endpoint = 20, knots = 1,
                   nboot = 0,  PDtree = tree, PDtype = "PD") 
 
@@ -245,23 +245,21 @@ View(trait.matrix.list)
 #imputed trait matrix
 traits <- read.csv("imputed_trait_matrix_fixed.csv", row.names = 1, header= TRUE)
 
+head(traits)
+
 
 for (i in 1:ncol(traits)) {
   if (class(traits[,i]) == "character") traits[, i] <- factor(traits[,i], levels = unique(traits[, i]))
 }
 distM <- cluster::daisy(x = traits, metric = "gower") %>% as.matrix()
 
-
-# FD_est <- estimate3D(data = trait.matrix.list, diversity = 'FD', q = c(0, 1, 2), datatype = 'incidence_raw', base = 'size',
-#                      #level = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20), 
-#                       nboot = 0,  FDdistM = distM)
-# 
-# View(FD_est)
+??iNEXT3D
 
 FD_out <- iNEXT3D(data = trait.matrix.list, diversity = 'FD', q = c(0, 1, 2), datatype = 'incidence_raw', #base = 'size',
-                 # size = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20), 
-                  endpoint = 20, #knots = 1,
-                  nboot = 0,  FDdistM = distM)
+                  size = c(1:188), 
+                #  endpoint = 20, #knots = 1,
+                  nboot = 199,  FDdistM = distM, FDtype = 'tau_values', 
+                 FDtau = NULL)
 
 FD_out
 
@@ -272,7 +270,7 @@ load(file = "FD_out")
 
 #$AUCiNextEst$size_based
 prairie.FD.df <- FD_out %>% 
-  purrr::pluck("AUCiNextEst", "size_based")
+  purrr::pluck("FDiNextEst", "size_based")
 
 View(prairie.FD.df)
 
