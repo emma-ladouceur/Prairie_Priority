@@ -129,13 +129,16 @@ prairie.TD.SAD <- ggplot(prairie.hill.TD, aes(x = nt, y = qD,  group = Assemblag
 prairie.TD.SAD
 
 
+prairie.hill.TD <- prairie.hill.TD %>% filter(!Order.q == "q = 1") %>% 
+  unite(Treatment , Nutrients, Invasion, Assembly, sep = " ", remove= F)
+
 df.point <- prairie.hill.TD[which(prairie.hill.TD$Method=="Observed"),]
 df.line <- prairie.hill.TD[which(prairie.hill.TD$Method!="Observed"),]
 df.line$Method <- factor(df.line$Method, 
                          c("Rarefaction", "Extrapolation"))
 
 # make an iNext style plot
-prairie.TD.fig <- ggplot(prairie.hill.TD, aes(x = nt, y = qD,   color = Assemblage)) +
+prairie.TD.fig <- ggplot(prairie.hill.TD, aes(x = nt, y = qD,   color = Treatment)) +
   facet_wrap(~Order.q)+
   geom_point(aes(), shape = 1, size=2, data = df.point) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.line) +
@@ -206,13 +209,16 @@ prairie.hill.PD <- read.csv("prairie.hill.treats.PD.csv",  header= TRUE)
 
 head(prairie.hill.PD)
 
+prairie.hill.PD <- prairie.hill.PD %>% filter(!Order.q == "q = 1") %>% 
+  unite(Treatment , Nutrients, Invasion, Assembly, sep = " ", remove= F)
+
 df.point <- prairie.hill.PD[which(prairie.hill.PD$Method=="Observed"),]
 df.line <- prairie.hill.PD[which(prairie.hill.PD$Method!="Observed"),]
 df.line$Method <- factor(df.line$Method, 
                          c("Rarefaction", "Extrapolation"))
 
 # make an iNext style plot
-prairie.PD.fig <- ggplot(prairie.hill.PD, aes(x = nt, y = qPD,   color = Assemblage)) +
+prairie.PD.fig <- ggplot(prairie.hill.PD, aes(x = nt, y = qPD,   color = Treatment)) +
   facet_wrap(~Order.q)+
   geom_point(aes(), shape = 1, size=2, data = df.point) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.line) +
@@ -221,7 +227,7 @@ prairie.PD.fig <- ggplot(prairie.hill.PD, aes(x = nt, y = qPD,   color = Assembl
   labs(title='b) Phylogenetic Diversity', color = "Treatment", x = "")+
   #xlim(0,20)+ 
   theme_classic() +   theme(legend.direction = "horizontal",legend.position = "right") +
-  guides(col = guide_legend(ncol = 2))
+  guides(col = guide_legend(ncol = 1))
 
 
 prairie.PD.fig
@@ -330,13 +336,16 @@ head(prairie.hill.FD)
 
 is.numeric(prairie.hill.FD$Assemblage)
 
+prairie.hill.FD <- prairie.hill.FD %>% filter(!Order.q == "q = 1") %>% 
+  unite(Treatment , Nutrients, Invasion, Assembly, sep = " ", remove= F)
+
 df.point <- prairie.hill.FD[which(prairie.hill.FD$Method=="Observed"),]
 df.line <- prairie.hill.FD[which(prairie.hill.FD$Method!="Observed"),]
 df.line$Method <- factor(df.line$Method, 
                          c("Rarefaction", "Extrapolation"))
 
 # make an iNext style plot
-prairie.FD.fig <- ggplot(prairie.hill.FD, aes(x = nt, y = qFD,   color = Assemblage)) +
+prairie.FD.fig <- ggplot(prairie.hill.FD, aes(x = nt, y = qFD,   color = Treatment)) +
   facet_wrap(~Order.q)+
   geom_point(aes(), shape = 1, size=2, data = df.point) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.line) +

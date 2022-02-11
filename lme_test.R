@@ -3,7 +3,11 @@
 
 library(tidyverse)
 library(lme4)
-#library(brms)
+librry(lmerTest)
+library(emmeans) # v. 1.7.0
+library(magrittr) # v. 2.0.1
+
+
 library(ggplot2)
 library(stringr)
 library(yarrr)
@@ -44,12 +48,28 @@ alpha_rich_lme <-  lmer(alpha_forb_rich ~  Nutrients * Invasion * Assembly  + ( 
 
 summary(alpha_rich_lme)
 
+# options
+# https://stackoverflow.com/questions/11072544/how-to-get-coefficients-and-their-confidence-intervals-in-mixed-effects-models
+
+fixef(alpha_rich_lme)
+
+coef(summary(as(alpha_rich_lme,"merModLmerTest")))
+     
+#likelihood profile
+confint(alpha_rich_lme)
 
 
-1-var(residuals(alpha_rich_lme))/(var(model.response(model.frame(alpha_rich_lme))))
 
+# https://aosmith.rbind.io/2019/03/25/getting-started-with-emmeans/
 
+emm1 = emmeans(alpha_rich_lme, specs = pairwise ~ Nutrients:Invasion:Assembly)
 
+emm1$emmeans
+
+emm1$contrasts
+
+emm1$contrasts %>%
+  confint()
 
 
 save(alpha_rich, file = '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Model_Fits/alpha_rich.Rdata')
