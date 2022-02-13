@@ -7,9 +7,9 @@ library(patchwork)
 
 setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/")
 
-TD <- read.csv("Data/Plot/prairie.hill.TD.csv", header= TRUE)
-PD <- read.csv("Data/Plot/prairie.hill.PD.csv", header= TRUE)
-FD <- read.csv("Data/Plot/prairie.hill.FD.csv", header= TRUE)
+TD <- read.csv("Data/Block Treat/prairie.hill.block.treats.TD.csv", header= TRUE)
+PD <- read.csv("Data/Block Treat/prairie.hill.block.treats.PD.csv", header= TRUE)
+FD <- read.csv("Data/Block Treat/prairie.hill.block.treats.FD.csv", header= TRUE)
 
 
 
@@ -17,26 +17,23 @@ FD <- read.csv("Data/Plot/prairie.hill.FD.csv", header= TRUE)
 #  Taxonomic diversity
 head(TD)
 
-View(TD)
 
-TD.lim <- TD %>% filter(Order.q == "0")
-
-View(div0.TD)
-
-div0.TD <- TD %>% filter(Order.q == "0",
+div0.TD <- TD %>% filter(Order.q == "q = 0",
               Method == "Observed") 
 
+head(div0.TD)
 
-div2.TD <- TD %>% filter(Order.q == "2",
+
+div2.TD <- TD %>% filter(Order.q == "q = 2",
                          Method == "Observed") 
 
 
-TD_div0 <-  brm(qD ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion * Assembly | Assemblage),
+TD_div0 <-  brm(qD ~  Nutrients * Invasion * Assembly  + (  Nutrients * Invasion * Assembly | Assemblage),
                    data = div0.TD, family = student(), cores = 4, iter=3000, warmup=1000, chains = 4)
 
 
-save(TD_div0, file = '3D_Model_Fits/TD_div0.Rdata')
-load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/TD_div0.Rdata')
+save(TD_div0, file = '3D_Model_Fits/TD_block_div0.Rdata')
+load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/TD_block_div0.Rdata')
 
 
 summary(TD_div0)

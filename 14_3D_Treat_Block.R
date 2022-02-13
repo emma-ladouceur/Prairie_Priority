@@ -62,9 +62,9 @@ levels(prairie.prep$species)
 
 
 prairie.prep.treats <- prairie.prep %>% 
-  gather(Treatment_cat, Treatment_type, "Nutrients":"Assembly") %>%
-  unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F) %>%
-  unite(Treatment_Block, Treatment, block, sep="_", remove= F)
+  #gather(Treatment_cat, Treatment_type, "Nutrients":"Assembly") %>%
+  #unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F) %>%
+  unite(Treatment_Block, treat_id, block, sep="_", remove= F)
 
 head(prairie.prep.treats)
 
@@ -107,7 +107,7 @@ View(prairie.TD.df)
 
 head(prairie.prep)
 
-prairie_info <- prairie.prep.treats %>% select(Treatment_Block,Treatment, Treatment_cat, Treatment_type) %>%
+prairie_info <- prairie.prep.treats %>% select(Treatment_Block, treat_id, block, treat_id, Nutrients, Invasion, Assembly) %>%
   distinct() %>% mutate(Assemblage = as.character(Treatment_Block))
 
 
@@ -119,7 +119,7 @@ prairie.hill.TD <- prairie.TD.df %>% left_join(prairie_info) %>%
 head(prairie.hill.TD)
 View(prairie.hill.TD)
 
-write.csv(prairie.hill.TD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Block Treats/prairie.hill.block.treats.TD.csv", row.names=FALSE)
+write.csv(prairie.hill.TD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Block Treat/prairie.hill.block.treats.TD.csv", row.names=FALSE)
 
 # ========================================================================================================== #
 # Phylogenetic diversity
@@ -129,9 +129,9 @@ phylo.prep <- read.csv("phylo_prep.csv")
 head(phylo.prep)
 
 phylo.prep.treats <- phylo.prep %>% 
-  gather(Treatment_cat, Treatment_type, "Nutrients":"Assembly") %>%
-  unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F)%>%
-  unite(Treatment_Block, Treatment, block, sep="_", remove= F)
+  # gather(Treatment_cat, Treatment_type, "Nutrients":"Assembly") %>%
+  # unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F)%>%
+  unite(Treatment_Block, treat_id, block, sep="_", remove= F)
 
 head(phylo.prep.treats)
 
@@ -178,6 +178,8 @@ prairie.hill.PD <- prairie.PD.df %>% left_join(prairie_info)%>%
                                Order.q == "1" ~ "q = 1",
                                Order.q == "2" ~ "q = 2") )
 
+head(prairie.hill.PD)
+
 
 write.csv(prairie.hill.PD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Block Treat/prairie.hill.block.treats.PD.csv", row.names=FALSE)
 
@@ -223,9 +225,9 @@ write.csv(traits_fixed, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Pri
 
 
 trait.prep.treats <- trait.prep %>% 
-  gather(Treatment_cat, Treatment_type, "Nutrients":"Assembly") %>%
-  unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F) %>%
-  unite(Treatment_Block, Treatment, block, sep="_", remove= F)
+  # gather(Treatment_cat, Treatment_type, "Nutrients":"Assembly") %>%
+  # unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F) %>%
+  unite(Treatment_Block, treat_id, block, sep="_", remove= F)
 
 
 head(trait.prep.treats)
@@ -280,6 +282,6 @@ prairie.hill.FD <- prairie.FD.df %>% left_join(prairie_info) %>%
                                Order.q == "2" ~ "q = 2") )
 
 
-write.csv(prairie.hill.FD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Block Treat/prairie.hill.treats.FD.csv", row.names=FALSE)
+write.csv(prairie.hill.FD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Block Treat/prairie.hill.block.treats.FD.csv", row.names=FALSE)
 
 

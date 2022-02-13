@@ -42,7 +42,7 @@ load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fit
 summary(TD_div0)
 
 #plot(conditional_effects(TD_div0_rich), ask = FALSE)
-TD_div0_nut <- conditional_effects(TD_div0, effects = 'Nutrients', re_formula = NA, method = 'fitted')  # conditional effects
+TD_div0 <- conditional_effects(TD_div0, effects = 'Treatment', re_formula = NA, method = 'fitted')  # conditional effects
 
 TD_div0_invasion <- conditional_effects(TD_div0, effects = 'Invasion', re_formula = NA, method = 'fitted')  # conditional effects
 
@@ -50,18 +50,18 @@ TD_div0_assembly <- conditional_effects(TD_div0, effects = 'Assembly', re_formul
 
 head(div0.TD)
 
-fig_TD_div0_nuts <- ggplot() + 
+fig_TD_div0 <- ggplot() + 
   geom_point(data = div0.TD,
-             aes(x = Nutrients, y = qD, colour = "#C0C0C0"), 
+             aes(x = Treatment, y = qD, colour = "#C0C0C0"), 
              size = 0.75, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
-  geom_point(data = TD_div0_nut$Nutrients,
-             aes(x = Nutrients, y = estimate__, colour = Nutrients), size = 3) +
-  geom_errorbar(data = TD_div0_nut$Nutrients,
-                aes(x = Nutrients, ymin = lower__, ymax = upper__, colour = Nutrients),
+  geom_point(data = TD_div0$Treatment,
+             aes(x = Treatment, y = estimate__, colour = Treatment), size = 3) +
+  geom_errorbar(data = TD_div0$Treatment,
+                aes(x = Treatment, ymin = lower__, ymax = upper__, colour = Treatment),
                 size = 1, width = 0) +
   labs(x = '',
        y='') +
-  scale_color_manual(values =  c(	"#C0C0C0", "#969696FF", "#FB9F53FF" ))  + 
+ # scale_color_manual(values =  c(	"#C0C0C0", "#969696FF", "#FB9F53FF" ))  + 
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                #axis.text.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -69,11 +69,11 @@ fig_TD_div0_nuts <- ggplot() +
                                strip.background = element_blank(),legend.position = "none") +
   #coord_flip() +
   labs( 
-    subtitle= 'Nutrients'
+    subtitle= 'Treatments'
   ) + ylab("Forb Taxonomic Diversity")
 
 
-fig_TD_div0_nuts
+fig_TD_div0
 
 
 fig_TD_div0_inv <- ggplot() + 

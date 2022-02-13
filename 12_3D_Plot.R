@@ -97,7 +97,7 @@ View(prairie.TD.df)
 
 head(prairie.prep)
 
-prairie_info <- prairie.prep %>% select(plot,  block, Nutrients, Invasion, Assembly) %>%
+prairie_info <- prairie.prep %>% select(plot,  block, Nutrients, Invasion, Assembly, treat_id) %>%
 distinct() %>% mutate(Assemblage = as.character(plot))
 
 
@@ -105,7 +105,7 @@ prairie.hill.TD <- prairie.TD.df %>% left_join(prairie_info)
 
 View(prairie.hill.TD)
 
-write.csv(prairie.hill.TD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/prairie.hill.TD.csv", row.names=FALSE)
+write.csv(prairie.hill.TD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Plot/prairie.hill.TD.csv", row.names=FALSE)
 
 # I will change treatment grouping for species area curves...
 # but just as an initial sneak peak (and keep the code for later)
@@ -175,7 +175,8 @@ PD_out
 
 save(PD_out, file = "PD_out.Rdata")
 
-load(file = "PD_out")
+setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Plot")
+load(file = "PD_out.Rdata")
 
 #$PDiNextEst$size_based
 prairie.PD.df <- PD_out %>% 
@@ -186,7 +187,9 @@ View(prairie.PD.df)
 prairie.hill.PD <- prairie.PD.df %>% left_join(prairie_info)
 
 
-write.csv(prairie.hill.PD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/prairie.hill.PD.csv", row.names=FALSE)
+head(prairie.hill.PD)
+
+write.csv(prairie.hill.PD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Plot/prairie.hill.PD.csv", row.names=FALSE)
 
 
 
@@ -268,7 +271,8 @@ FD_out
 save(FD_out, file = "FD_out.Rdata")
 
 
-load(file = "FD_out")
+setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Plot")
+load(file = "FD_out.Rdata")
 
 #$AUCiNextEst$size_based
 prairie.FD.df <- FD_out %>% 
@@ -278,6 +282,7 @@ View(prairie.FD.df)
 
 prairie.hill.FD <- prairie.FD.df %>% left_join(prairie_info)
 
+head(prairie.hill.FD)
 
-write.csv(prairie.hill.FD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/prairie.hill.FD.csv", row.names=FALSE)
+write.csv(prairie.hill.FD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Plot/prairie.hill.FD.csv", row.names=FALSE)
 
