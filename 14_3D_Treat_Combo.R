@@ -88,6 +88,7 @@ TD_treat_out
 
 save(TD_treat_out, file = "TD_treat_out.Rdata")
 
+setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Combo")
 load(file = "TD_treat_out.Rdata")
 
 #$iNextEst$size_based
@@ -110,8 +111,9 @@ prairie.hill.TD <- prairie.TD.df %>% left_join(prairie_info) %>%
 head(prairie.hill.TD)
 View(prairie.hill.TD)
 
-write.csv(prairie.hill.TD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/prairie.hill.treats.TD.csv", row.names=FALSE)
+write.csv(prairie.hill.TD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Combo/prairie.hill.treats.TD.csv", row.names=FALSE)
 
+setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Combo")
 prairie.hill.TD <- read.csv("prairie.hill.treats.TD.csv",  header= TRUE)
 
 

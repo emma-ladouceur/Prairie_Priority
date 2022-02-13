@@ -5,11 +5,11 @@ library(brms)
 library(viridis)
 library(patchwork)
 
-setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority")
+setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/")
 
-TD <- read.csv("Data/prairie.hill.TD.csv", header= TRUE)
-PD <- read.csv("Data/prairie.hill.PD.csv", header= TRUE)
-FD <- read.csv("Data/prairie.hill.FD.csv", header= TRUE)
+TD <- read.csv("Data/Plot/prairie.hill.TD.csv", header= TRUE)
+PD <- read.csv("Data/Plot/prairie.hill.PD.csv", header= TRUE)
+FD <- read.csv("Data/Plot/prairie.hill.FD.csv", header= TRUE)
 
 
 
@@ -21,7 +21,7 @@ View(TD)
 
 TD.lim <- TD %>% filter(Order.q == "0")
 
-View(TD.lim)
+View(div0.TD)
 
 div0.TD <- TD %>% filter(Order.q == "0",
               Method == "Observed") 

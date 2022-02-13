@@ -117,8 +117,11 @@ View(prairie.hill.TD)
 
 write.csv(prairie.hill.TD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Sep/prairie.hill.treats.sep.TD.csv", row.names=FALSE)
 
+setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Sep/")
 prairie.hill.TD <- read.csv("prairie.hill.treats.sep.TD.csv",  header= TRUE)
 
+
+View(prairie.hill.TD)
 
 prairie.hill.TD$Treatment_cat <- factor(prairie.hill.TD$Treatment_cat, levels = c("Nutrients", "Invasion", "Assembly"))
 

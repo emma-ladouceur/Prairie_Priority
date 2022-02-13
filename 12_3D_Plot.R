@@ -85,7 +85,9 @@ TD_out
 
 save(TD_out, file = "TD_out.Rdata")
 
-load(file = "TD_out")
+
+setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Plot")
+load(file = "TD_out.Rdata")
 
 #$iNextEst$size_based
 prairie.TD.df <- TD_out %>% 
