@@ -121,16 +121,16 @@ setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat S
 prairie.hill.TD <- read.csv("prairie.hill.treats.sep.TD.csv",  header= TRUE)
 
 
-View(prairie.hill.TD)
+head(prairie.hill.TD)
 
-prairie.hill.TD$Treatment_cat <- factor(prairie.hill.TD$Treatment_cat, levels = c("Nutrients", "Invasion", "Assembly"))
+prairie.hill.TD$Treatment_cat <- factor(prairie.hill.TD$Treatment_cat, levels = c("Nutrients",  "Assembly", "Invasion"))
 
 prairie.hill.TD$Treatment_type<- as.factor(prairie.hill.TD$Treatment_type)
 levels(prairie.hill.TD$Treatment_type)
 prairie.hill.TD$Treatment_type <- factor(prairie.hill.TD$Treatment_type, 
                                          levels = c("Control", "Nutrients", 
-                                                    "Early", "Late",
-                                                    "Both first", "Forbs first", "Grass first"))
+                                                    "Both first", "Forbs first", "Grass first",
+                                                    "Early", "Late"))
 
 prairie.hill.TD0 <- prairie.hill.TD %>% filter(Order.q == "q = 0") 
 prairie.hill.TD2 <- prairie.hill.TD %>% filter(Order.q == "q = 2") 
@@ -158,7 +158,14 @@ prairie.TD.fig <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Treatme
   labs(title='a) Taxonomic Diversity', color="Treatment", x= "")+
   #xlim(0,20)+ 
   theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none") +
-  guides(col = guide_legend(ncol = 4, nrow = 2))
+  guides(col = guide_legend(ncol = 4, nrow = 2)) +
+  annotate(
+    "text", label = "q = 0",
+    x = 550, y = 120, size = 5, colour = "black"
+  ) +   annotate(
+    "text", label = "q = 2",
+    x = 550, y = 30, size = 5, colour = "black"
+  )
 
 
 prairie.TD.fig 
@@ -231,14 +238,14 @@ prairie.hill.PD <- read.csv("prairie.hill.treats.sep.PD.csv",  header= TRUE)
 
 head(prairie.hill.PD)
 
-prairie.hill.PD$Treatment_cat <- factor(prairie.hill.PD$Treatment_cat, levels = c("Nutrients", "Invasion", "Assembly"))
+prairie.hill.PD$Treatment_cat <- factor(prairie.hill.PD$Treatment_cat, levels = c("Nutrients", "Assembly",  "Invasion"))
 
 prairie.hill.PD$Treatment_type<- as.factor(prairie.hill.PD$Treatment_type)
 levels(prairie.hill.PD$Treatment_type)
 prairie.hill.PD$Treatment_type <- factor(prairie.hill.PD$Treatment_type, 
                                          levels = c("Control", "Nutrients", 
-                                                    "Early", "Late",
-                                                    "Both first", "Forbs first", "Grass first"))
+                                                    "Both first", "Forbs first", "Grass first", 
+                                                    "Early", "Late"))
 
 
 prairie.hill.PD0 <- prairie.hill.PD %>% filter(Order.q == "q = 0") 
@@ -266,7 +273,14 @@ prairie.PD.fig <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Treatm
   labs(title='b) Phylogenetic Diversity', color = "Treatment", x = "")+
   #xlim(0,20)+ 
   theme_classic() +   theme(legend.direction = "horizontal",legend.position = "right") +
-  guides(col = guide_legend(ncol = 1))
+  guides(col = guide_legend(ncol = 1)) #+
+  # annotate(
+  #   "text", label = "q = 0",
+  #   x = 550, y = 5900, size = 6, colour = "black"
+  # ) +   annotate(
+  #   "text", label = "q = 2",
+  #   x = 550, y = 1900, size = 6, colour = "black"
+  # )
 
 
 prairie.PD.fig
@@ -379,14 +393,14 @@ head(prairie.hill.FD)
 
 is.numeric(prairie.hill.FD$Assemblage)
 
-prairie.hill.FD$Treatment_cat <- factor(prairie.hill.FD$Treatment_cat, levels = c("Nutrients", "Invasion", "Assembly"))
+prairie.hill.FD$Treatment_cat <- factor(prairie.hill.FD$Treatment_cat, levels = c("Nutrients",  "Assembly", "Invasion"))
 
 prairie.hill.FD$Treatment_type<- as.factor(prairie.hill.FD$Treatment_type)
 levels(prairie.hill.FD$Treatment_type)
 prairie.hill.FD$Treatment_type <- factor(prairie.hill.FD$Treatment_type, 
                                          levels = c("Control", "Nutrients", 
-                                                    "Early", "Late",
-                                                    "Both first", "Forbs first", "Grass first"))
+                                                    "Both first", "Forbs first", "Grass first",
+                                                    "Early", "Late"))
 
 
 prairie.hill.FD0 <- prairie.hill.FD %>% filter(Order.q == "q = 0") 
@@ -413,7 +427,14 @@ prairie.FD.fig <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Treatm
   scale_colour_manual( values = c("#31688e","#35b779", "#443983","#90d743","#21918c","#fde725", "#440154") ) +  
   labs(title='c) Functional Trait Diversity', color="Treatment")+
   theme_classic() +   theme(legend.direction = "horizontal",legend.position = "none") +
-  guides(col = guide_legend(ncol = 15))
+  guides(col = guide_legend(ncol = 15))# +
+  # annotate(
+  #   "text", label = "q = 0",
+  #   x = 550, y = 22, size = 6, colour = "black"
+  # ) +   annotate(
+  #   "text", label = "q = 2",
+  #   x = 550, y = 11, size = 6, colour = "black"
+  # )
 
 
 prairie.FD.fig

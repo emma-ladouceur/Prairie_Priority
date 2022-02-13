@@ -35,14 +35,14 @@ TD_div0 <-  brm(qD ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion *
                    data = div0.TD, family = student(), cores = 4, iter=3000, warmup=1000, chains = 4)
 
 
-save(TD_div0, file = '3D_Model_Fits/TD_div0.Rdata')
-load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/TD_div0.Rdata')
+save(TD_div0, file = '3D_Model_Fits/TD_plot_div0.Rdata')
+load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/TD_plot_div0.Rdata')
 
 
 summary(TD_div0)
 
 #plot(conditional_effects(TD_div0_rich), ask = FALSE)
-TD_div0 <- conditional_effects(TD_div0, effects = 'Treatment', re_formula = NA, method = 'fitted')  # conditional effects
+TD_div0_nuts <- conditional_effects(TD_div0, effects = 'Nutrients', re_formula = NA, method = 'fitted')  # conditional effects
 
 TD_div0_invasion <- conditional_effects(TD_div0, effects = 'Invasion', re_formula = NA, method = 'fitted')  # conditional effects
 
@@ -52,22 +52,22 @@ head(div0.TD)
 
 fig_TD_div0 <- ggplot() + 
   geom_point(data = div0.TD,
-             aes(x = Treatment, y = qD, colour = "#C0C0C0"), 
+             aes(x = Nutrients, y = qD, colour = "#C0C0C0"), 
              size = 0.75, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
-  geom_point(data = TD_div0$Treatment,
-             aes(x = Treatment, y = estimate__, colour = Treatment), size = 3) +
-  geom_errorbar(data = TD_div0$Treatment,
-                aes(x = Treatment, ymin = lower__, ymax = upper__, colour = Treatment),
+  geom_point(data = TD_div0_nuts$Nutrients,
+             aes(x = Nutrients, y = estimate__, colour = Nutrients), size = 3) +
+  geom_errorbar(data = TD_div0_nuts$Nutrients,
+                aes(x = Nutrients, ymin = lower__, ymax = upper__, colour = Nutrients),
                 size = 1, width = 0) +
   labs(x = '',
        y='') +
- # scale_color_manual(values =  c(	"#C0C0C0", "#969696FF", "#FB9F53FF" ))  + 
+  scale_color_manual(values =  c(	"#C0C0C0", "#969696FF", "#FB9F53FF" ))  + 
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                #axis.text.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(30,70) +
   labs( 
     subtitle= 'Treatments'
   ) + ylab("Forb Taxonomic Diversity")
@@ -89,11 +89,11 @@ fig_TD_div0_inv <- ggplot() +
        y='') +
   scale_color_manual(values =  c(	"#C0C0C0", "#EE0011FF","#0C5BB0FF"))  + 
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                               #axis.text.x = element_blank(),
+                               axis.text.y = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(30,70) +
   labs( subtitle= 'Invasion'
   ) + ylab("")  
 
@@ -114,13 +114,13 @@ fig_TD_div0_ass <- ggplot() +
        y='') +
   scale_color_manual(values =  c(	"#C0C0C0","#EC579AFF","#5A5895FF", "#15983DFF"))  + 
  # ggtitle( expression(atop(paste(italic(gamma),'-plot-scale'),  paste('plot = (9 subplots = 20.25', m^2 , ')' ) )) )+
-  ggtitle('Observed Taxonomic Diversity \n q = 0')+
+  ggtitle('Observed Taxonomic Diversity \n 10 samples \n q = 0')+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                               #axis.text.x = element_blank(),
+                               axis.text.y = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(30,70) +
   labs( subtitle= 'Assembly'
   ) + ylab("")  
 
@@ -138,8 +138,8 @@ TD_div2 <-  brm(qD ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion *
                   data = div2.TD, family = student(), cores = 4, iter=3000, warmup=1000, chains = 4)
 
 
-save(TD_div2, file = '3D_Model_Fits/TD_div2.Rdata')
-load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/TD_div2.Rdata')
+save(TD_div2, file = '3D_Model_Fits/TD_plot_div2.Rdata')
+load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/TD_plot_div2.Rdata')
 
 
 summary(TD_div2)
@@ -171,7 +171,7 @@ fig_TD_div2_nuts <- ggplot() +
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(20,40) +
   labs( #subtitle= 'a) Nutrients'
     y = "Forb Taxonomic Diversity"
   ) #+ ylab( expression(paste(ENS[PIE])) ) 
@@ -193,11 +193,11 @@ fig_TD_div2_inv <- ggplot() +
        y='') +
   scale_color_manual(values =  c(	"#C0C0C0", "#EE0011FF","#0C5BB0FF"))  + 
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                               #axis.text.x = element_blank(),
+                               axis.text.y = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(20,40) +
   labs( #subtitle= 'c) Invasion'
   ) + ylab("")  
 
@@ -220,11 +220,11 @@ fig_TD_div2_ass <- ggplot() +
   ggtitle('q = 2')+
   #  ggtitle( expression(atop(paste(italic(alpha),'-scale'),  paste('subplot = (0.25', m^2 , ')' ) )) )+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                               #axis.text.x = element_blank(),
+                               axis.text.y = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(20,40) +
   labs( #subtitle= 'b) Assembly'
   ) + ylab("")  
 
@@ -256,8 +256,8 @@ PD_div0 <-  brm(qPD ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion 
                 data = div0.PD, family = student(), cores = 4, iter=3000, warmup=1000, chains = 4)
 
 
-save(PD_div0, file = '3D_Model_Fits/PD_div0.Rdata')
-load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/PD_div0.Rdata')
+save(PD_div0, file = '3D_Model_Fits/PD_plot_div0.Rdata')
+load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/PD_plot_div0.Rdata')
 
 
 summary(PD_div0)
@@ -269,8 +269,7 @@ PD_div0_invasion <- conditional_effects(PD_div0, effects = 'Invasion', re_formul
 
 PD_div0_assembly <- conditional_effects(PD_div0, effects = 'Assembly', re_formula = NA, method = 'fitted')  # conditional effects
 
-piratepal(palette = "all")
-piratepal(palette = "basel")
+
 
 fig_PD_div0_nuts <- ggplot() + 
   geom_point(data = div0.PD,
@@ -287,9 +286,9 @@ fig_PD_div0_nuts <- ggplot() +
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(2200,4000) +
   labs( subtitle= 'Nutrients'
-  ) + ylab("Forb Phylogenetic Diversity")
+  ) + ylab("Forb Phylogenetic Diversity") + xlab("")
 
 
 fig_PD_div0_nuts
@@ -308,11 +307,11 @@ fig_PD_div0_inv <- ggplot() +
        y='') +
   scale_color_manual(values =  c(	"#C0C0C0", "#EE0011FF","#0C5BB0FF"))  + 
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                               #axis.text.x = element_blank(),
+                               axis.text.y = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(2200,4000) +
   labs( subtitle= 'Invasion'
   ) + ylab("")  
 
@@ -333,13 +332,13 @@ fig_PD_div0_ass <- ggplot() +
        y='') +
   scale_color_manual(values =  c(	"#C0C0C0","#EC579AFF","#5A5895FF", "#15983DFF"))  + 
   #ggtitle( expression(atop(paste(italic(gamma),'-plot-scale'),  paste('plot = (9 subplots = 20.25', m^2 , ')' ) )) )+
-  ggtitle('Observed Phylogenetic Diversity \n q = 0') +
+  ggtitle('Observed Phylogenetic Diversity \n 10 samples \n q = 0') +
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                               #axis.text.x = element_blank(),
+                               axis.text.y = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(2200,4000) +
   labs( subtitle= 'Assembly'
   ) + ylab("")  
 
@@ -357,8 +356,8 @@ PD_div2 <-  brm(qPD ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion 
                 data = div2.PD, family = student(), cores = 4, iter=3000, warmup=1000, chains = 4)
 
 
-save(PD_div2, file = '3D_Model_Fits/PD_div2.Rdata')
-load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/PD_div2.Rdata')
+save(PD_div2, file = '3D_Model_Fits/PD_plot_div2.Rdata')
+load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/PD_plot_div2.Rdata')
 
 
 summary(PD_div2)
@@ -370,8 +369,6 @@ PD_div2_invasion <- conditional_effects(PD_div2, effects = 'Invasion', re_formul
 
 PD_div2_assembly <- conditional_effects(PD_div2, effects = 'Assembly', re_formula = NA, method = 'fitted')  # conditional effects
 
-piratepal(palette = "all")
-piratepal(palette = "basel")
 
 fig_PD_div2_nuts <- ggplot() + 
   geom_point(data = div2.PD,
@@ -388,10 +385,10 @@ fig_PD_div2_nuts <- ggplot() +
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(1500, 2500) +
   labs( #subtitle= 'a) Nutrients'
     y= "Forb Phylogenetic Diversity"
-  )# + ylab( expression(paste(ENS[PIE])) ) 
+  )+ xlab("")
 
 
 fig_PD_div2_nuts
@@ -410,11 +407,11 @@ fig_PD_div2_inv <- ggplot() +
        y='') +
   scale_color_manual(values =  c(	"#C0C0C0", "#EE0011FF","#0C5BB0FF"))  + 
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                               #axis.text.x = element_blank(),
+                               axis.text.y = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(1500, 2500) +
   labs( #subtitle= 'Invasion'
   ) + ylab("")  
 
@@ -437,11 +434,11 @@ fig_PD_div2_ass <- ggplot() +
   ggtitle('q = 2') +
   #  ggtitle( expression(atop(paste(italic(alpha),'-scale'),  paste('subplot = (0.25', m^2 , ')' ) )) )+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                               #axis.text.x = element_blank(),
+                               axis.text.y = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(1500, 2500) +
   labs( #subtitle= 'Assembly'
   ) + ylab("")  
 
@@ -473,8 +470,8 @@ FD_div0 <-  brm(qFD ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion 
                 data = div0.FD, family = student(), cores = 4, iter=3000, warmup=1000, chains = 4)
 
 
-save(FD_div0, file = '3D_Model_Fits/FD_div0.Rdata')
-load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/FD_div0.Rdata')
+save(FD_div0, file = '3D_Model_Fits/FD_plot_div0.Rdata')
+load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/FD_plot_div0.Rdata')
 
 
 summary(FD_div0)
@@ -486,8 +483,6 @@ FD_div0_invasion <- conditional_effects(FD_div0, effects = 'Invasion', re_formul
 
 FD_div0_assembly <- conditional_effects(FD_div0, effects = 'Assembly', re_formula = NA, method = 'fitted')  # conditional effects
 
-piratepal(palette = "all")
-piratepal(palette = "basel")
 
 fig_FD_div0_nuts <- ggplot() + 
   geom_point(data = div0.FD,
@@ -506,7 +501,7 @@ fig_FD_div0_nuts <- ggplot() +
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(9,20) +
   labs( subtitle= 'Nutrients'
   ) + ylab("Forb Functional Diversity")
 
@@ -527,11 +522,11 @@ fig_FD_div0_inv <- ggplot() +
        y='') +
   scale_color_manual(values =  c(	"#C0C0C0", "#EE0011FF","#0C5BB0FF"))  + 
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                               #axis.text.x = element_blank(),
+                               axis.text.y = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(9,20) +
   labs( subtitle= 'Invasion'
   ) + ylab("")  
 
@@ -552,13 +547,13 @@ fig_FD_div0_ass <- ggplot() +
        y='') +
   scale_color_manual(values =  c(	"#C0C0C0","#EC579AFF","#5A5895FF", "#15983DFF"))  + 
   #ggtitle( expression(atop(paste(italic(gamma),'-plot-scale'),  paste('plot = (9 subplots = 20.25', m^2 , ')' ) )) )+
-  ggtitle('Observed Functional Diversity \n q = 0') +
+  ggtitle('Observed Functional Diversity \n 10 samples \n q = 0') +
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                               #axis.text.x = element_blank(),
+                               axis.text.y = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(9,20) +
   labs( subtitle= 'Assembly'
   ) + ylab("")  
 
@@ -576,8 +571,8 @@ FD_div2 <-  brm(qFD ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion 
                 data = div2.FD, family = student(), cores = 4, iter=3000, warmup=1000, chains = 4)
 
 
-save(FD_div2, file = '3D_Model_Fits/FD_div2.Rdata')
-load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/FD_div2.Rdata')
+save(FD_div2, file = '3D_Model_Fits/FD_plot_div2.Rdata')
+load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/FD_plot_div2.Rdata')
 
 
 summary(FD_div2)
@@ -589,8 +584,7 @@ FD_div2_invasion <- conditional_effects(FD_div2, effects = 'Invasion', re_formul
 
 FD_div2_assembly <- conditional_effects(FD_div2, effects = 'Assembly', re_formula = NA, method = 'fitted')  # conditional effects
 
-piratepal(palette = "all")
-piratepal(palette = "basel")
+
 
 fig_FD_div2_nuts <- ggplot() + 
   geom_point(data = div2.FD,
@@ -609,7 +603,7 @@ fig_FD_div2_nuts <- ggplot() +
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(8,18) +
   labs( #subtitle= 'Nutrients',
         y = "Forb Functional Diversity"
   ) #+ ylab( expression(paste(ENS[PIE])) ) 
@@ -631,11 +625,11 @@ fig_FD_div2_inv <- ggplot() +
        y='') +
   scale_color_manual(values =  c(	"#C0C0C0", "#EE0011FF","#0C5BB0FF"))  + 
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                               #axis.text.x = element_blank(),
+                               axis.text.y = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(8,18) +
   labs( #subtitle= 'Invasion'
   ) + ylab("")  
 
@@ -658,11 +652,11 @@ fig_FD_div2_ass <- ggplot() +
   ggtitle('q = 2') +
   #  ggtitle( expression(atop(paste(italic(alpha),'-scale'),  paste('subplot = (0.25', m^2 , ')' ) )) )+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                               #axis.text.x = element_blank(),
+                               axis.text.y = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
+  ylim(8,18) +
   labs( #subtitle= 'Assembly'
   ) + ylab("")  
 

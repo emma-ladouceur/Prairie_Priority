@@ -135,8 +135,8 @@ TD_div2 <-  brm(qD ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion *
                   data = div2.TD, family = student(), cores = 4, iter=3000, warmup=1000, chains = 4)
 
 
-save(TD_div2, file = '3D_Model_Fits/TD_div2.Rdata')
-load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/TD_div2.Rdata')
+save(TD_div2, file = '3D_Model_Fits/TD_block_div2.Rdata')
+load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/TD_block_div2.Rdata')
 
 
 summary(TD_div2)
@@ -148,8 +148,7 @@ TD_div2_invasion <- conditional_effects(TD_div2, effects = 'Invasion', re_formul
 
 TD_div2_assembly <- conditional_effects(TD_div2, effects = 'Assembly', re_formula = NA, method = 'fitted')  # conditional effects
 
-piratepal(palette = "all")
-piratepal(palette = "basel")
+
 
 fig_TD_div2_nuts <- ggplot() + 
   geom_point(data = div2.TD,
@@ -241,10 +240,10 @@ fig_TD
 #  Phylogenetic diversity
 head(PD)
 
-div0.PD <- PD %>% filter(Order.q == "0",
+div0.PD <- PD %>% filter(Order.q == "q = 0",
                         Method == "Observed") 
 
-div2.PD <- PD %>% filter(Order.q == "2",
+div2.PD <- PD %>% filter(Order.q == "q = 2",
                         Method == "Observed") 
 
 head(div0.PD)
@@ -253,8 +252,8 @@ PD_div0 <-  brm(qPD ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion 
                 data = div0.PD, family = student(), cores = 4, iter=3000, warmup=1000, chains = 4)
 
 
-save(PD_div0, file = '3D_Model_Fits/PD_div0.Rdata')
-load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/PD_div0.Rdata')
+save(PD_div0, file = '3D_Model_Fits/PD_block_div0.Rdata')
+load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/PD_block_div0.Rdata')
 
 
 summary(PD_div0)
@@ -266,8 +265,6 @@ PD_div0_invasion <- conditional_effects(PD_div0, effects = 'Invasion', re_formul
 
 PD_div0_assembly <- conditional_effects(PD_div0, effects = 'Assembly', re_formula = NA, method = 'fitted')  # conditional effects
 
-piratepal(palette = "all")
-piratepal(palette = "basel")
 
 fig_PD_div0_nuts <- ggplot() + 
   geom_point(data = div0.PD,
@@ -354,8 +351,8 @@ PD_div2 <-  brm(qPD ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion 
                 data = div2.PD, family = student(), cores = 4, iter=3000, warmup=1000, chains = 4)
 
 
-save(PD_div2, file = '3D_Model_Fits/PD_div2.Rdata')
-load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/PD_div2.Rdata')
+save(PD_div2, file = '3D_Model_Fits/PD_block_div2.Rdata')
+load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/PD_block_div2.Rdata')
 
 
 summary(PD_div2)
@@ -367,8 +364,7 @@ PD_div2_invasion <- conditional_effects(PD_div2, effects = 'Invasion', re_formul
 
 PD_div2_assembly <- conditional_effects(PD_div2, effects = 'Assembly', re_formula = NA, method = 'fitted')  # conditional effects
 
-piratepal(palette = "all")
-piratepal(palette = "basel")
+
 
 fig_PD_div2_nuts <- ggplot() + 
   geom_point(data = div2.PD,
@@ -458,10 +454,10 @@ fig_PD
 
 head(FD)
 
-div0.FD <- FD %>% filter(Order.q == "0",
+div0.FD <- FD %>% filter(Order.q == "q = 0",
                         Method == "Observed") 
 
-div2.FD <- FD %>% filter(Order.q == "2",
+div2.FD <- FD %>% filter(Order.q == "q = 2",
                         Method == "Observed") 
 
 head(div0.FD)
@@ -470,8 +466,8 @@ FD_div0 <-  brm(qFD ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion 
                 data = div0.FD, family = student(), cores = 4, iter=3000, warmup=1000, chains = 4)
 
 
-save(FD_div0, file = '3D_Model_Fits/FD_div0.Rdata')
-load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/FD_div0.Rdata')
+save(FD_div0, file = '3D_Model_Fits/FD_block_div0.Rdata')
+load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/FD_block_div0.Rdata')
 
 
 summary(FD_div0)
@@ -483,8 +479,7 @@ FD_div0_invasion <- conditional_effects(FD_div0, effects = 'Invasion', re_formul
 
 FD_div0_assembly <- conditional_effects(FD_div0, effects = 'Assembly', re_formula = NA, method = 'fitted')  # conditional effects
 
-piratepal(palette = "all")
-piratepal(palette = "basel")
+
 
 fig_FD_div0_nuts <- ggplot() + 
   geom_point(data = div0.FD,
@@ -573,8 +568,8 @@ FD_div2 <-  brm(qFD ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion 
                 data = div2.FD, family = student(), cores = 4, iter=3000, warmup=1000, chains = 4)
 
 
-save(FD_div2, file = '3D_Model_Fits/FD_div2.Rdata')
-load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/FD_div2.Rdata')
+save(FD_div2, file = '3D_Model_Fits/FD_block_div2.Rdata')
+load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/FD_block_div2.Rdata')
 
 
 summary(FD_div2)
@@ -586,8 +581,7 @@ FD_div2_invasion <- conditional_effects(FD_div2, effects = 'Invasion', re_formul
 
 FD_div2_assembly <- conditional_effects(FD_div2, effects = 'Assembly', re_formula = NA, method = 'fitted')  # conditional effects
 
-piratepal(palette = "all")
-piratepal(palette = "basel")
+
 
 fig_FD_div2_nuts <- ggplot() + 
   geom_point(data = div2.FD,
