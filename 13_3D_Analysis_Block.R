@@ -111,7 +111,7 @@ fig_TD_div0_ass <- ggplot() +
        y='') +
   scale_color_manual(values =  c(	"#C0C0C0","#EC579AFF","#5A5895FF", "#15983DFF"))  + 
  # ggtitle( expression(atop(paste(italic(gamma),'-plot-scale'),  paste('plot = (9 subplots = 20.25', m^2 , ')' ) )) )+
-  ggtitle('Observed Taxonomic Diversity \n q = 0')+
+  ggtitle('Observed Taxonomic Diversity \n 20 samples \n q = 0') +
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                #axis.text.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -327,7 +327,7 @@ fig_PD_div0_ass <- ggplot() +
        y='') +
   scale_color_manual(values =  c(	"#C0C0C0","#EC579AFF","#5A5895FF", "#15983DFF"))  + 
   #ggtitle( expression(atop(paste(italic(gamma),'-plot-scale'),  paste('plot = (9 subplots = 20.25', m^2 , ')' ) )) )+
-  ggtitle('Observed Phylogenetic Diversity \n q = 0') +
+  ggtitle('Observed Phylogenetic Diversity \n 20 samples \n q = 0') +
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                #axis.text.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -544,7 +544,7 @@ fig_FD_div0_ass <- ggplot() +
        y='') +
   scale_color_manual(values =  c(	"#C0C0C0","#EC579AFF","#5A5895FF", "#15983DFF"))  + 
   #ggtitle( expression(atop(paste(italic(gamma),'-plot-scale'),  paste('plot = (9 subplots = 20.25', m^2 , ')' ) )) )+
-  ggtitle('Observed Functional Diversity \n q = 0') +
+  ggtitle('Observed Functional Diversity \n 20 samples \n q = 0') +
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                #axis.text.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),

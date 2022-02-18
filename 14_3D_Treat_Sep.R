@@ -91,6 +91,7 @@ TD_treat_out <- iNEXT3D(data = prairie.matrix.list, diversity = 'TD', q = c(0,1,
 
 TD_treat_out
 
+setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Sep/")
 save(TD_treat_out, file = "TD_treat_sep_out.Rdata")
 
 load(file = "TD_treat_sep_out.Rdata")

@@ -50,7 +50,7 @@ TD_div0_assembly <- conditional_effects(TD_div0, effects = 'Assembly', re_formul
 
 head(div0.TD)
 
-fig_TD_div0 <- ggplot() + 
+fig_TD_div0_nuts <- ggplot() + 
   geom_point(data = div0.TD,
              aes(x = Nutrients, y = qD, colour = "#C0C0C0"), 
              size = 0.75, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
@@ -73,7 +73,7 @@ fig_TD_div0 <- ggplot() +
   ) + ylab("Forb Taxonomic Diversity")
 
 
-fig_TD_div0
+fig_TD_div0_nuts
 
 
 fig_TD_div0_inv <- ggplot() + 
@@ -151,8 +151,7 @@ TD_div2_invasion <- conditional_effects(TD_div2, effects = 'Invasion', re_formul
 
 TD_div2_assembly <- conditional_effects(TD_div2, effects = 'Assembly', re_formula = NA, method = 'fitted')  # conditional effects
 
-piratepal(palette = "all")
-piratepal(palette = "basel")
+
 
 fig_TD_div2_nuts <- ggplot() + 
   geom_point(data = div2.TD,
