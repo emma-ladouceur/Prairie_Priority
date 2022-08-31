@@ -66,6 +66,8 @@ prairie.prep.treats <- prairie.prep %>%
 
 head(prairie.prep.treats)
 
+write.csv(prairie.prep.treats, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/prairie.prep.treats.csv", row.names=FALSE)
+
 # full species list, for taxonomic diversity and phylo diversity
 prairie.list <- prairie.prep.treats  %>%
   split(.$Treatment)
@@ -122,6 +124,7 @@ setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat S
 prairie.hill.TD <- read.csv("prairie.hill.treats.sep.TD.csv",  header= TRUE)
 
 
+View(prairie.hill.TD)
 head(prairie.hill.TD)
 
 prairie.hill.TD$Treatment_cat <- factor(prairie.hill.TD$Treatment_cat, levels = c("Nutrients",  "Assembly", "Invasion"))
@@ -332,7 +335,7 @@ trait.prep.treats <- trait.prep %>%
   gather(Treatment_cat, Treatment_type, "Nutrients":"Assembly") %>%
   unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F)
 
-head(phylo.prep.treats)
+head(trait.prep.treats)
 
 # full species list, for taxonomic diversity
 trait.list <- trait.prep.treats %>%

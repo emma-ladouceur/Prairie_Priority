@@ -23,6 +23,8 @@ nrow(three_d_prep)
 three_d_prep <- three_d_prep %>% select(-c(corrected_sp, orig_species)) %>%
   mutate(orig_species = species)
 
+View(three_d_prep)
+
 # Flag infraspecies
 new_sps <- three_d_prep %>% select(orig_species, species) %>%
   distinct() %>%
@@ -88,14 +90,22 @@ head(three_d_prep)
 
 write.csv(phylo_prep, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/phylo_prep.csv", row.names=FALSE)
 
+phylo_prep <- read.csv("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/data/phylo_prep.csv") # Trait matrix with missing values
 
+clean_sps <- phylo_prep %>% select(species, genus, family) %>% distinct() %>% arrange(species) %>%
+  mutate(species = str_replace(species, "Lespedeza_juncea_var_sericea", "Lespedeza_juncea")) 
+
+clean_sps
 # how to make a phylo tree from existing plant list
 # https://vimeo.com/470373338#
+
 
 # make phylo tree
 prairie.phy = phylo.maker(clean_sps)
 
 prairie.tree = prairie.phy$scenario.3
+
+prairie.tree
 
 plotTree(prairie.tree)
 

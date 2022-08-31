@@ -82,6 +82,8 @@ std_traits <- sp_trait_prep %>%
 )
 
 
+std_traits %>% select(AccSpeciesName) %>% distinct()
+
 View(std_traits)
 head(std_traits)
 colnames(std_traits)
@@ -98,6 +100,11 @@ pvr <- std_traits %>% filter(Std_Name == "PVR")
 View(pvr)
 # so in reality we have 10 traits
 
+#check for lespedeza?
+std_traits %>% select(AccSpeciesID, AccSpeciesName) %>% distinct()
+
+std_traits %>% filter(AccSpeciesID == "237517")
+
 
 sp_trait_means <- std_traits %>%
 mutate(OrigValueStr = as.numeric(OrigValueStr)) %>%
@@ -112,6 +119,8 @@ mutate(OrigValueStr = as.numeric(OrigValueStr)) %>%
 
 View(sp_trait_means)
 colnames(sp_trait_means)
+
+sp_trait_means %>% filter(AccSpeciesID == "237517")
 
 # how many traits per species ?
  trait_abund <- sp_trait_means %>% select(AccSpeciesName, Std_Name) %>%

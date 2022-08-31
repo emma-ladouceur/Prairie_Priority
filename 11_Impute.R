@@ -15,9 +15,11 @@ require(pez)
 # import trait matrix with missing values
 trait <- read.csv("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/data/trait_Matrix.csv") # Trait matrix with missing values
 
-trait <- trait %>% select(-c(X, AccSpeciesID))
+trait <- trait %>% select(-c(X, AccSpeciesID)) %>% arrange(AccSpeciesName) %>%
+  mutate(AccSpeciesName = str_replace(AccSpeciesName, "Lespedeza juncea var. sericea", "Lespedeza juncea")) 
 
-head(trait)
+View(trait)
+
 # _______________________________________________________________
 
 trait_0 <- trait   
@@ -37,15 +39,19 @@ trait_0$`spp$species` = NULL
 # Load the phylogeny / tree
 prairie.tree <- read.tree('~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/phylo.tree.txt')
 
-View(prairie.tree)
 
 # check by creating a new column what spp are or aren't in the tree 
 phyo_match <- tibble(species = prairie.tree$tip.label, in_tree = 1) %>% left_join(spp, . , by = "species") 
+
+phyo_match
+
 phyo_match <- na.omit(phyo_match)
 
 phyo_match <- phyo_match[, 2]
 phyo_match <- as.data.frame(phyo_match)
 phyo_match$species <- phyo_match$phyo_match
+
+phyo_match
 
 setdiff( trait_0$species , phyo_match$species) # the 0 species missing
 

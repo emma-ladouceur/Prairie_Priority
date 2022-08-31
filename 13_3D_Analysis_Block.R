@@ -345,7 +345,7 @@ fig_PD_div0 <- (fig_PD_div0_nuts  + fig_PD_div0_ass + fig_PD_div0_inv)
 fig_PD_div0
 
 
-# q= 2
+# q = 2
 
 PD_div2 <-  brm(qPD ~  Nutrients * Invasion * Assembly + ( Nutrients * Invasion * Assembly | Assemblage),
                 data = div2.PD, family = student(), cores = 4, iter=3000, warmup=1000, chains = 4)

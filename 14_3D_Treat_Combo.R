@@ -1,4 +1,5 @@
 
+
 library(viridis)
 library(ape)
 library(tidyverse)
@@ -8,6 +9,8 @@ library(ggpubr)
 library(gg.gap)
 library(iNEXT.3D)
 library(patchwork)
+
+setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data")
 
 setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Combo")
 
@@ -165,7 +168,7 @@ prairie.TD.fig <- ggplot(prairie.hill.TD, aes(x = nt, y = qD,   color = Assembla
   scale_color_viridis(discrete = T, option="C")  + 
   labs(title='a) Taxonomic Diversity', color="Treatment", x= "")+
   #xlim(0,20)+ 
-  theme_classic() +   theme(legend.direction = "horizontal",legend.position = "bottom") +
+  theme_classic() +   theme(legend.direction = "horizontal",legend.position = "none") +
   guides(col = guide_legend(ncol = 15))
 
 
@@ -328,6 +331,7 @@ FD_treat_out <- iNEXT3D(data = trait.matrix.list, diversity = 'FD', q = c(0, 1, 
 
 FD_treat_out
 
+setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Combo")
 save(FD_treat_out, file = "FD_treat_out.Rdata")
 
 
@@ -343,9 +347,9 @@ prairie.hill.FD <- prairie.FD.df %>% left_join(prairie_info) %>%
   mutate( Order.q  = case_when(Order.q  == "0" ~ "q = 0",
                                Order.q == "1" ~ "q = 1",
                                Order.q == "2" ~ "q = 2") )
+prairie.hill.FD
 
-
-write.csv(prairie.hill.FD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/prairie.hill.treats.FD.csv", row.names=FALSE)
+write.csv(prairie.hill.FD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Combo/prairie.hill.treats.FD.csv", row.names=FALSE)
 
 
 prairie.hill.FD <- read.csv("prairie.hill.treats.FD.csv",  header= TRUE)
