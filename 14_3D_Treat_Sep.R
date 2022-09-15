@@ -10,7 +10,7 @@ library(iNEXT.3D)
 library(patchwork)
 
 setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Sep/")
-
+setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data")
 # cover and presence combined species data
 sp <- read.csv("pres_and_cover_plot.csv", header= TRUE)
 # corrected species list
@@ -49,7 +49,8 @@ prairie.prep <- sp %>%
   unite("treat_id" , nutrients, invasion, Grass.forbs, remove= FALSE) %>%
   unite("samp_id",  plot, subplot, block, sep="_", remove = FALSE) %>%
   # remove graminoid
-  filter(!species == "graminoid") 
+  filter(!species == "graminoid") %>%
+    mutate(species = str_replace(species, "Lespedeza juncea var. sericea", "Lespedeza juncea")) 
 
 head(prairie.prep)
 nrow(prairie.prep)
@@ -303,7 +304,7 @@ sp_traits <- traits %>% select(species) %>%
   mutate(species = str_replace_all(species, 
                                    pattern = "\\_", replacement = " "))
 
-head(sp_traits)
+View(sp_traits)
 
 
 sp_list <- prairie.prep %>% select(species) %>% distinct() %>%
@@ -326,6 +327,8 @@ traits <- traits %>% mutate(species = str_replace_all(species,
 
 traits_fixed <- sp_match %>% 
   left_join(traits)
+
+View(traits_fixed)
 
 write.csv(traits_fixed, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/imputed_trait_matrix_fixed.csv", row.names=FALSE)
 
