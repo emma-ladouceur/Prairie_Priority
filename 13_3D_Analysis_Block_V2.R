@@ -23,7 +23,7 @@ TD <- TD %>% unite(Treatment, c("Nutrients", "Assembly", "Invasion"), sep = " " 
 div0.TD <- TD %>% filter(Order.q == "q = 0",
               Method == "Observed") 
 
-head(div0.TD)
+View(div0.TD)
 
 div0.TD %>% select(treat_id) %>% distinct() %>% arrange()
 
@@ -31,7 +31,7 @@ div2.TD <- TD %>% filter(Order.q == "q = 2",
                          Method == "Observed") 
 
 # trt/block
-TD_div0 <-  brm(qD ~  Treatment  + ( 1 | block ),
+TD_div0 <-  brm(qD ~  Treatment  + ( Treatment | block ),
                    data = div0.TD, family = student(), cores = 4, iter=2000, warmup=1000, chains = 4,
                control = list(adapt_delta = 0.99)
                 )
@@ -48,25 +48,25 @@ pp_check(TD_div0)
 TD_div0_c <- conditional_effects(TD_div0, effects = 'Treatment', re_formula = NA, method = 'fitted')  # conditional effects
 
 TD_div0_df <-
-  as.data.frame(TD_div0_c$`Treatment`)%>% select(-c(qD, block)) 
+  as.data.frame(TD_div0_c$`Treatment`)%>% select(-c(qD, block)) %>% mutate( Treatment = reorder(Treatment, estimate__) )
 
 TD_div0_df
 
 div0.TD <- div0.TD %>% left_join(TD_div0_df)
 
-
+head(div0.TD)
 fig_TD_div0 <- ggplot() + 
-  geom_point(data = div0.TD,
-             aes(x = reorder(Treatment, `estimate__`), y = qD, colour = "#C0C0C0"), 
-             size = 0.75, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
-  geom_point(data = TD_div0_df,
+  geom_point(data = div0.TD %>% mutate( Treatment = reorder(Treatment, estimate__) ),
+             aes(x = Treatment, y = qD, colour = "#C0C0C0"), 
+             size = 2, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
+  geom_point(data = TD_div0_df %>% mutate( Treatment = reorder(Treatment, estimate__) ),
              aes(x = Treatment, y = estimate__, colour = Treatment), size = 3) +
-  geom_errorbar(data = TD_div0_df,
+  geom_errorbar(data = TD_div0_df  %>% mutate( Treatment = reorder(Treatment, estimate__) ),
                 aes(x = Treatment, ymin = lower__, ymax = upper__, colour = Treatment),
                 size = 1, width = 0) +
   labs(x = '',
        y='') +
-  scale_color_viridis(discrete = T)+
+  scale_color_viridis(discrete = T, option = "plasma")+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                #axis.text.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -86,7 +86,7 @@ div2.TD <- TD %>% filter(Order.q == "q = 2",
                          Method == "Observed") 
 
 # trt/block
-TD_div2 <-  brm(qD ~  Treatment  + ( 1 | block ),
+TD_div2 <-  brm(qD ~  Treatment  + ( Treatment | block ),
                 data = div2.TD, family = gaussian(), cores = 4, iter=2000, warmup=1000, chains = 4,
                 control = list(adapt_delta = 0.99)
 )
@@ -103,17 +103,18 @@ pp_check(TD_div2)
 TD_div2_c <- conditional_effects(TD_div2, effects = 'Treatment', re_formula = NA, method = 'fitted')  # conditional effects
 
 TD_div2_df <-
-  as.data.frame(TD_div2_c$`Treatment`) %>% select(-c(qFD, block)) 
+  as.data.frame(TD_div2_c$`Treatment`) %>% select(-c(qD, block)) 
 
 TD_div2_df
 
 div2.TD <- div2.TD %>% left_join(TD_div2_df)
 
+div2.TD
 
 fig_TD_div2 <- ggplot() + 
   geom_point(data = div2.TD,
              aes(x = reorder(Treatment, `estimate__`), y = qD, colour = "#C0C0C0"), 
-             size = 0.75, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
+             size = 2, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
   geom_point(data = TD_div2_df,
              aes(x = Treatment, y = estimate__, colour = Treatment), size = 3) +
   geom_errorbar(data = TD_div2_df,
@@ -121,7 +122,7 @@ fig_TD_div2 <- ggplot() +
                 size = 1, width = 0) +
   labs(x = '',
        y='') +
-  scale_color_viridis(discrete = T)+
+  scale_color_viridis(discrete = T, option = 'plasma')+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                #axis.text.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -154,7 +155,7 @@ div2.PD <- PD %>% filter(Order.q == "q = 2",
                          Method == "Observed") 
 
 # trt/block
-PD_div0 <-  brm(qPD ~  Treatment  + ( 1 | block ),
+PD_div0 <-  brm(qPD ~  Treatment  + ( Treatment | block ),
                 data = div0.PD, family = student(), cores = 4, iter=2000, warmup=1000, chains = 4,
                 control = list(adapt_delta = 0.99)
 )
@@ -182,7 +183,7 @@ View(div0.PD)
 fig_PD_div0 <- ggplot() + 
   geom_point(data = div0.PD,
              aes(x = reorder(Treatment, `estimate__`), y = qPD, colour = "#C0C0C0"), 
-             size = 0.75, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
+             size = 2, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
   geom_point(data = PD_div0_df,
              aes(x = Treatment, y = estimate__, colour = Treatment), size = 3) +
   geom_errorbar(data = PD_div0_df,
@@ -190,7 +191,7 @@ fig_PD_div0 <- ggplot() +
                 size = 1, width = 0) +
   labs(x = '',
        y='') +
-  scale_color_viridis(discrete = T)+
+  scale_color_viridis(discrete = T, option= 'plasma')+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                #axis.text.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -210,9 +211,9 @@ div2.PD <- PD %>% filter(Order.q == "q = 2",
                          Method == "Observed") 
 
 # trt/block
-PD_div2 <-  brm(qPD ~  Treatment  + ( 1 | block ),
+PD_div2 <-  brm(qPD ~  Treatment  + ( Treatment | block ),
                 data = div2.PD, family = gaussian(), cores = 4, iter=2000, warmup=1000, chains = 4,
-                control = list(adapt_delta = 0.99)
+                control = list(adapt_delta = 0.999)
 )
 
 
@@ -237,7 +238,7 @@ div2.PD <- div2.PD %>% left_join(PD_div2_df)
 fig_PD_div2 <- ggplot() + 
   geom_point(data = div2.PD,
              aes(x = reorder(Treatment, `estimate__`), y = qPD, colour = "#C0C0C0"), 
-             size = 0.75, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
+             size = 2, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
   geom_point(data = PD_div2_df,
              aes(x = Treatment, y = estimate__, colour = Treatment), size = 3) +
   geom_errorbar(data = PD_div2_df,
@@ -245,7 +246,7 @@ fig_PD_div2 <- ggplot() +
                 size = 1, width = 0) +
   labs(x = '',
        y='') +
-  scale_color_viridis(discrete = T)+
+  scale_color_viridis(discrete = T, option = 'plasma')+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                #axis.text.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -254,7 +255,7 @@ fig_PD_div2 <- ggplot() +
   #coord_flip() +
   scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
   labs( 
-    title= 'q = 2'
+   # title= 'q = 2'
   ) + ylab("Forb Phylogenetic Diversity")
 
 fig_PD_div2
@@ -278,7 +279,7 @@ div2.FD <- FD %>% filter(Order.q == "q = 2",
                          Method == "Observed") 
 
 # trt/block
-FD_div0 <-  brm(qFD ~  Treatment  + ( 1 | block ),
+FD_div0 <-  brm(qFD ~  Treatment  + ( Treatment | block ),
                 data = div0.FD, family = student(), cores = 4, iter=2000, warmup=1000, chains = 4,
                 control = list(adapt_delta = 0.99)
 )
@@ -306,7 +307,7 @@ head(div0.FD)
 fig_FD_div0 <- ggplot() + 
   geom_point(data = div0.FD,
              aes(x = reorder(Treatment, `estimate__`), y = qFD, colour = "#C0C0C0"), 
-             size = 0.75, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
+             size = 2, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
   geom_point(data = FD_div0_df,
              aes(x = Treatment, y = estimate__, colour = Treatment), size = 3) +
   geom_errorbar(data = FD_div0_df,
@@ -314,7 +315,7 @@ fig_FD_div0 <- ggplot() +
                 size = 1, width = 0) +
   labs(x = '',
        y='') +
-  scale_color_viridis(discrete = T)+
+  scale_color_viridis(discrete = T, option= 'plasma')+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                #axis.text.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -334,7 +335,7 @@ div2.FD <- FD %>% filter(Order.q == "q = 2",
                          Method == "Observed") 
 
 # trt/block
-FD_div2 <-  brm(qFD ~  Treatment  + ( 1 | block ),
+FD_div2 <-  brm(qFD ~  Treatment  + ( Treatment | block ),
                 data = div2.FD, family = gaussian(), cores = 4, iter=2000, warmup=1000, chains = 4,
                 control = list(adapt_delta = 0.99)
 )
@@ -361,7 +362,7 @@ div2.FD <- div2.FD %>% left_join(FD_div2_df)
 fig_FD_div2 <- ggplot() + 
   geom_point(data = div2.FD,
              aes(x = reorder(Treatment, `estimate__`), y = qFD, colour = "#C0C0C0"), 
-             size = 0.75, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
+             size = 2, alpha = 0.4, position = position_jitter(width = 0.05, height=0.45)) +
   geom_point(data = FD_div2_df,
              aes(x = Treatment, y = estimate__, colour = Treatment), size = 3) +
   geom_errorbar(data = FD_div2_df,
@@ -369,7 +370,7 @@ fig_FD_div2 <- ggplot() +
                 size = 1, width = 0) +
   labs(x = '',
        y='') +
-  scale_color_viridis(discrete = T)+
+  scale_color_viridis(discrete = T, option = 'plasma')+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                #axis.text.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -378,10 +379,14 @@ fig_FD_div2 <- ggplot() +
   #coord_flip() +
   scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
   labs( 
-    title= 'q = 2'
+   # title= 'q = 2'
   ) + ylab("Forb Functional Diversity")
 
 fig_FD_div2
 
+# LANDSCAPE 8.50 X 13
 
 ( prairie.FD.fig / fig_FD_div0 )
+
+# LANDSCAPE 12 X 14
+(fig_TD_div2/ fig_PD_div2 / fig_FD_div2 )
