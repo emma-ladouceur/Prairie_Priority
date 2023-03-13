@@ -96,7 +96,9 @@ nrow((cover %>% filter(is.na(Seeded))))
                     data = cover_sums, family = student(), cores = 4, iter = 3000, warmup = 1000, chains = 4)
 
  
+ summary(alpha_comp)
  
+ pp_check(alpha_comp)
  
  alpha_inv <- conditional_effects(alpha_comp, effects = 'Invasion:cover_group', re_formula = NA, method = 'fitted')  # conditional effects
  

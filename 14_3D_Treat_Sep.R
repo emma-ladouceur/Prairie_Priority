@@ -140,6 +140,8 @@ prairie.hill.TD$Treatment_type <- factor(prairie.hill.TD$Treatment_type,
 prairie.hill.TD0 <- prairie.hill.TD %>% filter(Order.q == "q = 0") 
 prairie.hill.TD2 <- prairie.hill.TD %>% filter(Order.q == "q = 2") 
 
+View(prairie.hill.TD)
+
 df.point0 <- prairie.hill.TD0[which(prairie.hill.TD0$Method=="Observed"),]
 df.line0 <- prairie.hill.TD0[which(prairie.hill.TD0$Method!="Observed"),]
 df.line0$Method <- factor(df.line0$Method, 

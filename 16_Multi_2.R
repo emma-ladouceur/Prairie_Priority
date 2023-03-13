@@ -13,9 +13,9 @@ setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data")
 sp <- read.csv("prairie.prep.treats.csv", header= TRUE)
 
 head(sp)
-
-plot_n <- sp %>% select(Treatment_cat, Treatment_type, Treatment, samp_id) %>% distinct() %>%
-  group_by(Treatment_cat, Treatment_type, Treatment) %>% summarise(n_samps = n())
+View(sp)
+plot_n <- sp %>% select(treat_id, samp_id) %>% distinct() %>%
+  group_by(treat_id) %>% summarise(n_samps = n())
 
 plot_n
 
@@ -26,14 +26,14 @@ head(traits)
 
 
 prairie_traits <- sp %>% left_join(traits) %>%
-  select(Treatment_cat, Treatment_type, Treatment, species, LA:SSD) %>%
-  group_by(Treatment_cat, Treatment_type) %>%
+  select(treat_id,  species, LA:SSD) %>%
+  group_by(treat_id) %>%
   distinct() %>% left_join(plot_n) %>%
   drop_na() 
 
 
 head(prairie_traits)
-
+View(head(prairie_traits))
 
 
 traits = data.frame(species =  traits$species, 
@@ -96,19 +96,27 @@ head(PCAvalues)
 
 datt_trait = dplyr::left_join(prairie_traits, PCAvalues, by =  "species") 
 
+View(datt_trait)
 head(datt_trait)
-datt_trait$Treatment <- as.factor(datt_trait$Treatment)
-levels(datt_trait$Treatment)
 
-nut_0 = dplyr::filter(datt_trait, Treatment == "Nutrients_Control") # Separating the data into dry and wet  
-nut_1 = dplyr::filter(datt_trait, Treatment == "Nutrients_Nutrients")
+datt_trait$treat_id <- as.factor(as.character(datt_trait$treat_id))
+levels(datt_trait$treat_id)
 
-ass_b = dplyr::filter(datt_trait, Treatment == "Assembly_Both first") # Separating the data into dry and wet  
-ass_f = dplyr::filter(datt_trait, Treatment == "Assembly_Forbs first")
-ass_g = dplyr::filter(datt_trait, Treatment == "Assembly_Grass first")
+ = dplyr::filter(datt_trait, treat_id == "0_e_b") # Separating the data into dry and wet  
+nut_1 = dplyr::filter(datt_trait, treat_id == "0_e_f")
+nut_1 = dplyr::filter(datt_trait, treat_id == "0_e_g")
 
-inv_e = dplyr::filter(datt_trait, Treatment == "Invasion_Early") # Separating the data into dry and wet  
-inv_l = dplyr::filter(datt_trait, Treatment == "Invasion_Late")
+= dplyr::filter(datt_trait, treat_id == "0_l_b") # Separating the data into dry and wet  
+nut_1 = dplyr::filter(datt_trait, treat_id == "0_l_f")
+nut_1 = dplyr::filter(datt_trait, treat_id == "0_l_g")
+
+= dplyr::filter(datt_trait, treat_id == "1_e_b") # Separating the data into dry and wet  
+nut_1 = dplyr::filter(datt_trait, treat_id == "1_e_f")
+nut_1 = dplyr::filter(datt_trait, treat_id == "1_e_g")
+
+= dplyr::filter(datt_trait, treat_id == "1_l_b") # Separating the data into dry and wet  
+nut_1 = dplyr::filter(datt_trait, treat_id == "1_l_f")
+nut_1 = dplyr::filter(datt_trait, treat_id == "1_l_g")
 
 
 colnames(dry)
@@ -203,9 +211,6 @@ inv_f <- ggMarginal(inv_f, type = "density", groupColour = TRUE, groupFill = TRU
 
 inv_f
 
-library(patchwork)
-
- ( (nuts_f) / (ass_f) / (inv_f) )
 
 ## two treats
 combo_traits <- sp %>% left_join(traits) %>%
@@ -363,3 +368,4 @@ ggplot(sum_metrics) +
                      y=mean, color = status),  size = 1,  # error mean point
                  show.legend = FALSE) +
   facet_wrap(~ metric, scales = "free") 
+

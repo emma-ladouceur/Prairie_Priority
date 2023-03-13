@@ -77,7 +77,7 @@ View(prairie.matrix.list)
 # ========================================================================================================== #
 #  Taxonomic diversity
 
-
+??iNEXT3D
 TD_out <- iNEXT3D(data = prairie.matrix.list, diversity = 'TD', q = c(0,1,2), datatype = 'incidence_raw', #base = 'size',
                   size = c(1:188), nboot = 0)
 
