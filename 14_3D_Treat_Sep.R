@@ -124,8 +124,6 @@ write.csv(prairie.hill.TD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_
 setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Sep/")
 prairie.hill.TD <- read.csv("prairie.hill.treats.sep.TD.csv",  header= TRUE)
 
-
-View(prairie.hill.TD)
 head(prairie.hill.TD)
 
 prairie.hill.TD$Treatment_cat <- factor(prairie.hill.TD$Treatment_cat, levels = c("Nutrients",  "Assembly", "Invasion"))
@@ -140,39 +138,39 @@ prairie.hill.TD$Treatment_type <- factor(prairie.hill.TD$Treatment_type,
 prairie.hill.TD0 <- prairie.hill.TD %>% filter(Order.q == "q = 0") 
 prairie.hill.TD2 <- prairie.hill.TD %>% filter(Order.q == "q = 2") 
 
-View(prairie.hill.TD)
+head(prairie.hill.TD0)
 
-df.point0 <- prairie.hill.TD0[which(prairie.hill.TD0$Method=="Observed"),]
-df.line0 <- prairie.hill.TD0[which(prairie.hill.TD0$Method!="Observed"),]
-df.line0$Method <- factor(df.line0$Method, 
+df.pointTD0 <- prairie.hill.TD0[which(prairie.hill.TD0$Method=="Observed"),]
+df.lineTD0 <- prairie.hill.TD0[which(prairie.hill.TD0$Method!="Observed"),]
+df.lineTD0$Method <- factor(df.lineTD0$Method, 
                          c("Rarefaction", "Extrapolation"))
 
-df.point2 <- prairie.hill.TD2[which(prairie.hill.TD2$Method=="Observed"),]
-df.line2 <- prairie.hill.TD2[which(prairie.hill.TD2$Method!="Observed"),]
-df.line2$Method <- factor(df.line2$Method, 
+df.pointTD2 <- prairie.hill.TD2[which(prairie.hill.TD2$Method=="Observed"),]
+df.lineTD2 <- prairie.hill.TD2[which(prairie.hill.TD2$Method!="Observed"),]
+df.lineTD2$Method <- factor(df.lineTD2$Method, 
                           c("Rarefaction", "Extrapolation"))
 
 # make an iNext style plot
 prairie.TD.fig <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Treatment_type)) +
   facet_grid(~Treatment_cat)+
-  geom_point(aes(), shape = 1, size=2, data = df.point0) +
-  geom_line(aes(linetype = Method), lwd=1.5, data = df.line0) +
-  geom_point(aes(), shape = 1, size=2, data = df.point2) +
-  geom_line(aes(linetype = Method), lwd=1.5, data = df.line2) +
+  geom_point(aes(), shape = 1, size=2, data = df.pointTD0) +
+  geom_line(aes(linetype = Method), lwd=1.5, data = df.lineTD0) +
+  geom_point(aes(), shape = 1, size=2, data = df.pointTD2) +
+  geom_line(aes(linetype = Method), lwd=1.5, data = df.lineTD2) +
   labs(x="Number of sampling units", y="Taxonomic Diversity",title="") +
   #scale_color_viridis(discrete = T, option="D")  + 
   scale_colour_manual( values = c("#31688e","#35b779", "#443983","#90d743","#21918c","#fde725", "#440154") ) +  
-  labs(title='a) Taxonomic Diversity', color="Treatment", x= "")+
+  labs(title='Taxonomic Diversity', color="Treatment", x= "")+
   #xlim(0,20)+ 
-  theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none") +
-  guides(col = guide_legend(ncol = 4, nrow = 2)) +
+  theme_classic() +   theme(legend.direction = "horizontal", legend.position = "bottom") +
+  guides(col = guide_legend(ncol = 7)) +
   annotate(
     "text", label = "q = 0",
     x = 550, y = 120, size = 5, colour = "black"
   ) +   annotate(
     "text", label = "q = 2",
     x = 550, y = 30, size = 5, colour = "black"
-  )
+  ) 
 
 
 prairie.TD.fig 
@@ -258,36 +256,36 @@ prairie.hill.PD$Treatment_type <- factor(prairie.hill.PD$Treatment_type,
 prairie.hill.PD0 <- prairie.hill.PD %>% filter(Order.q == "q = 0") 
 prairie.hill.PD2 <- prairie.hill.PD %>% filter(Order.q == "q = 2") 
 
-df.point0 <- prairie.hill.PD0[which(prairie.hill.PD0$Method=="Observed"),]
-df.line0 <- prairie.hill.PD0[which(prairie.hill.PD0$Method!="Observed"),]
-df.line0$Method <- factor(df.line0$Method, 
+df.pointPD0 <- prairie.hill.PD0[which(prairie.hill.PD0$Method=="Observed"),]
+df.linePD0 <- prairie.hill.PD0[which(prairie.hill.PD0$Method!="Observed"),]
+df.linePD0$Method <- factor(df.linePD0$Method, 
                           c("Rarefaction", "Extrapolation"))
 
-df.point2 <- prairie.hill.PD2[which(prairie.hill.PD2$Method=="Observed"),]
-df.line2 <- prairie.hill.PD2[which(prairie.hill.PD2$Method!="Observed"),]
-df.line2$Method <- factor(df.line2$Method, 
+df.pointPD2 <- prairie.hill.PD2[which(prairie.hill.PD2$Method=="Observed"),]
+df.linePD2 <- prairie.hill.PD2[which(prairie.hill.PD2$Method!="Observed"),]
+df.linePD2$Method <- factor(df.linePD2$Method, 
                           c("Rarefaction", "Extrapolation"))
 
 # make an iNext style plot
 prairie.PD.fig <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Treatment_type)) +
   facet_wrap(~Treatment_cat)+
-  geom_point(aes(), shape = 1, size=2, data = df.point0) +
-  geom_line(aes(linetype = Method), lwd=1.5, data = df.line0) +
-  geom_point(aes(), shape = 1, size=2, data = df.point2) +
-  geom_line(aes(linetype = Method), lwd=1.5, data = df.line2) +
+  geom_point(aes(), shape = 1, size=2, data = df.pointPD0) +
+  geom_line(aes(linetype = Method), lwd=1.5, data = df.linePD0) +
+  geom_point(aes(), shape = 1, size=2, data = df.pointPD2) +
+  geom_line(aes(linetype = Method), lwd=1.5, data = df.linePD2) +
   labs(x="Number of sampling units", y="Phylogenetic Diversity",title="") +
   scale_colour_manual( values = c("#31688e","#35b779", "#443983","#90d743","#21918c","#fde725", "#440154") ) +  
-  labs(title='b) Phylogenetic Diversity', color = "Treatment", x = "")+
+  labs(title='Phylogenetic Diversity', color = "Treatment", x = "")+
   #xlim(0,20)+ 
-  theme_classic() +   theme(legend.direction = "horizontal",legend.position = "right") +
-  guides(col = guide_legend(ncol = 1)) #+
-  # annotate(
-  #   "text", label = "q = 0",
-  #   x = 550, y = 5900, size = 6, colour = "black"
-  # ) +   annotate(
-  #   "text", label = "q = 2",
-  #   x = 550, y = 1900, size = 6, colour = "black"
-  # )
+  theme_classic() +   theme(legend.direction = "horizontal",legend.position = "bottom") +
+  guides(col = guide_legend(ncol = 7)) +
+  annotate(
+    "text", label = "q = 0",
+    x = 550, y = 5900, size = 6, colour = "black"
+  ) +   annotate(
+    "text", label = "q = 2",
+    x = 550, y = 1900, size = 6, colour = "black"
+  )
 
 
 prairie.PD.fig
@@ -415,38 +413,40 @@ prairie.hill.FD$Treatment_type <- factor(prairie.hill.FD$Treatment_type,
 prairie.hill.FD0 <- prairie.hill.FD %>% filter(Order.q == "q = 0") 
 prairie.hill.FD2 <- prairie.hill.FD %>% filter(Order.q == "q = 2") 
 
-df.point0 <- prairie.hill.FD0[which(prairie.hill.FD0$Method=="Observed"),]
-df.line0 <- prairie.hill.FD0[which(prairie.hill.FD0$Method!="Observed"),]
-df.line0$Method <- factor(df.line0$Method, 
+df.pointFD0 <- prairie.hill.FD0[which(prairie.hill.FD0$Method=="Observed"),]
+df.lineFD0 <- prairie.hill.FD0[which(prairie.hill.FD0$Method!="Observed"),]
+df.lineFD0$Method <- factor(df.lineFD0$Method, 
                           c("Rarefaction", "Extrapolation"))
 
-df.point2 <- prairie.hill.FD2[which(prairie.hill.FD2$Method=="Observed"),]
-df.line2 <- prairie.hill.FD2[which(prairie.hill.FD2$Method!="Observed"),]
-df.line2$Method <- factor(df.line2$Method, 
+df.pointFD2 <- prairie.hill.FD2[which(prairie.hill.FD2$Method=="Observed"),]
+df.lineFD2 <- prairie.hill.FD2[which(prairie.hill.FD2$Method!="Observed"),]
+df.lineFD2$Method <- factor(df.lineFD2$Method, 
                           c("Rarefaction", "Extrapolation"))
 
 # make an iNext style plot
 prairie.FD.fig <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Treatment_type)) +
   facet_wrap(~Treatment_cat)+
-  geom_point(aes(), shape = 1, size=2, data = df.point0) +
-  geom_line(aes(linetype = Method), lwd=1.5, data = df.line0) +
-  geom_point(aes(), shape = 1, size=2, data = df.point2) +
-  geom_line(aes(linetype = Method), lwd=1.5, data = df.line2) +
+  geom_point(aes(), shape = 1, size=2, data = df.pointFD0) +
+  geom_line(aes(linetype = Method), lwd=1.5, data = df.lineFD0) +
+  geom_point(aes(), shape = 1, size=2, data = df.pointFD2) +
+  geom_line(aes(linetype = Method), lwd=1.5, data = df.lineFD2) +
   labs(x="Number of sampling units", y="Functional Diversity",title="") +
   scale_colour_manual( values = c("#31688e","#35b779", "#443983","#90d743","#21918c","#fde725", "#440154") ) +  
-  labs(title='c) Functional Trait Diversity', color="Treatment")+
-  theme_classic() +   theme(legend.direction = "horizontal",legend.position = "none") +
-  guides(col = guide_legend(ncol = 15))# +
-  # annotate(
-  #   "text", label = "q = 0",
-  #   x = 550, y = 22, size = 6, colour = "black"
-  # ) +   annotate(
-  #   "text", label = "q = 2",
-  #   x = 550, y = 11, size = 6, colour = "black"
-  # )
+  labs(title='Functional Trait Diversity', color="Treatment")+
+  theme_classic() +   theme(legend.direction = "horizontal",legend.position = "bottom") +
+  guides(col = guide_legend(ncol = 15)) +
+  annotate(
+    "text", label = "q = 0",
+    x = 550, y = 22, size = 6, colour = "black"
+  ) +   annotate(
+    "text", label = "q = 2",
+    x = 550, y = 11, size = 6, colour = "black"
+  )
 
 
 prairie.FD.fig
+
+
 
 g_legend<-function(a.gplot){
   tmp <- ggplot_gtable(ggplot_build(a.gplot))

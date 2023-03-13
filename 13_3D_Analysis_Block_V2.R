@@ -255,11 +255,11 @@ fig_PD_div2 <- ggplot() +
   scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
   labs( 
     title= 'q = 2'
-  ) + ylab("Forb Taxonomic Diversity")
+  ) + ylab("Forb Phylogenetic Diversity")
 
 fig_PD_div2
 
-(prairie.PD.fig /fig_PD_div0)
+(prairie.PD.fig / fig_PD_div0)
 
 # ========================================================================================================== #
 #  Functional diversity
@@ -301,6 +301,7 @@ FD_div0_df
 
 div0.FD <- div0.FD %>% left_join(FD_div0_df)
 
+head(div0.FD)
 
 fig_FD_div0 <- ggplot() + 
   geom_point(data = div0.FD,
@@ -323,7 +324,7 @@ fig_FD_div0 <- ggplot() +
   scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
   labs( 
     title= 'q = 0'
-  ) + ylab("Forb Taxonomic Diversity")
+  ) + ylab("Forb Functional Diversity")
 
 fig_FD_div0
 
@@ -378,7 +379,7 @@ fig_FD_div2 <- ggplot() +
   scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
   labs( 
     title= 'q = 2'
-  ) + ylab("Forb Taxonomic Diversity")
+  ) + ylab("Forb Functional Diversity")
 
 fig_FD_div2
 
