@@ -67,7 +67,7 @@ prairie.prep.treats <- prairie.prep %>%
   unite(Treatment_Block, treat_id, block, sep="_", remove= F)
 
 head(prairie.prep.treats)
-
+prairie.prep.treats %>% select(Treatment_Block, subplot, plot) %>% distinct() %>% arrange(Treatment_Block, subplot, plot)
 
 # full species list, for taxonomic diversity and phylo diversity
 prairie.list <- prairie.prep.treats  %>%

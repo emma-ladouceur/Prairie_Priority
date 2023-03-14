@@ -126,6 +126,8 @@ prairie.hill.TD <- read.csv("prairie.hill.treats.sep.TD.csv",  header= TRUE)
 
 head(prairie.hill.TD)
 
+prairie.hill.TD %>% filter(Method == "Observed")
+
 prairie.hill.TD$Treatment_cat <- factor(prairie.hill.TD$Treatment_cat, levels = c("Nutrients",  "Assembly", "Invasion"))
 
 prairie.hill.TD$Treatment_type<- as.factor(prairie.hill.TD$Treatment_type)

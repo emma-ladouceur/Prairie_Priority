@@ -125,7 +125,6 @@ head(n_subplots)
 # 2. within each block (18 subplots nested within 2 plots = 9 x 9 m)
 # 3. treatment/site level - single number? could jack knife or bootstrap or something....
 
-# 1. gamma of treatments within each (10 x 10) plot = (9 sub plots/plot  = 4.5 x 4.5 m)
 
 
 
