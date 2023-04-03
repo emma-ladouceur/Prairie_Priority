@@ -1,13 +1,22 @@
 
+library(tidyverse)
 library(viridis)
 library(ape)
-library(tidyverse)
 library(ggplot2)
 library(reshape2)
 library(ggpubr)
 library(gg.gap)
-library(iNEXT.3D)
 library(patchwork)
+
+
+# check for updates ?
+# install.packages("remotes")
+# library(remotes)
+# install.packages("rlang")
+# remotes::install_github("KaiHsiangHu/iNEXT.3D")
+library(iNEXT.3D)
+# cite 
+citation("iNEXT.3D")
 
 setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Sep/")
 setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data")
@@ -26,8 +35,13 @@ new_sp <- corrected_sp_list %>% mutate(species = old_name,
 
 head(new_sp)
 nrow(new_sp)
+head(sp)
+summary(sp)
+
+sp %>% select(subplot) %>% distinct()
 
 prairie.prep <- sp %>% 
+  # filter(!subplot == 10 ) %>%
   # clean out and normalise some riff raff
   mutate(species = str_replace_all(species, 
                                    pattern = "\\.", replacement = "_")) %>%
@@ -39,9 +53,16 @@ prairie.prep <- sp %>%
                                    pattern = "sp ", replacement = "spp")) %>%
   mutate(species = str_replace_all(species, 
                                    pattern = "spec", replacement = "spp")) %>%
-  left_join(new_sp) %>%
-  mutate(orig_species = species) %>% select(-species) %>%
-  mutate_all(na_if,"") %>%
+   left_join(new_sp) %>%
+   mutate(orig_species = species,
+          subplot = as.character(subplot),
+          plot = as.character(plot),
+          block = as.character(block),
+          ) %>% select(-species) %>%
+   #mutate_all(na_if,"") %>%
+  mutate(across( where(is.character), ~ na_if(.x, "0") ),
+        # across( where(is.numeric), ~ na_if(.x, 0) ),
+         ) %>%
   mutate(species =
            ifelse(!is.na(corrected_sp),
                   corrected_sp,
@@ -50,10 +71,12 @@ prairie.prep <- sp %>%
   unite("samp_id",  plot, subplot, block, sep="_", remove = FALSE) %>%
   # remove graminoid
   filter(!species == "graminoid") %>%
-    mutate(species = str_replace(species, "Lespedeza juncea var. sericea", "Lespedeza juncea")) 
+    mutate(species = str_replace(species, "Lespedeza juncea var. sericea", "Lespedeza juncea"))
 
 head(prairie.prep)
 nrow(prairie.prep)
+
+prairie.prep %>% select(subplot) %>% distinct()
 
 levels(prairie.prep$species)
 
@@ -140,7 +163,7 @@ prairie.hill.TD$Treatment_type <- factor(prairie.hill.TD$Treatment_type,
 prairie.hill.TD0 <- prairie.hill.TD %>% filter(Order.q == "q = 0") 
 prairie.hill.TD2 <- prairie.hill.TD %>% filter(Order.q == "q = 2") 
 
-head(prairie.hill.TD0)
+View(prairie.hill.TD0)
 
 df.pointTD0 <- prairie.hill.TD0[which(prairie.hill.TD0$Method=="Observed"),]
 df.lineTD0 <- prairie.hill.TD0[which(prairie.hill.TD0$Method!="Observed"),]
@@ -190,14 +213,20 @@ phylo.prep <- read.csv("phylo_prep.csv")
 head(phylo.prep)
 
 phylo.prep.treats <- phylo.prep %>% 
+  #filter(!subplot == 10 ) %>%
   gather(Treatment_cat, Treatment_type, "Nutrients":"Assembly") %>%
-  unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F)
+  unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F) %>%
+  filter(!grepl("_spp",species))
 
 head(phylo.prep.treats)
+
+
 
 # full species list, for taxonomic diversity and phylo diversity
 phylo.list <- phylo.prep.treats %>%
   split(.$Treatment)
+
+phylo.list
 
 phylo.matrix.list <- purrr::map(phylo.list, ~ .x %>% 
                                   select(species, samp_id, pres) %>%
@@ -212,6 +241,7 @@ View(phylo.matrix.list)
 tree <- read.tree("phylo.tree.txt")
 
 # need sp names to have underscores instead of space because phylo package does this
+tree
 head(tree)
 
 
@@ -220,10 +250,11 @@ PD_treat_out <- iNEXT3D(data = phylo.matrix.list, diversity = 'PD', q = c(0, 1, 
                   # OR  # endpoint = 20, knots = 1,
                   nboot = 0,  PDtree = tree, PDtype = "PD") 
 
-PD_treat_out
+ PD_treat_out
 
 setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Sep/")
 save(PD_treat_out, file = "PD_treat_sep_out.Rdata")
+
 
 load(file = "PD_treat_out.Rdata")
 
@@ -301,6 +332,8 @@ prairie.PD.fig
 setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data")
 traits <- read.csv("imputed_trait_matrix.csv",  header= TRUE)
 
+head(traits)
+
 sp_traits <- traits %>% select(species) %>%
   mutate(traits_sp = species) %>% 
   mutate(species = str_replace_all(species, 
@@ -337,6 +370,7 @@ write.csv(traits_fixed, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Pri
 head(trait.prep)
 
 trait.prep.treats <- trait.prep %>% 
+  #filter(!subplot == 10 ) %>%
   gather(Treatment_cat, Treatment_type, "Nutrients":"Assembly") %>%
   unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F)
 
