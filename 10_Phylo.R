@@ -93,7 +93,8 @@ write.csv(phylo_prep, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Prior
 phylo_prep <- read.csv("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/data/phylo_prep.csv") # Trait matrix with missing values
 
 clean_sps <- phylo_prep %>% select(species, genus, family) %>% distinct() %>% arrange(species) %>%
-  mutate(species = str_replace(species, "Lespedeza_juncea_var_sericea", "Lespedeza_juncea")) 
+  mutate(species = str_replace(species, "Lespedeza_juncea_var_sericea", "Lespedeza_juncea")) %>%
+  filter(!grepl("_spp",species))
 
 clean_sps
 # how to make a phylo tree from existing plant list
@@ -106,6 +107,7 @@ prairie.phy = phylo.maker(clean_sps)
 prairie.tree = prairie.phy$scenario.3
 
 prairie.tree
+
 
 plotTree(prairie.tree)
 
