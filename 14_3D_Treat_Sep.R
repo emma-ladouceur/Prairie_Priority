@@ -213,7 +213,6 @@ phylo.prep <- read.csv("phylo_prep.csv")
 
 head(phylo.prep)
 
-# fix lespedeza fo tree matching
 phylo.prep$species[phylo.prep$species == "Lespedeza_juncea"] = "Lespedeza_juncea_var_sericea"
 
 phylo.prep.treats <- phylo.prep %>% 

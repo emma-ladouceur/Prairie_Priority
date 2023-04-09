@@ -3,9 +3,9 @@ library(viridis)
 library(ape)
 library(tidyverse)
 library(ggplot2)
-library(reshape2)
-library(ggpubr)
-library(gg.gap)
+# library(reshape2)
+# library(ggpubr)
+# library(gg.gap)
 library(iNEXT.3D)
 library(patchwork)
 
@@ -39,6 +39,12 @@ prairie.prep <- sp %>%
                                    pattern = "sp ", replacement = "spp")) %>%
   mutate(species = str_replace_all(species, 
                                    pattern = "spec", replacement = "spp")) %>%
+  mutate(subplot = as.character(subplot),
+         plot = as.character(plot),
+         block = as.character(block),
+         nutrients = as.character(nutrients),
+         pres = as.character(pres),
+         ) %>%
   left_join(new_sp) %>%
   mutate(orig_species = species) %>% select(-species) %>%
   mutate_all(na_if,"") %>%
@@ -68,6 +74,9 @@ prairie.prep.treats <- prairie.prep %>%
 
 head(prairie.prep.treats)
 prairie.prep.treats %>% select(Treatment_Block, subplot, plot) %>% distinct() %>% arrange(Treatment_Block, subplot, plot)
+
+prairie_info <- prairie.prep.treats %>% select(Treatment_Block, treat_id, block, treat_id, Nutrients, Invasion, Assembly) %>%
+  distinct() %>% mutate(Assemblage = as.character(Treatment_Block))
 
 # full species list, for taxonomic diversity and phylo diversity
 prairie.list <- prairie.prep.treats  %>%
@@ -107,8 +116,6 @@ View(prairie.TD.df)
 
 head(prairie.prep)
 
-prairie_info <- prairie.prep.treats %>% select(Treatment_Block, treat_id, block, treat_id, Nutrients, Invasion, Assembly) %>%
-  distinct() %>% mutate(Assemblage = as.character(Treatment_Block))
 
 
 prairie.hill.TD <- prairie.TD.df %>% left_join(prairie_info) %>%
@@ -128,13 +135,11 @@ phylo.prep <- read.csv("phylo_prep.csv")
 
 head(phylo.prep)
 
-# fix lespedeza fo tree matching
 phylo.prep$species[phylo.prep$species == "Lespedeza_juncea"] = "Lespedeza_juncea_var_sericea"
 
 phylo.prep.treats <- phylo.prep %>% 
-  # gather(Treatment_cat, Treatment_type, "Nutrients":"Assembly") %>%
-  # unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F)%>%
-  unite(Treatment_Block, treat_id, block, sep="_", remove= F)
+  unite(Treatment_Block, treat_id, block, sep="_", remove= F) %>%
+  filter(!grepl("_spp",species))
 
 head(phylo.prep.treats)
 
@@ -153,10 +158,11 @@ phylo.matrix.list <- purrr::map(phylo.list, ~ .x %>%
 View(phylo.matrix.list)
 
 tree <- read.tree("phylo.tree.txt")
-
 # need sp names to have underscores instead of space because phylo package does this
-head(tree)
+
 tree$tip.label[tree$tip.label == "Lespedeza_juncea"] = "Lespedeza_juncea_var_sericea"
+head(tree)
+
 
 PD_treat_out <- iNEXT3D(data = phylo.matrix.list, diversity = 'PD', q = c(0, 1, 2), datatype = 'incidence_raw', #base = 'size',
                   size = c(1:600),

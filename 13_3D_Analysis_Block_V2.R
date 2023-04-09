@@ -156,7 +156,7 @@ div2.PD <- PD %>% filter(Order.q == "q = 2",
 
 # trt/block
 PD_div0 <-  brm(qPD ~  Treatment  + ( Treatment | block ),
-                data = div0.PD, family = student(), cores = 4, iter=2000, warmup=1000, chains = 4,
+                data = div0.PD, family = student(), cores = 4, iter=4000, warmup=1000, chains = 4,
                 control = list(adapt_delta = 0.99)
 )
 
@@ -209,16 +209,18 @@ fig_PD_div0
 #---------------------------
 div2.PD <- PD %>% filter(Order.q == "q = 2",
                          Method == "Observed") 
+head(div2.PD)
 
 # trt/block
 PD_div2 <-  brm(qPD ~  Treatment  + ( Treatment | block ),
-                data = div2.PD, family = gaussian(), cores = 4, iter=2000, warmup=1000, chains = 4,
-                control = list(adapt_delta = 0.999)
+                data = div2.PD, family = gaussian(), cores = 4, iter=4000, warmup=1000, chains = 4,
+                control = list(adapt_delta = 0.9999,
+                               max_treedepth = 13 )
 )
 
 
 save(PD_div2, file = '3D_Model_Fits/PD_block_div2.Rdata')
-load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/PD_block_div2.Rdata')
+#load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/PD_block_div2.Rdata')
 
 
 summary(PD_div2)
