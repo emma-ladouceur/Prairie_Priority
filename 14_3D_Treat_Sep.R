@@ -8,7 +8,6 @@ library(ggpubr)
 library(gg.gap)
 library(patchwork)
 
-
 # check for updates ?
 # install.packages("remotes")
 # library(remotes)
@@ -90,6 +89,11 @@ prairie.prep.treats <- prairie.prep %>%
 
 head(prairie.prep.treats)
 
+
+prairie_info <- prairie.prep.treats %>% select(Treatment, Treatment_cat, Treatment_type) %>%
+  distinct() %>% mutate(Assemblage = as.character(Treatment))
+
+
 write.csv(prairie.prep.treats, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/prairie.prep.treats.csv", row.names=FALSE)
 
 # full species list, for taxonomic diversity and phylo diversity
@@ -129,9 +133,6 @@ prairie.TD.df <- TD_treat_out %>%
 View(prairie.TD.df)
 
 head(prairie.prep)
-
-prairie_info <- prairie.prep.treats %>% select(Treatment, Treatment_cat, Treatment_type) %>%
-  distinct() %>% mutate(Assemblage = as.character(Treatment))
 
 
 prairie.hill.TD <- prairie.TD.df %>% left_join(prairie_info) %>%
@@ -212,6 +213,9 @@ phylo.prep <- read.csv("phylo_prep.csv")
 
 head(phylo.prep)
 
+# fix lespedeza fo tree matching
+phylo.prep$species[phylo.prep$species == "Lespedeza_juncea"] = "Lespedeza_juncea_var_sericea"
+
 phylo.prep.treats <- phylo.prep %>% 
   #filter(!subplot == 10 ) %>%
   gather(Treatment_cat, Treatment_type, "Nutrients":"Assembly") %>%
@@ -219,7 +223,6 @@ phylo.prep.treats <- phylo.prep %>%
   filter(!grepl("_spp",species))
 
 head(phylo.prep.treats)
-
 
 
 # full species list, for taxonomic diversity and phylo diversity
@@ -241,14 +244,14 @@ View(phylo.matrix.list)
 tree <- read.tree("phylo.tree.txt")
 
 # need sp names to have underscores instead of space because phylo package does this
-tree
 head(tree)
-
+#variety is messing up the tree with an error. change the species name. do the same above to match,
+tree$tip.label[tree$tip.label == "Lespedeza_juncea"] = "Lespedeza_juncea_var_sericea"
 
 PD_treat_out <- iNEXT3D(data = phylo.matrix.list, diversity = 'PD', q = c(0, 1, 2), datatype = 'incidence_raw', #base = 'size',
                   size = c(1:600),
                   # OR  # endpoint = 20, knots = 1,
-                  nboot = 0,  PDtree = tree, PDtype = "PD") 
+                  nboot = 0,  PDtree = tree, PDtype = "meanPD") 
 
  PD_treat_out
 
@@ -256,7 +259,7 @@ setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat S
 save(PD_treat_out, file = "PD_treat_sep_out.Rdata")
 
 
-load(file = "PD_treat_out.Rdata")
+load(file = "PD_treat_sep_out.Rdata")
 
 #$PDiNextEst$size_based
 prairie.PD.df <- PD_treat_out %>% 
@@ -314,10 +317,10 @@ prairie.PD.fig <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Treatm
   guides(col = guide_legend(ncol = 7)) +
   annotate(
     "text", label = "q = 0",
-    x = 550, y = 5900, size = 6, colour = "black"
+    x = 550, y = 15, size = 6, colour = "black"
   ) +   annotate(
     "text", label = "q = 2",
-    x = 550, y = 1900, size = 6, colour = "black"
+    x = 550, y = 7, size = 6, colour = "black"
   )
 
 

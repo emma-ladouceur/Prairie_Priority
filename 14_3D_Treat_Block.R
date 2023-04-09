@@ -128,6 +128,9 @@ phylo.prep <- read.csv("phylo_prep.csv")
 
 head(phylo.prep)
 
+# fix lespedeza fo tree matching
+phylo.prep$species[phylo.prep$species == "Lespedeza_juncea"] = "Lespedeza_juncea_var_sericea"
+
 phylo.prep.treats <- phylo.prep %>% 
   # gather(Treatment_cat, Treatment_type, "Nutrients":"Assembly") %>%
   # unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F)%>%
@@ -153,12 +156,12 @@ tree <- read.tree("phylo.tree.txt")
 
 # need sp names to have underscores instead of space because phylo package does this
 head(tree)
-
+tree$tip.label[tree$tip.label == "Lespedeza_juncea"] = "Lespedeza_juncea_var_sericea"
 
 PD_treat_out <- iNEXT3D(data = phylo.matrix.list, diversity = 'PD', q = c(0, 1, 2), datatype = 'incidence_raw', #base = 'size',
                   size = c(1:600),
                   # OR  # endpoint = 20, knots = 1,
-                  nboot = 0,  PDtree = tree, PDtype = "PD") 
+                  nboot = 0,  PDtree = tree, PDtype = "meanPD") 
 
 PD_treat_out
 
