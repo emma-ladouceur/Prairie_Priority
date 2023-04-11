@@ -195,7 +195,7 @@ prairie.TD.fig <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Treatme
     x = 550, y = 120, size = 5, colour = "black"
   ) +   annotate(
     "text", label = "q = 2",
-    x = 550, y = 30, size = 5, colour = "black"
+    x = 550, y = 29, size = 5, colour = "black"
   ) 
 
 
@@ -316,10 +316,10 @@ prairie.PD.fig <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Treatm
   guides(col = guide_legend(ncol = 7)) +
   annotate(
     "text", label = "q = 0",
-    x = 550, y = 15, size = 6, colour = "black"
+    x = 550, y = 17, size = 6, colour = "black"
   ) +   annotate(
     "text", label = "q = 2",
-    x = 550, y = 7, size = 6, colour = "black"
+    x = 550, y = 8, size = 6, colour = "black"
   )
 
 
@@ -478,7 +478,7 @@ prairie.FD.fig <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Treatm
     x = 550, y = 22, size = 6, colour = "black"
   ) +   annotate(
     "text", label = "q = 2",
-    x = 550, y = 11, size = 6, colour = "black"
+    x = 550, y = 15, size = 6, colour = "black"
   )
 
 
