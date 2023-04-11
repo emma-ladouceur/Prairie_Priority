@@ -121,7 +121,7 @@ fig_TD_div2 <- ggplot() +
                 aes(x = Treatment, ymin = lower__, ymax = upper__, colour = Treatment),
                 size = 1, width = 0) +
   labs(x = '',
-       y='') +
+       y='', title ='q = 2') +
   scale_color_viridis(discrete = T, option = 'plasma')+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                #axis.text.x = element_blank(),
@@ -136,9 +136,9 @@ fig_TD_div2 <- ggplot() +
 
 fig_TD_div2
 
-(prairie.TD.fig /fig_TD_div0)
+fig_1<-(prairie.TD.fig /fig_TD_div0/ fig_TD_div2)
 
-
+fig_1
 # ========================================================================================================== #
 #  Phylo diversity
 head(PD)
@@ -220,7 +220,7 @@ PD_div2 <-  brm(qPD ~  Treatment  + ( Treatment | block ),
 
 
 save(PD_div2, file = '3D_Model_Fits/PD_block_div2.Rdata')
-#load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/PD_block_div2.Rdata')
+load( '~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/3D_Model_Fits/PD_block_div2.Rdata')
 
 
 summary(PD_div2)
@@ -247,7 +247,7 @@ fig_PD_div2 <- ggplot() +
                 aes(x = Treatment, ymin = lower__, ymax = upper__, colour = Treatment),
                 size = 1, width = 0) +
   labs(x = '',
-       y='') +
+       y='', title = 'q = 2') +
   scale_color_viridis(discrete = T, option = 'plasma')+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                #axis.text.x = element_blank(),
@@ -261,9 +261,9 @@ fig_PD_div2 <- ggplot() +
   ) + ylab("Forb Phylogenetic Diversity")
 
 fig_PD_div2
-
-(prairie.PD.fig / fig_PD_div0)
-
+#12X14 landscape
+fig_2 <- (prairie.PD.fig / fig_PD_div0/ fig_PD_div2)
+fig_2
 # ========================================================================================================== #
 #  Functional diversity
 head(FD)
@@ -381,14 +381,143 @@ fig_FD_div2 <- ggplot() +
   #coord_flip() +
   scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
   labs( 
-   # title= 'q = 2'
+    title= 'q = 2'
   ) + ylab("Forb Functional Diversity")
 
 fig_FD_div2
 
-# LANDSCAPE 8.50 X 13
+fig_3 <- ( prairie.FD.fig / fig_FD_div0/ fig_FD_div2 )
 
-( prairie.FD.fig / fig_FD_div0 )
-
+fig_3
 # LANDSCAPE 12 X 14
-(fig_TD_div2/ fig_PD_div2 / fig_FD_div2 )
+
+
+
+head(div0.TD)
+head(div2.TD)
+
+TD_joint <-  div0.TD %>% select(Treatment, estimate__, lower__, upper__) %>%
+  mutate(r_estimate = estimate__, r_lower = lower__, r_upper = upper__) %>%
+  select(Treatment, r_estimate, r_lower,  r_upper ) %>% left_join(
+     div2.TD %>% 
+            select(Treatment, estimate__, lower__, upper__) %>%
+            mutate(e_estimate = estimate__, e_lower = lower__, e_upper = upper__) %>%
+            select(Treatment, e_estimate, e_lower,  e_upper ) ) %>%
+  distinct()
+
+TD_joint
+
+fig_4a <- ggplot()+
+  geom_vline(xintercept = 0,linetype="longdash") + geom_hline(yintercept = 0,linetype="longdash") + 
+  # overall effects
+  geom_point(data = TD_joint,
+             aes(x = r_estimate, y = e_estimate, colour = Treatment
+             ), size = 3) +
+  geom_errorbar(data = TD_joint,
+                aes(x = r_estimate, ymin = e_lower, ymax = e_upper,  colour = Treatment )) +
+  geom_errorbarh(data = TD_joint,
+                 aes(y = e_estimate, xmin = r_lower, xmax =  r_upper,  colour = Treatment )) +
+  xlim(40,80) +
+  ylim(20,50) +
+   # scale_x_continuous(breaks=c(0, 5, 10, 15, 20, 25)) +
+   # scale_y_continuous(breaks=c(0, 10, 20, 30, 40, 50, 60)) +
+  scale_color_viridis(discrete = T, option="plasma")  +
+  labs(title= "Taxonomic Diversity")+
+  ylab("Average TD q = 2") +
+  xlab("Average TD q = 0") +
+  theme_classic(base_size = 16) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        strip.background = element_rect(colour="black", fill="white"),legend.position="none") #+
+  #guides(color=guide_legend(title="Treatment", ncol = 3))
+
+# 8.50 X 14
+fig_4a
+
+
+PD_joint <-  div0.PD %>% select(Treatment, estimate__, lower__, upper__) %>%
+  mutate(r_estimate = estimate__, r_lower = lower__, r_upper = upper__) %>%
+  select(Treatment, r_estimate, r_lower,  r_upper ) %>% left_join(
+    div2.PD %>% 
+      select(Treatment, estimate__, lower__, upper__) %>%
+      mutate(e_estimate = estimate__, e_lower = lower__, e_upper = upper__) %>%
+      select(Treatment, e_estimate, e_lower,  e_upper ) ) %>%
+  distinct()
+
+PD_joint
+
+fig_4b <- ggplot()+
+  geom_vline(xintercept = 0,linetype="longdash") + geom_hline(yintercept = 0,linetype="longdash") + 
+  # overall effects
+  geom_point(data = PD_joint,
+             aes(x = r_estimate, y = e_estimate, colour = Treatment
+             ), size = 3) +
+  geom_errorbar(data = PD_joint,
+                aes(x = r_estimate, ymin = e_lower, ymax = e_upper,  colour = Treatment )) +
+  geom_errorbarh(data = PD_joint,
+                 aes(y = e_estimate, xmin = r_lower, xmax =  r_upper,  colour = Treatment )) +
+  # xlim(40,80) +
+  # ylim(20,50) +
+  # scale_x_continuous(breaks=c(0, 5, 10, 15, 20, 25)) +
+  # scale_y_continuous(breaks=c(0, 10, 20, 30, 40, 50, 60)) +
+  scale_color_viridis(discrete = T, option="plasma")  +
+  labs(title= "Phylogenetic Diversity")+
+  ylab("Average PD q = 2") +
+  xlab("Average PD q = 0") +
+  theme_classic(base_size = 16) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        strip.background = element_rect(colour="black", fill="white"),legend.position="bottom") +
+  guides(color=guide_legend(title="Treatment", ncol = 3))
+
+# 8.50 X 14
+fig_4b
+
+
+FD_joint <-  div0.FD %>% select(Treatment, estimate__, lower__, upper__) %>%
+  mutate(r_estimate = estimate__, r_lower = lower__, r_upper = upper__) %>%
+  select(Treatment, r_estimate, r_lower,  r_upper ) %>% left_join(
+    div2.FD %>% 
+      select(Treatment, estimate__, lower__, upper__) %>%
+      mutate(e_estimate = estimate__, e_lower = lower__, e_upper = upper__) %>%
+      select(Treatment, e_estimate, e_lower,  e_upper ) ) %>%
+  distinct()
+
+FD_joint
+
+fig_4c <- ggplot()+
+  geom_vline(xintercept = 0,linetype="longdash") + geom_hline(yintercept = 0,linetype="longdash") + 
+  # overall effects
+  geom_point(data = FD_joint,
+             aes(x = r_estimate, y = e_estimate, colour = Treatment
+             ), size = 3) +
+  geom_errorbar(data = FD_joint,
+                aes(x = r_estimate, ymin = e_lower, ymax = e_upper,  colour = Treatment )) +
+  geom_errorbarh(data = FD_joint,
+                 aes(y = e_estimate, xmin = r_lower, xmax =  r_upper,  colour = Treatment )) +
+  # xlim(40,80) +
+  # ylim(20,50) +
+  # scale_x_continuous(breaks=c(0, 5, 10, 15, 20, 25)) +
+  # scale_y_continuous(breaks=c(0, 10, 20, 30, 40, 50, 60)) +
+  scale_color_viridis(discrete = T, option="plasma")  +
+  labs(title= "Functional Diversity")+
+  ylab("Average FD q = 2") +
+  xlab("Average FD q = 0") +
+  theme_classic(base_size = 16) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        strip.background = element_rect(colour="black", fill="white"),legend.position="none") #+
+  #guides(color=guide_legend(title="Treatment", ncol = 3))
+
+# 8.50 X 14
+fig_4c
+
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)}
+
+# fixed effect for controls
+fig_4_legend <- g_legend(fig_4b)
+
+#8.50X14
+fig_4 <- (fig_4a + fig_4b + theme(legend.position="none") + fig_4c)/ (fig_4_legend) + plot_layout(heights = c(10,  2))
+fig_4
