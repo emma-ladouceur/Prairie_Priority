@@ -14,6 +14,7 @@ library(phytools)
 library(V.PhyloMaker)
 library(stdnames) 
 
+citation("V.PhyloMaker")
 # read in corrected sp list
 three_d_prep <- read.csv("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/3D_prep.csv")
 
@@ -100,7 +101,7 @@ clean_sps
 # how to make a phylo tree from existing plant list
 # https://vimeo.com/470373338#
 
-
+??phylo.maker
 # make phylo tree
 prairie.phy = phylo.maker(clean_sps)
 
