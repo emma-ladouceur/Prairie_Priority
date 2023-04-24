@@ -17,8 +17,8 @@ library(iNEXT.3D)
 # cite 
 citation("iNEXT.3D")
 
-setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Sep/")
-setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data")
+setwd("~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/")
+setwd("~/Dropbox/_Projects/Prairie_Priority/Data")
 # cover and presence combined species data
 sp <- read.csv("pres_and_cover_plot.csv", header= TRUE)
 # corrected species list
@@ -81,7 +81,7 @@ levels(prairie.prep$species)
 
 #prairie.info <- prairie.prep %>% select(treat_id)
 
-#write.csv(prairie.prep, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/3D_prep.csv", row.names=FALSE)
+#write.csv(prairie.prep, "~/Dropbox/_Projects/Prairie_Priority/Data/3D_prep.csv", row.names=FALSE)
 
 prairie.prep.treats <- prairie.prep %>% 
   gather(Treatment_cat, Treatment_type, "Nutrients":"Assembly") %>%
@@ -94,7 +94,7 @@ prairie_info <- prairie.prep.treats %>% select(Treatment, Treatment_cat, Treatme
   distinct() %>% mutate(Assemblage = as.character(Treatment))
 
 
-write.csv(prairie.prep.treats, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/prairie.prep.treats.csv", row.names=FALSE)
+write.csv(prairie.prep.treats, "~/Dropbox/_Projects/Prairie_Priority/Data/prairie.prep.treats.csv", row.names=FALSE)
 
 # full species list, for taxonomic diversity and phylo diversity
 prairie.list <- prairie.prep.treats  %>%
@@ -121,7 +121,7 @@ TD_treat_out <- iNEXT3D(data = prairie.matrix.list, diversity = 'TD', q = c(0,1,
 
 TD_treat_out
 
-setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Sep/")
+setwd("~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/")
 save(TD_treat_out, file = "TD_treat_sep_out.Rdata")
 
 load(file = "TD_treat_sep_out.Rdata")
@@ -143,9 +143,9 @@ prairie.hill.TD <- prairie.TD.df %>% left_join(prairie_info) %>%
 head(prairie.hill.TD)
 View(prairie.hill.TD)
 
-write.csv(prairie.hill.TD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Sep/prairie.hill.treats.sep.TD.csv", row.names=FALSE)
+write.csv(prairie.hill.TD, "~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/prairie.hill.treats.sep.TD.csv", row.names=FALSE)
 
-setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Sep/")
+setwd("~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/")
 prairie.hill.TD <- read.csv("prairie.hill.treats.sep.TD.csv",  header= TRUE)
 
 head(prairie.hill.TD)
@@ -207,7 +207,7 @@ prairie.TD.fig
 
 # ========================================================================================================== #
 # Phylogenetic diversity
-setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data")
+setwd("~/Dropbox//_Projects/Prairie_Priority/Data")
 
 phylo.prep <- read.csv("phylo_prep.csv")
 
@@ -254,7 +254,7 @@ PD_treat_out <- iNEXT3D(data = phylo.matrix.list, diversity = 'PD', q = c(0, 1, 
 
  PD_treat_out
 
-setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Sep/")
+setwd("~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/")
 save(PD_treat_out, file = "PD_treat_sep_out.Rdata")
 
 
@@ -272,7 +272,7 @@ prairie.hill.PD <- prairie.PD.df %>% left_join(prairie_info)%>%
                                Order.q == "2" ~ "q = 2") )
 
 
-write.csv(prairie.hill.PD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Sep/prairie.hill.treats.sep.PD.csv", row.names=FALSE)
+write.csv(prairie.hill.PD, "~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/prairie.hill.treats.sep.PD.csv", row.names=FALSE)
 
 prairie.hill.PD <- read.csv("prairie.hill.treats.sep.PD.csv",  header= TRUE)
 
@@ -331,7 +331,7 @@ prairie.PD.fig
 
 # match traits and corrected species list from cover data
 
-setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data")
+setwd("~/Dropbox/_Projects/Prairie_Priority/Data")
 traits <- read.csv("imputed_trait_matrix.csv",  header= TRUE)
 
 head(traits)
@@ -367,7 +367,7 @@ traits_fixed <- sp_match %>%
 
 View(traits_fixed)
 
-write.csv(traits_fixed, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/imputed_trait_matrix_fixed.csv", row.names=FALSE)
+write.csv(traits_fixed, "~/Dropbox/_Projects/Prairie_Priority/Data/imputed_trait_matrix_fixed.csv", row.names=FALSE)
 
 head(trait.prep)
 
@@ -410,7 +410,7 @@ FD_treat_out <- iNEXT3D(data = trait.matrix.list, diversity = 'FD', q = c(0, 1, 
                   FDtau = NULL)
 
 FD_treat_out
-setwd("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Sep/")
+setwd("~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/")
 save(FD_treat_out, file = "FD_treat_sep_out.Rdata")
 
 
@@ -428,7 +428,7 @@ prairie.hill.FD <- prairie.FD.df %>% left_join(prairie_info) %>%
                                Order.q == "2" ~ "q = 2") )
 
 
-write.csv(prairie.hill.FD, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/Treat Sep/prairie.hill.treats.sep.FD.csv", row.names=FALSE)
+write.csv(prairie.hill.FD, "~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/prairie.hill.treats.sep.FD.csv", row.names=FALSE)
 
 
 prairie.hill.FD <- read.csv("prairie.hill.treats.sep.FD.csv",  header= TRUE)
