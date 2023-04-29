@@ -428,7 +428,7 @@ distM <- cluster::daisy(x = traits, metric = "gower") %>% as.matrix()
 
 
 
-FD_treat_out <- iNEXT3D(data = trait.matrix.list, diversity = 'FD', q = c(0, 1, 2), datatype = 'incidence_raw', #base = 'size',
+FD_treat_out <- iNEXT3D(data = trait.matrix.list, diversity = 'FD', q = c(0, 2), datatype = 'incidence_raw', #base = 'size',
                   #size = c(1:188), 
                   endpoint = 200, #knots = 1,
                   nboot = 50,  FDdistM = distM, FDtype = 'tau_values', 

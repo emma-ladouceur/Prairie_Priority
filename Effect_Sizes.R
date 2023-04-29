@@ -9,7 +9,7 @@ library(viridisLite)
 library(patchwork)
 library(metafor)
 
-setwd("~/head(TDDropbox/_Projects/Prairie_Priority/")
+setwd("~/Dropbox/_Projects/Prairie_Priority/")
 
 # 14 3D_treat_block.R
 TD <- read.csv("Data/Treat Sep/prairie.hill.treats.sep.TD.csv", header= TRUE)
@@ -17,108 +17,178 @@ PD <- read.csv("Data/Treat Sep/prairie.hill.treats.sep.PD.csv", header= TRUE)
 FD <- read.csv("Data/Treat Sep/prairie.hill.treats.sep.FD.csv", header= TRUE)
 
 head(TD)
-View(TD)
+head(PD)
+head(FD)
 
+PD <- PD %>% mutate( qD = qPD, qD.LCL = qPD.LCL, qD.UCL = qPD.UCL ) %>%
+  select( -c( qPD,  qPD.LCL, qPD.UCL )) %>%
+  mutate(nt = as.factor(nt),
+         D = "PD") 
 
-alph_gam_TD  <- TD %>% 
-  filter(nt == c(1, 80)) %>%
+FD <- FD %>% mutate( qD = qFD, qD.LCL = qFD.LCL, qD.UCL = qFD.UCL ) %>%
+  select( -c( qFD,  qFD.LCL, qFD.UCL )) %>%
+  mutate(nt = as.factor(nt),
+         D = "FD") 
+
+Div  <- TD %>% mutate(nt = as.factor(nt),  D = "TD") %>%
+  bind_rows(FD, PD) %>%  
+  filter(nt == c(1, 80)) %>% 
   separate(Treatment, c("Nutrients", "Invasion"), remove = F) %>% 
-  select(c(Order.q, nt, Nutrients, Invasion, qD ,  qD.LCL, qD.UCL)) %>%
-  gather(variable, value, -(Order.q:Invasion)) %>%
+  select(c(Order.q, nt, Nutrients, Invasion, D, qD , qD.LCL, qD.UCL)) %>%
+  gather(variable, value, -(Order.q:D)) %>%
   unite(temp, Invasion, variable) %>%
   spread(temp, value) %>%
   mutate( ESqd = (Late_qD - Early_qD),
           ESqd.LCL = (Late_qD.LCL - Early_qD.LCL),
           ESqd.UCL = (Late_qD.UCL - Early_qD.UCL) ) %>% 
- # select(c( Order.q, nt, Nutrients)) %>%
   gather(trt, response, c(Early_qD:Late_qD.UCL)) %>%
-  separate(trt, c("Invasion", "q"), extra = "merge", sep="_") %>% select(-c(Invasion, q, response)) %>% distinct() %>%
-  mutate(nt = as.factor(nt),
-         qD = "TD") 
+  separate(trt, c("Invasion", "q"), extra = "merge", sep="_") %>% 
+  select(-c(Invasion, q, response)) %>% distinct() 
   
 
-head(alph_gam_TD)
+View(Div)
+
+Div$D <- factor(Div$D  , levels=c("TD","PD", "FD"))
 
 
-q_0 <- ggplot() +  
-  #facet_wrap(~Order.q) +
-  geom_point(data = alph_gam_TD  %>% filter(Order.q ==  "q = 0" ),
-             aes(x = nt, y = ESqd, colour = Nutrients, group = Nutrients), size = 3) +
-  geom_errorbar(data = alph_gam_TD %>% filter(Order.q ==  "q = 0" ) ,
-                aes(x = nt, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Nutrients, group = Nutrients),
-                size = 1, width = 0) +
+q_0_smol <- ggplot() +  
+  geom_point(data = Div  %>% filter(Order.q ==  "q = 0" ) %>% filter(nt == 1 ) ,
+             aes(x = D, y = ESqd, colour = Nutrients, group = Nutrients), size = 2,
+             position = position_dodge(width = .60) ) +
+  geom_errorbar(data = Div %>% filter(Order.q ==  "q = 0" ) %>% filter(nt == 1 ) ,
+                aes(x = D, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Nutrients, group = Nutrients),
+                size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
   scale_color_viridis(discrete = T, option = "plasma")+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                               #axis.text.x = element_blank(),
+                               axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
-                               strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
-  scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
+                               strip.background = element_blank(),legend.position = "bottom") +
+  coord_cartesian() +
+  #scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
   labs( 
-   # title= 'q = 0'
-  ) + ylab("Forb Taxonomic Diversity")
+    title= (expression(paste(italic(alpha), "-diversity", sep = ' ')))
+  ) + ylab("q = 0 \n Effect of late invasion")
 
-q_2 <-ggplot() +  
-  #facet_wrap(~Order.q) +
-  geom_point(data = alph_gam_TD  %>% filter(Order.q ==  "q = 2" ),
-             aes(x = nt, y = ESqd, colour = Nutrients, group = Nutrients), size = 3) +
-  geom_errorbar(data = alph_gam_TD %>% filter(Order.q ==  "q = 2" ) ,
-                aes(x = nt, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Nutrients, group = Nutrients),
-                size = 1, width = 0) +
-  labs(x = '' # y=''
-       ) +
-  scale_color_viridis(discrete = T, option= "plasma")+
+q_0_smol
+
+q_0_lorg <- ggplot() +  
+  geom_point(data = Div  %>% filter(Order.q ==  "q = 0" ) %>% filter(nt == 80 ) ,
+             aes(x = D, y = ESqd, colour = Nutrients, group = Nutrients), size = 2,
+             position = position_dodge(width = .60) ) +
+  geom_errorbar(data = Div %>% filter(Order.q ==  "q = 0" ) %>% filter(nt == 80 ) ,
+                aes(x = D, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Nutrients, group = Nutrients),
+                size = 1, width = 0, position = position_dodge(width = .60)) +
+  # labs(x = '',
+  #      y='') +
+  scale_color_viridis(discrete = T, option = "plasma")+
   theme_bw(base_size=18) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                               #axis.text.x = element_blank(),
+                               axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
                                strip.background = element_blank(),legend.position = "none") +
-  #coord_flip() +
-  scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
+  coord_cartesian() +
+  #scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
+  labs( 
+     title= (expression(paste(italic(gamma), "-diversity", sep = ' ')))
+  ) + ylab("Effect of late invasion")
+
+q_0_lorg
+
+q_2_smol <- ggplot() +  
+  geom_point(data = Div  %>% filter(Order.q ==  "q = 2" ) %>% filter(nt == 1 ) ,
+             aes(x = D, y = ESqd, colour = Nutrients, group = Nutrients), size = 2,
+             position = position_dodge(width = .60) ) +
+  geom_errorbar(data = Div %>% filter(Order.q ==  "q = 0" ) %>% filter(nt == 1 ) ,
+                aes(x = D, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Nutrients, group = Nutrients),
+                size = 1, width = 0, position = position_dodge(width = .60)) +
+  # labs(x = '',
+  #      y='') +
+  scale_color_viridis(discrete = T, option = "plasma")+
+  theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                               axis.title.x = element_blank(),
+                               plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
+                               plot.title=element_text(size=18, hjust=0.5),
+                               strip.background = element_blank(),legend.position = "none") +
+  coord_cartesian() +
+  #scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
   labs( 
     # title= 'q = 0'
-  ) + ylab("Forb Taxonomic Diversity")
+  ) + ylab("q = 2 \n Effect of late invasion")
 
-(q_0 + q_2)
+q_2_smol
 
+q_2_lorg <- ggplot() +  
+  geom_point(data = Div  %>% filter(Order.q ==  "q = 2" ) %>% filter(nt == 80 ) ,
+             aes(x = D, y = ESqd, colour = Nutrients, group = Nutrients), size = 2,
+             position = position_dodge(width = .60) ) +
+  geom_errorbar(data = Div %>% filter(Order.q ==  "q = 2" ) %>% filter(nt == 80 ) ,
+                aes(x = D, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Nutrients, group = Nutrients),
+                size = 1, width = 0, position = position_dodge(width = .60)) +
+  # labs(x = '',
+  #      y='') +
+  scale_color_viridis(discrete = T, option = "plasma")+
+  theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                               axis.title.x = element_blank(),
+                               plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
+                               plot.title=element_text(size=18, hjust=0.5),
+                               strip.background = element_blank(),legend.position = "none") +
+  coord_cartesian() +
+  #scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
+  labs( 
+    # title= 'q = 0'
+  ) + ylab("Effect of late invasion")
 
-
-
-alph_gam_TD  <- TD %>% 
-  filter(nt == c(1, 80)) %>%
-  separate(Treatment, c("Nutrients", "Invasion"), remove = F) %>% 
-  mutate( q_std_dev = ( (qD.UCL- qD.LCL) / 3.92) * sqrt(50) ) %>%
-  arrange(Order.q, nt, Nutrients, desc(Invasion)) %>%
-  mutate(group_size = 50) %>%
-  select(Order.q, nt, Nutrients, Invasion, group_size, qD, q_std_dev) %>%
-  #group_by(Order.q, Nutrients) %>%
-  gather(variable, value, -(Order.q:Invasion)) %>%
-  unite(temp, Invasion, variable) %>%
-  spread(temp, value) 
-
-
-head(alph_gam_TD)
-
-lrr_TD <- escalc(measure = "ROM", m1i=Late_qD, m2i=Early_qD, sd1i= Late_q_std_dev, sd2i= Early_q_std_dev,
-                 n1i=Late_group_size , n2i=Early_group_size,
-       data=alph_gam_TD, slab=paste0(Order.q , ", ", nt, ", ",Nutrients), digits=4)
-
-head(lrr_TD)
-
-
-forest(lrr_TD$yi, lrr_TD$vi)
+q_2_lorg
 
 
-hd_TD <- escalc(measure = "SMD", m1i=Late_qD, m2i=Early_qD, sd1i= Late_q_std_dev, sd2i= Early_q_std_dev,
-                 n1i=Late_group_size , n2i=Early_group_size,
-                 data=alph_gam_TD, slab=paste0(Order.q , ", ", nt, ", ",Nutrients), digits=4)
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)}
 
-head(hd_TD)
+es_legend <- g_legend(q_0_smol)
+
+( (( (q_0_smol + theme(legend.position="none") ) + q_0_lorg) / (q_2_smol + q_2_lorg) ) / es_legend ) + plot_layout(heights = c(10, 10, 2))
 
 
-forest(hd_TD$yi, hd_TD$vi)
+
+# 
+# alph_gam_TD  <- TD %>% 
+#   filter(nt == c(1, 80)) %>%
+#   separate(Treatment, c("Nutrients", "Invasion"), remove = F) %>% 
+#   mutate( q_std_dev = ( (qD.UCL- qD.LCL) / 3.92) * sqrt(50) ) %>%
+#   arrange(Order.q, nt, Nutrients, desc(Invasion)) %>%
+#   mutate(group_size = 50) %>%
+#   select(Order.q, nt, Nutrients, Invasion, group_size, qD, q_std_dev) %>%
+#   #group_by(Order.q, Nutrients) %>%
+#   gather(variable, value, -(Order.q:Invasion)) %>%
+#   unite(temp, Invasion, variable) %>%
+#   spread(temp, value) 
+# 
+# 
+# head(alph_gam_TD)
+# 
+# lrr_TD <- escalc(measure = "ROM", m1i=Late_qD, m2i=Early_qD, sd1i= Late_q_std_dev, sd2i= Early_q_std_dev,
+#                  n1i=Late_group_size , n2i=Early_group_size,
+#        data=alph_gam_TD, slab=paste0(Order.q , ", ", nt, ", ",Nutrients), digits=4)
+# 
+# head(lrr_TD)
+# 
+# 
+# forest(lrr_TD$yi, lrr_TD$vi)
+# 
+# 
+# hd_TD <- escalc(measure = "SMD", m1i=Late_qD, m2i=Early_qD, sd1i= Late_q_std_dev, sd2i= Early_q_std_dev,
+#                  n1i=Late_group_size , n2i=Early_group_size,
+#                  data=alph_gam_TD, slab=paste0(Order.q , ", ", nt, ", ",Nutrients), digits=4)
+# 
+# head(hd_TD)
+# 
+# 
+# forest(hd_TD$yi, hd_TD$vi)
 
 
