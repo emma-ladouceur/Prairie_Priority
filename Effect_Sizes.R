@@ -40,7 +40,12 @@ Div  <- TD %>% mutate(nt = as.factor(nt),  D = "TD") %>%
   spread(temp, value) %>%
   mutate( ESqd = (Late_qD - Early_qD),
           ESqd.LCL = (Late_qD.LCL - Early_qD.LCL),
-          ESqd.UCL = (Late_qD.UCL - Early_qD.UCL) ) %>% 
+          ESqd.UCL = (Late_qD.UCL - Early_qD.UCL),
+          # log effect sizes
+          ESqd_log = ( log(Late_qD) -  log(Early_qD) ),
+          ESqd.LCL_log = ( log(Late_qD.LCL) -  log(Early_qD.LCL) ),
+          ESqd.UCL_log = ( log(Late_qD.UCL) -  log(Early_qD.UCL) ),
+          ) %>% 
   gather(trt, response, c(Early_qD:Late_qD.UCL)) %>%
   separate(trt, c("Invasion", "q"), extra = "merge", sep="_") %>% 
   select(-c(Invasion, q, response)) %>% distinct() 
@@ -48,6 +53,7 @@ Div  <- TD %>% mutate(nt = as.factor(nt),  D = "TD") %>%
 
 View(Div)
 
+# reorder Div's
 Div$D <- factor(Div$D  , levels=c("TD","PD", "FD"))
 
 
@@ -153,6 +159,113 @@ g_legend<-function(a.gplot){
 es_legend <- g_legend(q_0_smol)
 
 ( (( (q_0_smol + theme(legend.position="none") ) + q_0_lorg) / (q_2_smol + q_2_lorg) ) / es_legend ) + plot_layout(heights = c(10, 10, 2))
+
+
+
+# Log ratio
+
+q_0_smol_log <- ggplot() +  
+  geom_point(data = Div  %>% filter(Order.q ==  "q = 0" ) %>% filter(nt == 1 ) ,
+             aes(x = D, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
+             position = position_dodge(width = .60) ) +
+  geom_errorbar(data = Div %>% filter(Order.q ==  "q = 0" ) %>% filter(nt == 1 ) ,
+                aes(x = D, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
+                size = 1, width = 0, position = position_dodge(width = .60)) +
+  # labs(x = '',
+  #      y='') +
+  scale_color_viridis(discrete = T, option = "plasma")+
+  theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                               axis.title.x = element_blank(),
+                               plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
+                               plot.title=element_text(size=18, hjust=0.5),
+                               strip.background = element_blank(),legend.position = "bottom") +
+  coord_cartesian() +
+  #scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
+  labs( 
+    title= (expression(paste(italic(alpha), "-diversity", sep = ' ')))
+  ) + ylab("q = 0 \n Log effect of late invasion")
+
+q_0_smol_log
+
+q_0_lorg_log <- ggplot() +  
+  geom_point(data = Div  %>% filter(Order.q ==  "q = 0" ) %>% filter(nt == 80 ) ,
+             aes(x = D, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
+             position = position_dodge(width = .60) ) +
+  geom_errorbar(data = Div %>% filter(Order.q ==  "q = 0" ) %>% filter(nt == 80 ) ,
+                aes(x = D, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
+                size = 1, width = 0, position = position_dodge(width = .60)) +
+  # labs(x = '',
+  #      y='') +
+  scale_color_viridis(discrete = T, option = "plasma")+
+  theme_bw(base_size=18) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                                 axis.title.x = element_blank(),
+                                 plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
+                                 plot.title=element_text(size=18, hjust=0.5),
+                                 strip.background = element_blank(),legend.position = "none") +
+  coord_cartesian() +
+  #scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
+  labs( 
+    title= (expression(paste(italic(gamma), "-diversity", sep = ' ')))
+  ) + ylab("Log effect of late invasion")
+
+q_0_lorg_log
+
+q_2_smol_log <- ggplot() +  
+  geom_point(data = Div  %>% filter(Order.q ==  "q = 2" ) %>% filter(nt == 1 ) ,
+             aes(x = D, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
+             position = position_dodge(width = .60) ) +
+  geom_errorbar(data = Div %>% filter(Order.q ==  "q = 0" ) %>% filter(nt == 1 ) ,
+                aes(x = D, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
+                size = 1, width = 0, position = position_dodge(width = .60)) +
+  # labs(x = '',
+  #      y='') +
+  scale_color_viridis(discrete = T, option = "plasma")+
+  theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                               axis.title.x = element_blank(),
+                               plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
+                               plot.title=element_text(size=18, hjust=0.5),
+                               strip.background = element_blank(),legend.position = "none") +
+  coord_cartesian() +
+  #scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
+  labs( 
+    # title= 'q = 0'
+  ) + ylab("q = 2 \n Log effect of late invasion")
+
+q_2_smol_log
+
+q_2_lorg_log <- ggplot() +  
+  geom_point(data = Div  %>% filter(Order.q ==  "q = 2" ) %>% filter(nt == 80 ) ,
+             aes(x = D, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
+             position = position_dodge(width = .60) ) +
+  geom_errorbar(data = Div %>% filter(Order.q ==  "q = 2" ) %>% filter(nt == 80 ) ,
+                aes(x = D, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
+                size = 1, width = 0, position = position_dodge(width = .60)) +
+  # labs(x = '',
+  #      y='') +
+  scale_color_viridis(discrete = T, option = "plasma")+
+  theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                               axis.title.x = element_blank(),
+                               plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
+                               plot.title=element_text(size=18, hjust=0.5),
+                               strip.background = element_blank(),legend.position = "none") +
+  coord_cartesian() +
+  #scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
+  labs( 
+    # title= 'q = 0'
+  ) + ylab("Log effect of late invasion")
+
+q_2_lorg_log
+
+
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)}
+
+es_legend <- g_legend(q_0_smol_log)
+
+( (( (q_0_smol_log + theme(legend.position="none") ) + q_0_lorg_log) / (q_2_smol_log + q_2_lorg_log) ) / es_legend ) + plot_layout(heights = c(10, 10, 2))
 
 
 
