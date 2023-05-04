@@ -160,7 +160,7 @@ head(prairie.hill.TD)
 
 prairie.hill.TD %>% filter(Method == "Observed")
 
-prairie.hill.TD$Assemblage <- factor(prairie.hill.TD$Assemblage, levels = c("Nutrients_Late", "Control_Late", "Nutrients_Early",  "Control_Early"))
+prairie.hill.TD$Assemblage <- factor(prairie.hill.TD$Assemblage, levels = c("Control_Early",  "Nutrients_Early",  "Control_Late", "Nutrients_Late" ))
 
 #prairie.hill.TD$Treatment_type<- as.factor(prairie.hill.TD$Treatment_type)
 # levels(prairie.hill.TD$Treatment_type)
@@ -304,7 +304,7 @@ prairie.hill.PD <- read.csv("prairie.hill.treats.sep.PD.csv",  header= TRUE)
 
 head(prairie.hill.PD)
 
-prairie.hill.PD$Assemblage <- factor(prairie.hill.PD$Assemblage, levels = c("Nutrients_Late", "Control_Late", "Nutrients_Early",  "Control_Early"))
+prairie.hill.PD$Assemblage <- factor(prairie.hill.PD$Assemblage, levels = c("Control_Early",  "Nutrients_Early",  "Control_Late", "Nutrients_Late" ))
 
 # prairie.hill.PD$Treatment_type<- as.factor(prairie.hill.PD$Treatment_type)
 # levels(prairie.hill.PD$Treatment_type)
@@ -481,7 +481,7 @@ head(prairie.hill.FD)
 
 is.numeric(prairie.hill.FD$Assemblage)
 
-prairie.hill.FD$Assemblage <- factor(prairie.hill.FD$Assemblage, levels = c("Nutrients_Late", "Control_Late", "Nutrients_Early",  "Control_Early"))
+prairie.hill.FD$Assemblage <- factor(prairie.hill.FD$Assemblage, levels = c("Control_Early",  "Nutrients_Early",  "Control_Late", "Nutrients_Late" ))
 
 # prairie.hill.FD$Treatment_type<- as.factor(prairie.hill.FD$Treatment_type)
 # levels(prairie.hill.FD$Treatment_type)
@@ -560,14 +560,15 @@ line.leg <- ggplot() +
 
 line.legend <- g_legend(line.leg)
 
-# 
+# "Control_Early",  "Nutrients_Early",  "Control_Late", "Nutrients_Late" 
 trt.leg <- ggplot() +
   geom_line(data = prairie.hill.FD, aes(x = nt, y = qFD,   color = Assemblage), lwd = 1) +
   labs(x="Number of sampling units", y="Species richness",title="") +
   #scale_color_viridis(discrete = T, option="C")  +
   scale_color_manual(values=met.brewer("Hokusai3", 4),
-                     labels=c("Nutrients late invasion", "Control late invasion",
-                              "Nutrients early invasion", "Control early invasion"))+
+                     labels=c("Control early invasion", "Nutrients early invasion", 
+                              "Control late invasion", "Nutrients late invasion"
+                              ))+
   # scale_colour_manual( values = c("#31688e","#35b779",# "#443983","#90d743","#21918c",
   #                                 "#fde725", "#440154"),
   #                      labels=c("Nutrients late invasion", "Control late invasion",

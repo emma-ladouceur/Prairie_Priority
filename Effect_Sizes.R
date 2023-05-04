@@ -66,7 +66,7 @@ q_0_smol <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_viridis(discrete = T, option = "plasma")+
+  scale_color_manual(values=met.brewer("Hokusai3", 4))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -89,7 +89,7 @@ q_0_lorg <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_viridis(discrete = T, option = "plasma")+
+  scale_color_manual(values=met.brewer("Hokusai3", 4))+
   theme_bw(base_size=18) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -112,7 +112,7 @@ q_2_smol <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_viridis(discrete = T, option = "plasma")+
+  scale_color_manual(values=met.brewer("Hokusai3", 4))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -135,7 +135,7 @@ q_2_lorg <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_viridis(discrete = T, option = "plasma")+
+  scale_color_manual(values=met.brewer("Hokusai3", 4))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -173,7 +173,7 @@ q_0_smol_log <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_viridis(discrete = T, option = "plasma")+
+  scale_color_manual(values=met.brewer("Hokusai3", 4))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -196,7 +196,7 @@ q_0_lorg_log <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_viridis(discrete = T, option = "plasma")+
+  scale_color_manual(values=met.brewer("Hokusai3", 4))+
   theme_bw(base_size=18) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                  axis.title.x = element_blank(),
                                  plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -219,7 +219,7 @@ q_2_smol_log <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_viridis(discrete = T, option = "plasma")+
+  scale_color_manual(values=met.brewer("Hokusai3", 4))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -242,7 +242,7 @@ q_2_lorg_log <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_viridis(discrete = T, option = "plasma")+
+  scale_color_manual(values=met.brewer("Hokusai3", 4))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),

@@ -44,6 +44,8 @@ Div.q <- Div %>%  gather(variable, value, (qD:qD.UCL)) %>%
 head(Div.q)
 
 Div.q$D <- factor(Div.q$D  , levels=c("TD","PD", "FD"))
+Div$Treatment <- factor(Div$Treatment, levels = c("Control_Early",  "Nutrients_Early",  "Control_Late", "Nutrients_Late" ))
+
 
 Div.q_Fig <- ggplot()+
   geom_vline(xintercept = 0,linetype="longdash") + geom_hline(yintercept = 0,linetype="longdash") +
@@ -60,7 +62,7 @@ Div.q_Fig <- ggplot()+
   # ylim(20,50) +
   # scale_x_continuous(breaks=c(0, 5, 10, 15, 20, 25)) +
   # scale_y_continuous(breaks=c(0, 10, 20, 30, 40, 50, 60)) +
-  scale_color_manual(values=met.brewer("Hokusai3", 4))+
+  scale_color_manual(values=met.brewer("Hokusai3", 4, ), guide = "none" )+
   scale_shape_discrete(labels=c( (expression(paste(italic(alpha), "-diversity (1 sample)", sep = ' '))) ,
                                  (expression(paste(italic(gamma), "-diversity (80 samples)", sep = ' ')))  ),name="Spatial scale")+
   labs(title= "") +
@@ -78,6 +80,7 @@ Div.q_Fig
 # alpha vs gamma
 head(Div)
 
+
 Div.s <- Div %>%  
   gather(variable, value, (qD:qD.UCL)) %>%
   unite(temp, nt, variable) %>%
@@ -86,6 +89,7 @@ Div.s <- Div %>%
 head(Div.s)
 
 Div.s$D <- factor(Div.s$D  , levels=c("TD","PD", "FD"))
+
 
 Div.s_Fig <- ggplot()+
   geom_vline(xintercept = 0,linetype="longdash") + geom_hline(yintercept = 0,linetype="longdash") +
@@ -126,14 +130,14 @@ Div.legend <- ggplot()+
   geom_errorbarh(data = Div.s,
                  aes(y =`80_qD`, xmin = `1_qD.LCL`, xmax =  `1_qD.UCL`,   group=Order.q , colour = Treatment )) +
   scale_color_manual(values=met.brewer("Hokusai3", 4), 
-                     labels=c("Nutrients late invasion", "Control late invasion",
-                              "Nutrients early invasion", "Control early invasion") )+
+                     labels=c("Control early invasion", "Nutrients early invasion", 
+                              "Control late invasion", "Nutrients late invasion" ) )+
   labs(title= "")+
   ylab( (expression(paste(italic(gamma), "-diversity", sep = ' '))) ) +
   xlab( (expression(paste(italic(alpha), "-diversity", sep = ' '))) ) +
   theme_classic(base_size = 16) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-        strip.background = element_rect(colour="black", fill="white"), legend.position="bottom") 
+        strip.background = element_rect(colour="black", fill="white"), legend.position="bottom") +   guides(col = guide_legend(ncol = 2))
 
 Div.legend
 
@@ -264,15 +268,15 @@ Div_D_legend <- ggplot()+
                 aes(x = `PD_qD`, ymin = `FD_qD.LCL`, ymax = `FD_qD.UCL`,  colour = Treatment, group=Order.q )) +
   geom_errorbarh(data = Div.d,
                  aes(y =`FD_qD`, xmin = `PD_qD.LCL`, xmax =  `PD_qD.UCL`,  colour = Treatment, group=Order.q  )) +
-  scale_color_manual(values=met.brewer("Hokusai3", 4), labels=c("Nutrients late invasion", "Control late invasion",
-                                                                "Nutrients early invasion", "Control early invasion") )+
+  scale_color_manual(values=met.brewer("Hokusai3", 4), labels=c("Control early invasion", "Nutrients early invasion", 
+                                                                "Control late invasion", "Nutrients late invasion") )+
   labs(title= "")+
   ylab("Average FD") +
   xlab("Average PD") +
   theme_classic(base_size = 16) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
         strip.background = element_rect(colour="black", fill="white"),legend.position="bottom") +
-  guides(shape = guide_legend(title="Order of q") )
+  guides(shape = guide_legend(title="Order of q") ) +   guides(col = guide_legend(ncol = 2))
 
 Div_D_legend
 
