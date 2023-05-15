@@ -17,13 +17,9 @@ citation("missForest")
 # https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12232
 
 # import trait matrix with missing values
-trait <- read.csv("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/data/trait_Matrix.csv") # Trait matrix with missing values
+trait <- read.csv("~/Dropbox/_Projects/Prairie_Priority/data/trait_matrix.csv") # Trait matrix with missing values
 
-trait <- trait %>% select(-c(X, AccSpeciesID)) %>% arrange(AccSpeciesName) %>%
-  mutate(AccSpeciesName = str_replace(AccSpeciesName, "Lespedeza juncea var. sericea", "Lespedeza juncea")) 
-
-View(trait)
-
+head(trait)
 # _______________________________________________________________
 
 trait_0 <- trait   
@@ -41,7 +37,7 @@ trait_0$species = trait_0$`spp$species`
 trait_0$`spp$species` = NULL
 
 # Load the phylogeny / tree
-prairie.tree <- read.tree('~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/phylo.tree.txt')
+prairie.tree <- read.tree('~/Dropbox/_Projects/Prairie_Priority/Data/phylo.tree.txt')
 
 
 # check by creating a new column what spp are or aren't in the tree 
@@ -142,6 +138,7 @@ SN_ideal   <-missForest(trait.imp[, 1: (10+dfk2$k_min_SN)] , maxiter = 25, ntree
 SSBL_ideal   <-missForest(trait.imp[, 1: (10+dfk2$k_min_SSBL)] , maxiter = 25, ntree = 100 ,   variablewise = TRUE) 
 SSD_ideal   <-missForest(trait.imp[, 1: (10+dfk2$k_min_SSD)] , maxiter = 25, ntree = 100 ,   variablewise = TRUE) 
 
+
 best_LA  <-tibble(LA = LA_ideal$ximp$LA,species=rownames(LA_ideal$ximp))
 best_LDMC   <-tibble(LDMC  = LDMC_ideal$ximp$LDMC,  species=rownames (LDMC_ideal$ximp))
 best_LN    <-tibble(LN   = LN_ideal$ximp$LN,    species=rownames (LN_ideal$ximp))
@@ -167,4 +164,4 @@ Trait_imputed <- best_LA %>% left_join( best_LDMC, by="species")%>%   # traits i
 
 View(Trait_imputed)
 
-write.csv(Trait_imputed, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/imputed_trait_matrix.csv",  row.names=FALSE)
+write.csv(Trait_imputed, "~/Dropbox/_Projects/Prairie_Priority/Data/imputed_trait_matrix.csv",  row.names=FALSE)

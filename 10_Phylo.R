@@ -16,7 +16,7 @@ library(stdnames)
 
 citation("V.PhyloMaker")
 # read in corrected sp list
-three_d_prep <- read.csv("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/3D_prep.csv")
+three_d_prep <- read.csv("~/Dropbox/_Projects/Prairie_Priority/Data/3D_prep.csv")
 
 head(three_d_prep)
 nrow(three_d_prep)
@@ -25,6 +25,8 @@ three_d_prep <- three_d_prep %>% select(-c(corrected_sp, orig_species)) %>%
   mutate(orig_species = species)
 
 View(three_d_prep)
+
+
 
 # Flag infraspecies
 new_sps <- three_d_prep %>% select(orig_species, species) %>%
@@ -91,10 +93,10 @@ head(three_d_prep)
 
 write.csv(phylo_prep, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/phylo_prep.csv", row.names=FALSE)
 
-phylo_prep <- read.csv("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/data/phylo_prep.csv") # Trait matrix with missing values
+phylo_prep <- read.csv("~/Dropbox/_Projects/Prairie_Priority/data/phylo_prep.csv") # Trait matrix with missing values
 
 clean_sps <- phylo_prep %>% select(species, genus, family) %>% distinct() %>% arrange(species) %>%
-  mutate(species = str_replace(species, "Lespedeza_juncea_var_sericea", "Lespedeza_juncea")) %>%
+  mutate(species = str_replace(species, "Lespedeza_juncea_var_sericea", "Lespedeza_cuneata")) %>%
   filter(!grepl("_spp",species))
 
 clean_sps
@@ -112,7 +114,7 @@ prairie.tree
 
 plotTree(prairie.tree)
 
-write.tree(prairie.tree, "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/phylo.tree.txt")
+write.tree(prairie.tree, "~/Dropbox/_Projects/Prairie_Priority/Data/phylo.tree.txt")
 
 
 

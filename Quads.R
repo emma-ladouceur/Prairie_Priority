@@ -150,6 +150,7 @@ g_legend<-function(a.gplot){
 
 quads.legend <- g_legend(Div.legend)
 
+# normal landscape dimensions
 
 (Div.q_Fig / Div.s_Fig/ quads.legend + plot_layout(heights = c(10,10,2) ) )
 
@@ -288,5 +289,5 @@ g_legend<-function(a.gplot){
 
 quads.D.legend <- g_legend(Div_D_legend)
 
-
+# normal protrait
 (Div.tpd_Fig / Div.tfd_Fig/ Div.pfd_Fig/quads.D.legend + plot_layout(heights = c(10,10,10,2) )  )

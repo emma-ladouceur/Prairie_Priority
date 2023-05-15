@@ -32,13 +32,17 @@ corrected_sp_list <- read.csv("species_corrected_complete.csv", row.names = 1, h
 
 # correct species  names  in cover data
 head(corrected_sp_list)
+View(corrected_sp_list)
 
 new_sp <- corrected_sp_list %>% mutate(species = old_name,
                                        corrected_sp = name) %>%
   select(-c(old_name, name, morphotype)) %>%
-  filter(!corrected_sp == "graminoid sp.")
+  filter(!corrected_sp == "graminoid sp.") %>%
+  mutate( corrected_sp = case_when(
+    corrected_sp == "Lespedeza juncea var. sericea" ~ "Lespedeza cuneata",
+    TRUE ~ corrected_sp ) ) 
 
-head(new_sp)
+View(new_sp)
 nrow(new_sp)
 head(sp)
 summary(sp)
@@ -80,6 +84,7 @@ prairie.prep <- sp %>%
   select(-Assembly) %>%
     mutate(species = str_replace(species, "Lespedeza juncea var. sericea", "Lespedeza juncea"))
 
+View(prairie.prep)
 head(prairie.prep)
 nrow(prairie.prep)
 
@@ -123,7 +128,7 @@ View(prairie.matrix.list)
 ??iNEXT3D
 
 TD_treat_out <- iNEXT3D(data = prairie.matrix.list, diversity = 'TD', q = c(0,2), datatype = 'incidence_raw', #base = 'size',
-                  size = c(1:200), 
+                  size = c(1:120), 
                   #endpoint = 160, knots =1,
                   nboot = 50)
 
@@ -200,7 +205,7 @@ prairie.TD.fig0 <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Assemb
   #                                 #"#443983","#90d743","#21918c",
   #                                 "#fde725", "#440154") ) +  
   labs(title='Taxonomic Diversity', subtitle = 'q = 0')+
-  xlim(0,160)+ 
+  xlim(0,120)+ 
   theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
 
@@ -217,7 +222,7 @@ prairie.TD.fig2 <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Assemb
   #                                 #"#443983","#90d743","#21918c",
   #                                 "#fde725", "#440154") ) +  
   labs(title='', subtitle = 'q = 2')+
-  #xlim(0,20)+ 
+  xlim(0,120)+ 
   theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none",
                             axis.title.y = element_blank(), plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
@@ -230,16 +235,16 @@ prairie.TD.fig
 
 # ========================================================================================================== #
 # Phylogenetic diversity
-setwd("~/Dropbox//_Projects/Prairie_Priority/Data")
+setwd("~/Dropbox/_Projects/Prairie_Priority/Data")
 
 phylo.prep <- read.csv("phylo_prep.csv")
 
 head(phylo.prep)
 
-phylo.prep$species[phylo.prep$species == "Lespedeza_juncea"] = "Lespedeza_juncea_var_sericea"
 
 phylo.prep.treats <- phylo.prep %>% 
   #filter(!subplot == 10 ) %>%
+  mutate(species = str_replace(species, "Lespedeza_juncea_var_sericea", "Lespedeza_cuneata")) %>%
   filter(Assembly == "Both first") %>%
   select(-Assembly) %>%
   #gather(Treatment_cat, Treatment_type, "Nutrients":"Invasion") %>%
@@ -271,10 +276,10 @@ tree <- read.tree("phylo.tree.txt")
 # need sp names to have underscores instead of space because phylo package does this
 head(tree)
 #variety is messing up the tree with an error. change the species name. do the same above to match,
-tree$tip.label[tree$tip.label == "Lespedeza_juncea"] = "Lespedeza_juncea_var_sericea"
+#tree$tip.label[tree$tip.label == "Lespedeza_juncea"] = "Lespedeza_juncea_var_sericea"
 
 PD_treat_out <- iNEXT3D(data = phylo.matrix.list, diversity = 'PD', q = c(0, 2), datatype = 'incidence_raw', #base = 'size',
-                  size = c(1:200),
+                  size = c(1:120),
                   # OR  # endpoint = 20, knots = 1,
                   nboot = 50,  PDtree = tree, PDtype = "meanPD") 
 
@@ -338,7 +343,7 @@ prairie.PD.fig0 <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Assem
   #                                 "#fde725", "#440154") ) +  
   labs(title='Phylogenetic Diversity', #subtitle = 'q = 0'
        )+
-  #xlim(0,20)+ 
+  xlim(0,120)+  
   theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
 
@@ -353,7 +358,7 @@ prairie.PD.fig2 <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Assem
   #                                 "#fde725", "#440154") ) +  
   labs(title='', #subtitle = 'q = 2'
        )+
-  #xlim(0,20)+ 
+  xlim(0,120)+ 
   theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none",
                             axis.title.y = element_blank(), plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
@@ -448,9 +453,9 @@ distM <- cluster::daisy(x = traits, metric = "gower") %>% as.matrix()
 
 FD_treat_out <- iNEXT3D(data = trait.matrix.list, diversity = 'FD', q = c(0, 2), datatype = 'incidence_raw', #base = 'size',
                   #size = c(1:188), 
-                  endpoint = 200, #knots = 1,
+                  endpoint = 120, #knots = 1,
                   nboot = 50,  FDdistM = distM, FDtype = 'tau_values', 
-                  FDtau = NULL)
+                  FDtau = NULL )
 
 FD_treat_out
 setwd("~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/")
@@ -516,7 +521,7 @@ prairie.FD.fig0 <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Assem
   #                                 "#fde725", "#440154") ) +  
   labs(title='Functional Diversity', #subtitle = 'q = 0'
        )+
-  #xlim(0,20)+ 
+  xlim(0,120)+ 
   theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
 
@@ -531,7 +536,7 @@ prairie.FD.fig2 <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Assem
   #                                 "#fde725", "#440154") ) +  
   labs(title='', #subtitle = 'q = 2'
        )+
-  #xlim(0,20)+ 
+  xlim(0,120)+ 
   theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none",
                             axis.title.y = element_blank(), plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
