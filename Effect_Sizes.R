@@ -53,6 +53,14 @@ Div  <- TD %>% mutate(nt = as.factor(nt),  D = "TD") %>%
 
 View(Div)
 
+# report results
+Div %>% filter( D == "PD") %>% filter( Order.q == "q = 0") %>% filter(nt == 1)
+Div %>% filter( D == "PD") %>% filter( Order.q == "q = 0") %>% filter(nt == 80)
+#Div %>% filter( D == "TD") %>% filter( Order.q == "q = 2") %>% filter(nt == 1) # same as q=0
+Div %>% filter( D == "PD") %>% filter( Order.q == "q = 2") %>% filter(nt == 80)
+
+
+
 # reorder Div's
 Div$D <- factor(Div$D  , levels=c("TD","PD", "FD"))
 
