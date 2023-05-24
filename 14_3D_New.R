@@ -156,6 +156,8 @@ prairie.hill.TD <- prairie.TD.df %>% left_join(prairie_info) %>%
 head(prairie.hill.TD)
 View(prairie.hill.TD)
 
+View(prairie.hill.TD %>% filter(Method == "Observed"))
+
 write.csv(prairie.hill.TD, "~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/prairie.hill.treats.sep.TD.csv", row.names=FALSE)
 
 setwd("~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/")
@@ -584,7 +586,7 @@ trt.leg <- ggplot() +
 
 trt.legend <- g_legend(trt.leg)
 
-
+# 11X11
  prairie.div <- (prairie.TD.fig  / prairie.PD.fig / ( prairie.FD.fig + theme(legend.position="none") ) / (line.legend) / (trt.legend)   + plot_layout(heights = c(10,10,10,2,2))) 
 
  prairie.div

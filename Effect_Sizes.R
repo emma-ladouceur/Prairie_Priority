@@ -277,39 +277,4 @@ es_legend <- g_legend(q_0_smol_log)
 
 
 
-# 
-# alph_gam_TD  <- TD %>% 
-#   filter(nt == c(1, 80)) %>%
-#   separate(Treatment, c("Nutrients", "Invasion"), remove = F) %>% 
-#   mutate( q_std_dev = ( (qD.UCL- qD.LCL) / 3.92) * sqrt(50) ) %>%
-#   arrange(Order.q, nt, Nutrients, desc(Invasion)) %>%
-#   mutate(group_size = 50) %>%
-#   select(Order.q, nt, Nutrients, Invasion, group_size, qD, q_std_dev) %>%
-#   #group_by(Order.q, Nutrients) %>%
-#   gather(variable, value, -(Order.q:Invasion)) %>%
-#   unite(temp, Invasion, variable) %>%
-#   spread(temp, value) 
-# 
-# 
-# head(alph_gam_TD)
-# 
-# lrr_TD <- escalc(measure = "ROM", m1i=Late_qD, m2i=Early_qD, sd1i= Late_q_std_dev, sd2i= Early_q_std_dev,
-#                  n1i=Late_group_size , n2i=Early_group_size,
-#        data=alph_gam_TD, slab=paste0(Order.q , ", ", nt, ", ",Nutrients), digits=4)
-# 
-# head(lrr_TD)
-# 
-# 
-# forest(lrr_TD$yi, lrr_TD$vi)
-# 
-# 
-# hd_TD <- escalc(measure = "SMD", m1i=Late_qD, m2i=Early_qD, sd1i= Late_q_std_dev, sd2i= Early_q_std_dev,
-#                  n1i=Late_group_size , n2i=Early_group_size,
-#                  data=alph_gam_TD, slab=paste0(Order.q , ", ", nt, ", ",Nutrients), digits=4)
-# 
-# head(hd_TD)
-# 
-# 
-# forest(hd_TD$yi, hd_TD$vi)
-
 
