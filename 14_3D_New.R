@@ -10,10 +10,9 @@ library(patchwork)
 library(MetBrewer)
 
 # check for updates ?
-# install.packages("remotes")
-# library(remotes)
-# install.packages("rlang")
-# remotes::install_github("KaiHsiangHu/iNEXT.3D")
+ # install.packages("remotes")
+ # library(remotes)
+ # remotes::install_github("KaiHsiangHu/iNEXT.3D")
 library(iNEXT.3D)
 # cite 
 citation("iNEXT.3D")
@@ -206,7 +205,7 @@ prairie.TD.fig0 <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Assemb
   # scale_colour_manual( values = c("#31688e","#35b779",
   #                                 #"#443983","#90d743","#21918c",
   #                                 "#fde725", "#440154") ) +  
-  labs(title='Taxonomic Diversity', subtitle = 'q = 0')+
+  labs(title='Taxonomic Diversity', subtitle = 'q = 0', tag = "a)" )+
   xlim(0,120)+ 
   theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
@@ -223,7 +222,7 @@ prairie.TD.fig2 <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Assemb
   # scale_colour_manual( values = c("#31688e","#35b779",
   #                                 #"#443983","#90d743","#21918c",
   #                                 "#fde725", "#440154") ) +  
-  labs(title='', subtitle = 'q = 2')+
+  labs(title='', subtitle = 'q = 2', tag= "b)")+
   xlim(0,120)+ 
   theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none",
                             axis.title.y = element_blank(), plot.subtitle = element_text(hjust = 0.5) ) +
@@ -344,6 +343,7 @@ prairie.PD.fig0 <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Assem
   #                                 #"#443983","#90d743","#21918c",
   #                                 "#fde725", "#440154") ) +  
   labs(title='Phylogenetic Diversity', #subtitle = 'q = 0'
+       tag= "c)"
        )+
   xlim(0,120)+  
   theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
@@ -359,6 +359,7 @@ prairie.PD.fig2 <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Assem
   #                                 #"#443983","#90d743","#21918c",
   #                                 "#fde725", "#440154") ) +  
   labs(title='', #subtitle = 'q = 2'
+       tag= "d)"
        )+
   xlim(0,120)+ 
   theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none",
@@ -454,7 +455,7 @@ distM <- cluster::daisy(x = traits, metric = "gower") %>% as.matrix()
 
 
 FD_treat_out <- iNEXT3D(data = trait.matrix.list, diversity = 'FD', q = c(0, 2), datatype = 'incidence_raw', #base = 'size',
-                  #size = c(1:188), 
+                  size = c(1:120), 
                   endpoint = 120, #knots = 1,
                   nboot = 50,  FDdistM = distM, FDtype = 'tau_values', 
                   FDtau = NULL )
@@ -522,6 +523,7 @@ prairie.FD.fig0 <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Assem
   #                                 #"#443983","#90d743","#21918c",
   #                                 "#fde725", "#440154") ) +  
   labs(title='Functional Diversity', #subtitle = 'q = 0'
+       tag= "e)"
        )+
   xlim(0,120)+ 
   theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
@@ -537,6 +539,7 @@ prairie.FD.fig2 <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Assem
   #                                 #"#443983","#90d743","#21918c",
   #                                 "#fde725", "#440154") ) +  
   labs(title='', #subtitle = 'q = 2'
+       tag= "f)"
        )+
   xlim(0,120)+ 
   theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none",

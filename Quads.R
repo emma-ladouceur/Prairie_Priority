@@ -33,7 +33,7 @@ FD <- FD %>% mutate( qD = qFD, qD.LCL = qFD.LCL, qD.UCL = qFD.UCL ) %>%
 
 Div  <- TD %>% mutate(nt = as.factor(nt),  D = "TD") %>%
   bind_rows(FD, PD) %>%  
-  filter(nt == c(1, 80)) %>%  
+  filter(nt %in% c(2, 80)) %>%  
   select(c( Treatment, nt,  D, Order.q, qD , qD.LCL, qD.UCL))
   
   
@@ -96,12 +96,12 @@ Div.s_Fig <- ggplot()+
   facet_wrap(~D, scales="free") +
   # overall effects
   geom_point(data = Div.s,
-             aes(x = `1_qD`, y = `80_qD`,shape= Order.q , group=Order.q , colour = Treatment,
+             aes(x = `2_qD`, y = `80_qD`,shape= Order.q , group=Order.q , colour = Treatment,
              ),   size = 3) +
   geom_errorbar(data = Div.s,
-                aes(x = `1_qD`, ymin = `80_qD.LCL`, ymax = `80_qD.UCL`,  group=Order.q ,colour = Treatment )) +
+                aes(x = `2_qD`, ymin = `80_qD.LCL`, ymax = `80_qD.UCL`,  group=Order.q ,colour = Treatment )) +
   geom_errorbarh(data = Div.s,
-                 aes(y =`80_qD`, xmin = `1_qD.LCL`, xmax =  `1_qD.UCL`,   group=Order.q , colour = Treatment )) +
+                 aes(y =`80_qD`, xmin = `2_qD.LCL`, xmax =  `2_qD.UCL`,   group=Order.q , colour = Treatment )) +
   # xlim(40,80) +
   # ylim(20,50) +
   # scale_x_continuous(breaks=c(0, 5, 10, 15, 20, 25)) +
@@ -123,12 +123,12 @@ Div.legend <- ggplot()+
   facet_wrap(~D, scales="free") +
   # overall effects
   geom_point(data = Div.s,
-             aes(x = `1_qD`, y = `80_qD`,group=Order.q , colour = Treatment,
+             aes(x = `2_qD`, y = `80_qD`,group=Order.q , colour = Treatment,
              ),   size = 3) +
   geom_errorbar(data = Div.s,
-                aes(x = `1_qD`, ymin = `80_qD.LCL`, ymax = `80_qD.UCL`,  group=Order.q ,colour = Treatment )) +
+                aes(x = `2_qD`, ymin = `80_qD.LCL`, ymax = `80_qD.UCL`,  group=Order.q ,colour = Treatment )) +
   geom_errorbarh(data = Div.s,
-                 aes(y =`80_qD`, xmin = `1_qD.LCL`, xmax =  `1_qD.UCL`,   group=Order.q , colour = Treatment )) +
+                 aes(y =`80_qD`, xmin = `2_qD.LCL`, xmax =  `2_qD.UCL`,   group=Order.q , colour = Treatment )) +
   scale_color_manual(values=met.brewer("Hokusai3", 4), 
                      labels=c("Control early invasion", "Nutrients early invasion", 
                               "Control late invasion", "Nutrients late invasion" ) )+
@@ -168,7 +168,7 @@ head(Div.d)
 
 
 nt_names <- c(
-  `1` = 'alpha-scale', 
+  `2` = 'alpha-scale', 
   `80` = 'gamma-scale' 
 )
 
