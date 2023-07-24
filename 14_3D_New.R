@@ -87,7 +87,9 @@ View(prairie.prep)
 head(prairie.prep)
 nrow(prairie.prep)
 
-prairie.prep %>% select(subplot) %>% distinct()
+prairie.prep %>% select(block, plot) %>% distinct()
+
+prairie.prep %>% select(block, plot, subplot) %>% distinct()
 
 levels(prairie.prep$species)
 

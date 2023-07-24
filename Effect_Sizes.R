@@ -38,9 +38,9 @@ PD %>% filter(nt %in% c(2, 80)) %>% select(-c(SC, SC.LCL, SC.UCL)) %>%  mutate(n
 
 FD %>%  filter(nt %in% c(2, 80)) %>% select(-c(SC, SC.LCL, SC.UCL)) %>%  mutate(nt = as.factor(nt))  %>% mutate(Div = D)
 ) %>% mutate(n_samples = nt) %>% select(-c(Assemblage, Reftime, Type,Tau, nt, Method)) %>% 
-  mutate(qD_Lower_CI = qD.LCL, qD_Upper_CI = qD.UCL, ) %>%
+  mutate(qD_Lower_CI = round(qD.LCL, 2), qD_Upper_CI = round(qD.UCL, 2), qD = round(qD, 2) ) %>%
   select(Div, Treatment, n_samples, Order.q, qD, qD_Lower_CI, qD_Upper_CI) %>% 
-  arrange(Div, n_samples, Order.q, qD)
+  arrange(rev(Div), n_samples, Order.q, qD)
 
 View(Table_S1)
 
@@ -74,9 +74,10 @@ head(Table_S1)
  Table_S2 <- Div %>% 
   mutate(n_samples = nt,
          Div = D) %>% select(-c( nt, D)) %>% 
-   mutate(Esq_Lower_CI = ESqd.LCL, Esqd_Upper_CI = ESqd.UCL, Esqd_Lower_CI_log =  ESqd.LCL_log, Esqd_Upper_CI_log= ESqd.UCL_log) %>%
+   mutate(Esq_Lower_CI = round(ESqd.LCL, 2), Esqd_Upper_CI = round(ESqd.UCL, 2) , Esqd_Lower_CI_log =  round(ESqd.LCL_log, 2), Esqd_Upper_CI_log= round(ESqd.UCL_log, 2),
+          ESqd = round(ESqd,2), ESqd_log = round(ESqd_log, 2) ) %>%
    select(Div, Nutrients, n_samples, Order.q, ESqd , Esq_Lower_CI ,  Esqd_Upper_CI,   ESqd_log, Esqd_Lower_CI_log, Esqd_Upper_CI_log) %>%
-   arrange(Div, n_samples, Order.q, ESqd)
+   arrange(rev(Div), n_samples, Order.q, ESqd) 
    
 View(Table_S2)
 
@@ -99,6 +100,7 @@ Div$D <- factor(Div$D  , levels=c("TD","PD", "FD"))
 Div
 
 q_0_smol <- ggplot() +  
+  geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = Div  %>% filter(Order.q ==  "q = 0" ) %>% filter(nt == 2 ) ,
              aes(x = D, y = ESqd, colour = Nutrients, group = Nutrients), size = 2,
              position = position_dodge(width = .60) ) +
@@ -122,6 +124,7 @@ q_0_smol <- ggplot() +
 q_0_smol
 
 q_0_lorg <- ggplot() +  
+  geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = Div  %>% filter(Order.q ==  "q = 0" ) %>% filter(nt == 80 ) ,
              aes(x = D, y = ESqd, colour = Nutrients, group = Nutrients), size = 2,
              position = position_dodge(width = .60) ) +
@@ -145,6 +148,7 @@ q_0_lorg <- ggplot() +
 q_0_lorg
 
 q_2_smol <- ggplot() +  
+  geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = Div  %>% filter(Order.q ==  "q = 2" ) %>% filter(nt == 2 ) ,
              aes(x = D, y = ESqd, colour = Nutrients, group = Nutrients), size = 2,
              position = position_dodge(width = .60) ) +
@@ -167,6 +171,7 @@ q_2_smol <- ggplot() +
 q_2_smol
 
 q_2_lorg <- ggplot() +  
+  geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = Div  %>% filter(Order.q ==  "q = 2" ) %>% filter(nt == 80 ) ,
              aes(x = D, y = ESqd, colour = Nutrients, group = Nutrients), size = 2,
              position = position_dodge(width = .60) ) +
@@ -204,6 +209,7 @@ es_legend <- g_legend(q_0_smol)
 # Log ratio
 
 q_0_smol_log <- ggplot() +  
+  geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = Div  %>% filter(Order.q ==  "q = 0" ) %>% filter(nt == 2 ) ,
              aes(x = D, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
              position = position_dodge(width = .60) ) +
@@ -227,6 +233,7 @@ q_0_smol_log <- ggplot() +
 q_0_smol_log
 
 q_0_lorg_log <- ggplot() +  
+  geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = Div  %>% filter(Order.q ==  "q = 0" ) %>% filter(nt == 80 ) ,
              aes(x = D, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
              position = position_dodge(width = .60) ) +
@@ -249,6 +256,7 @@ q_0_lorg_log <- ggplot() +
 q_0_lorg_log
 
 q_2_smol_log <- ggplot() +  
+  geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = Div  %>% filter(Order.q ==  "q = 2" ) %>% filter(nt == 2 ) ,
              aes(x = D, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
              position = position_dodge(width = .60) ) +
@@ -271,6 +279,7 @@ q_2_smol_log <- ggplot() +
 q_2_smol_log
 
 q_2_lorg_log <- ggplot() +  
+  geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = Div  %>% filter(Order.q ==  "q = 2" ) %>% filter(nt == 80 ) ,
              aes(x = D, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
              position = position_dodge(width = .60) ) +
