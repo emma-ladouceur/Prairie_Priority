@@ -62,7 +62,7 @@ Div.q_Fig <- ggplot()+
   # ylim(20,50) +
   # scale_x_continuous(breaks=c(0, 5, 10, 15, 20, 25)) +
   # scale_y_continuous(breaks=c(0, 10, 20, 30, 40, 50, 60)) +
-  scale_color_manual(values=met.brewer("Hokusai3", 4, ), guide = "none" )+
+  scale_color_manual(values=met.brewer("Tam", 4, ), guide = "none" )+
   scale_shape_discrete(labels=c( (expression(paste(italic(alpha), "-diversity (1 sample)", sep = ' '))) ,
                                  (expression(paste(italic(gamma), "-diversity (80 samples)", sep = ' ')))  ),name="Spatial scale")+
   labs(title= "") +
@@ -106,7 +106,7 @@ Div.s_Fig <- ggplot()+
   # ylim(20,50) +
   # scale_x_continuous(breaks=c(0, 5, 10, 15, 20, 25)) +
   # scale_y_continuous(breaks=c(0, 10, 20, 30, 40, 50, 60)) +
-  scale_color_manual(values=met.brewer("Hokusai3", 4), guide = "none" )+
+  scale_color_manual(values=met.brewer("Tam", 4), guide = "none" )+
   labs(title= "")+
   ylab( (expression(paste(italic(gamma), "-diversity", sep = ' '))) ) +
   xlab( (expression(paste(italic(alpha), "-diversity", sep = ' '))) ) +
@@ -129,7 +129,7 @@ Div.legend <- ggplot()+
                 aes(x = `2_qD`, ymin = `80_qD.LCL`, ymax = `80_qD.UCL`,  group=Order.q ,colour = Treatment )) +
   geom_errorbarh(data = Div.s,
                  aes(y =`80_qD`, xmin = `2_qD.LCL`, xmax =  `2_qD.UCL`,   group=Order.q , colour = Treatment )) +
-  scale_color_manual(values=met.brewer("Hokusai3", 4), 
+  scale_color_manual(values=met.brewer("Tam", 4), 
                      labels=c("Control early invasion", "Nutrients early invasion", 
                               "Control late invasion", "Nutrients late invasion" ) )+
   labs(title= "")+
@@ -189,7 +189,7 @@ Div.tpd_Fig <- ggplot()+
   # ylim(20,50) +
   # scale_x_continuous(breaks=c(0, 5, 10, 15, 20, 25)) +
   # scale_y_continuous(breaks=c(0, 10, 20, 30, 40, 50, 60)) +
-  scale_color_manual(values=met.brewer("Hokusai3", 4) )+
+  scale_color_manual(values=met.brewer("Tam", 4) )+
   labs(title= "")+
   ylab("Average PD") +
   xlab("Average TD") +
@@ -217,7 +217,7 @@ Div.tfd_Fig <- ggplot()+
   # ylim(20,50) +
   # scale_x_continuous(breaks=c(0, 5, 10, 15, 20, 25)) +
   # scale_y_continuous(breaks=c(0, 10, 20, 30, 40, 50, 60)) +
-  scale_color_manual(values=met.brewer("Hokusai3", 4), guide = "none" )+
+  scale_color_manual(values=met.brewer("Tam", 4), guide = "none" )+
   labs(title= "")+
   ylab("Average FD") +
   xlab("Average TD") +
@@ -246,7 +246,7 @@ Div.pfd_Fig <- ggplot()+
   # ylim(20,50) +
   # scale_x_continuous(breaks=c(0, 5, 10, 15, 20, 25)) +
   # scale_y_continuous(breaks=c(0, 10, 20, 30, 40, 50, 60)) +
-  scale_color_manual(values=met.brewer("Hokusai3", 4), guide = "none" )+
+  scale_color_manual(values=met.brewer("Tam", 4), guide = "none" )+
   labs(title= "")+
   ylab("Average FD") +
   xlab("Average PD") +
@@ -269,7 +269,7 @@ Div_D_legend <- ggplot()+
                 aes(x = `PD_qD`, ymin = `FD_qD.LCL`, ymax = `FD_qD.UCL`,  colour = Treatment, group=Order.q )) +
   geom_errorbarh(data = Div.d,
                  aes(y =`FD_qD`, xmin = `PD_qD.LCL`, xmax =  `PD_qD.UCL`,  colour = Treatment, group=Order.q  )) +
-  scale_color_manual(values=met.brewer("Hokusai3", 4), labels=c("Control early invasion", "Nutrients early invasion", 
+  scale_color_manual(values=met.brewer("Tam", 4), labels=c("Control early invasion", "Nutrients early invasion", 
                                                                 "Control late invasion", "Nutrients late invasion") )+
   labs(title= "")+
   ylab("Average FD") +

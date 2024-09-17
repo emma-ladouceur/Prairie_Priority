@@ -1,8 +1,8 @@
 
 
 
-pres <- read.csv("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Prairie_Plot_Presence_Absence_100621.csv",header=T,fill=TRUE,sep=",",na.strings=c(""," ","NA","NA ","na","NULL"))
-sampled_dat <- read.csv("~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/sampled_dat.csv",header=T,fill=TRUE,sep=",",na.strings=c(""," ","NA","NA ","na","NULL"))
+pres <- read.csv("~/Dropbox/_Projects/Prairie_Priority/Prairie_Plot_Presence_Absence_100621.csv",header=T,fill=TRUE,sep=",",na.strings=c(""," ","NA","NA ","na","NULL"))
+sampled_dat <- read.csv("~/Dropbox/_Projects/Prairie_Priority/Data/sampled_dat.csv",header=T,fill=TRUE,sep=",",na.strings=c(""," ","NA","NA ","na","NULL"))
 
 
 
@@ -28,7 +28,7 @@ head(sampled_dat)
 nrow(sampled_dat)
 
 sampled_pres <- sampled_dat %>%
-  select(subplot,plot, block, nutrients, invasion, Grass.forbs, species) %>% 
+  select(subplot,plot, block, nutrients, invasion, Grass.forbs, species, cover) %>% 
   mutate(pres = 1)
 
 nrow(sampled_pres)

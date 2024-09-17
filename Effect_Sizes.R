@@ -109,7 +109,7 @@ q_0_smol <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_manual(values=met.brewer("Hokusai3", 4))+
+  scale_color_manual(values=met.brewer("Tam", 4), )+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -133,7 +133,7 @@ q_0_lorg <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_manual(values=met.brewer("Hokusai3", 4))+
+  scale_color_manual(values=met.brewer("Tam", 4))+
   theme_bw(base_size=18) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -156,7 +156,7 @@ q_2_smol <- ggplot() +
                 aes(x = D, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Nutrients, group = Nutrients),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
    labs(tag= "c)") +
-  scale_color_manual(values=met.brewer("Hokusai3", 4))+
+  scale_color_manual(values=met.brewer("Tam", 4))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -179,7 +179,7 @@ q_2_lorg <- ggplot() +
                 aes(x = D, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Nutrients, group = Nutrients),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
    labs(tag= "d)") +
-  scale_color_manual(values=met.brewer("Hokusai3", 4))+
+  scale_color_manual(values=met.brewer("Tam", 4))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -218,7 +218,7 @@ q_0_smol_log <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_manual(values=met.brewer("Hokusai3", 4))+
+  scale_color_manual(values=met.brewer("Tam", 4))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -241,7 +241,7 @@ q_0_lorg_log <- ggplot() +
                 aes(x = D, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(tag= "b)") +
-  scale_color_manual(values=met.brewer("Hokusai3", 4))+
+  scale_color_manual(values=met.brewer("Tam", 4))+
   theme_bw(base_size=18) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                  axis.title.x = element_blank(),
                                  plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -264,7 +264,7 @@ q_2_smol_log <- ggplot() +
                 aes(x = D, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(tag= "c)") +
-  scale_color_manual(values=met.brewer("Hokusai3", 4))+
+  scale_color_manual(values=met.brewer("Tam", 4))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -288,7 +288,7 @@ q_2_lorg_log <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_manual(values=met.brewer("Hokusai3", 4))+
+  scale_color_manual(values=met.brewer("Tam", 4))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),

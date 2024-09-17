@@ -22,7 +22,7 @@ citation("iNEXT.3D")
 
 #met.brewer("Greek", 3))
 
-setwd("~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/")
+#setwd("~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/")
 setwd("~/Dropbox/_Projects/Prairie_Priority/Data")
 # cover and presence combined species data
 sp <- read.csv("pres_and_cover_plot.csv", header= TRUE)
@@ -201,15 +201,17 @@ display_all(colorblind_only = T)
 prairie.TD.fig0 <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointTD0) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.lineTD0) +
-  labs(x="Number of sampling units", y="Taxonomic Diversity",title="") +
+  labs(x="Number of sampling units", y="Taxonomic diversity",title="") +
   #scale_color_viridis(discrete = T, option="D")  +
-  scale_color_manual(values=met.brewer("Hokusai3", 4))+
+  scale_color_manual(values=met.brewer("Tam", 4),
+                    #values = c("#04a3bd",  "#931e18", "#da7901", "#247d3f", "#20235b") 
+                    )+
   # scale_colour_manual( values = c("#31688e","#35b779",
   #                                 #"#443983","#90d743","#21918c",
   #                                 "#fde725", "#440154") ) +  
-  labs(title='Taxonomic Diversity', subtitle = 'q = 0', tag = "a)" )+
+  labs(title='Taxonomic diversity', subtitle = 'q = 0', tag = "a)" )+
   xlim(0,120)+ 
-  theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
+  theme_classic(base_size=18) +    theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
 
 prairie.TD.fig0
@@ -218,15 +220,15 @@ prairie.TD.fig0
 prairie.TD.fig2 <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointTD2) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.lineTD2) +
-  labs(x="Number of sampling units", y="Taxonomic Diversity",title="") +
+  labs(x="Number of sampling units", y="Taxonomic diversity",title="") +
   #scale_color_viridis(discrete = T, option="D")  + 
-  scale_color_manual(values=met.brewer("Hokusai3", 4))+
+  scale_color_manual(values=met.brewer("Tam", 4))+
   # scale_colour_manual( values = c("#31688e","#35b779",
   #                                 #"#443983","#90d743","#21918c",
   #                                 "#fde725", "#440154") ) +  
   labs(title='', subtitle = 'q = 2', tag= "b)")+
   xlim(0,120)+ 
-  theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none",
+  theme_classic(base_size=18) +   theme(legend.direction = "horizontal", legend.position = "none",
                             axis.title.y = element_blank(), plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
 
@@ -338,25 +340,25 @@ df.linePD2$Method <- factor(df.linePD2$Method,
 prairie.PD.fig0 <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointPD0) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.linePD0) +
-  labs(x="Number of sampling units", y="Phylogenetic Diversity",title="") +
+  labs(x="Number of sampling units", y="Phylogenetic diversity",title="") +
   #scale_color_viridis(discrete = T, option="D")  + 
-  scale_color_manual(values=met.brewer("Hokusai3", 4))+
+  scale_color_manual(values=met.brewer("Tam", 4))+
   # scale_colour_manual( values = c("#31688e","#35b779",
   #                                 #"#443983","#90d743","#21918c",
   #                                 "#fde725", "#440154") ) +  
-  labs(title='Phylogenetic Diversity', #subtitle = 'q = 0'
+  labs(title='Phylogenetic diversity', #subtitle = 'q = 0'
        tag= "c)"
        )+
   xlim(0,120)+  
-  theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
+  theme_classic(base_size=18) +     theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
 
 prairie.PD.fig2 <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointPD2) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.linePD2) +
-  labs(x="Number of sampling units", y="Phylogenetic Diversity",title="") +
+  labs(x="Number of sampling units", y="Phylogenetic diversity",title="") +
   #scale_color_viridis(discrete = T, option="D")  + 
-  scale_color_manual(values=met.brewer("Hokusai3", 4))+
+  scale_color_manual(values=met.brewer("Tam", 4))+
   # scale_colour_manual( values = c("#31688e","#35b779",
   #                                 #"#443983","#90d743","#21918c",
   #                                 "#fde725", "#440154") ) +  
@@ -364,7 +366,7 @@ prairie.PD.fig2 <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Assem
        tag= "d)"
        )+
   xlim(0,120)+ 
-  theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none",
+  theme_classic(base_size=18) +     theme(legend.direction = "horizontal", legend.position = "none",
                             axis.title.y = element_blank(), plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
 
@@ -518,25 +520,25 @@ df.lineFD2$Method <- factor(df.lineFD2$Method,
 prairie.FD.fig0 <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointFD0) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.lineFD0) +
-  labs(x="Number of sampling units", y="Functional Diversity",title="") +
+  labs(x="Number of sampling units", y="Functional diversity",title="") +
   #scale_color_viridis(discrete = T, option="D")  + 
-  scale_color_manual(values=met.brewer("Hokusai3", 4))+
+  scale_color_manual(values=met.brewer("Tam", 4))+
   # scale_colour_manual( values = c("#31688e","#35b779",
   #                                 #"#443983","#90d743","#21918c",
   #                                 "#fde725", "#440154") ) +  
-  labs(title='Functional Diversity', #subtitle = 'q = 0'
+  labs(title='Functional diversity', #subtitle = 'q = 0'
        tag= "e)"
        )+
   xlim(0,120)+ 
-  theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
+  theme_classic(base_size=18) +      theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
 
 prairie.FD.fig2 <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointFD2) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.lineFD2) +
-  labs(x="Number of sampling units", y="Functional Diversity",title="") +
+  labs(x="Number of sampling units", y="Functional diversity",title="") +
   #scale_color_viridis(discrete = T, option="D")  + 
-  scale_color_manual(values=met.brewer("Hokusai3", 4))+
+  scale_color_manual(values=met.brewer("Tam", 4))+
   # scale_colour_manual( values = c("#31688e","#35b779",
   #                                 #"#443983","#90d743","#21918c",
   #                                 "#fde725", "#440154") ) +  
@@ -544,7 +546,7 @@ prairie.FD.fig2 <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Assem
        tag= "f)"
        )+
   xlim(0,120)+ 
-  theme_classic() +   theme(legend.direction = "horizontal", legend.position = "none",
+  theme_classic(base_size=18) +     theme(legend.direction = "horizontal", legend.position = "none",
                             axis.title.y = element_blank(), plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
 
@@ -577,7 +579,7 @@ trt.leg <- ggplot() +
   geom_line(data = prairie.hill.FD, aes(x = nt, y = qFD,   color = Assemblage), lwd = 1) +
   labs(x="Number of sampling units", y="Species richness",title="") +
   #scale_color_viridis(discrete = T, option="C")  +
-  scale_color_manual(values=met.brewer("Hokusai3", 4),
+  scale_color_manual(values=met.brewer("Tam", 4),
                      labels=c("Control early invasion", "Nutrients early invasion", 
                               "Control late invasion", "Nutrients late invasion"
                               ))+
@@ -591,7 +593,7 @@ trt.leg <- ggplot() +
 
 trt.legend <- g_legend(trt.leg)
 
-# 11X11
+# 11X13
  prairie.div <- (prairie.TD.fig  / prairie.PD.fig / ( prairie.FD.fig + theme(legend.position="none") ) / (line.legend) / (trt.legend)   + plot_layout(heights = c(10,10,10,2,2))) 
 
  prairie.div
