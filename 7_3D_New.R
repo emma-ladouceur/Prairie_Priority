@@ -7,17 +7,22 @@ library(reshape2)
 library(ggpubr)
 library(gg.gap)
 library(patchwork)
+library(MetBrewer)
 
 # check for updates ?
-# install.packages("remotes")
-# library(remotes)
-# install.packages("rlang")
-# remotes::install_github("KaiHsiangHu/iNEXT.3D")
+ # install.packages("remotes")
+ # library(remotes)
+ # remotes::install_github("KaiHsiangHu/iNEXT.3D")
 library(iNEXT.3D)
 # cite 
 citation("iNEXT.3D")
 
-setwd("~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/")
+
+
+
+#met.brewer("Greek", 3))
+
+#setwd("~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/")
 setwd("~/Dropbox/_Projects/Prairie_Priority/Data")
 # cover and presence combined species data
 sp <- read.csv("pres_and_cover_plot.csv", header= TRUE)
@@ -26,18 +31,25 @@ corrected_sp_list <- read.csv("species_corrected_complete.csv", row.names = 1, h
 
 # correct species  names  in cover data
 head(corrected_sp_list)
+View(corrected_sp_list)
 
 new_sp <- corrected_sp_list %>% mutate(species = old_name,
                                        corrected_sp = name) %>%
   select(-c(old_name, name, morphotype)) %>%
-  filter(!corrected_sp == "graminoid sp.")
+  filter(!corrected_sp == "graminoid sp.") %>%
+  mutate( corrected_sp = case_when(
+    corrected_sp == "Lespedeza juncea var. sericea" ~ "Lespedeza cuneata",
+    TRUE ~ corrected_sp ) ) 
 
-head(new_sp)
+View(new_sp)
 nrow(new_sp)
 head(sp)
 summary(sp)
 
-sp %>% select(subplot) %>% distinct()
+sp %>% select(block, plot, subplot, Nutrients, Invasion, Assembly ) %>% distinct() %>% #filter(!subplot == 10) %>%
+       #filter(Nutrients == "Control", Invasion == "Late", Assembly == "Grass first")
+       filter(plot == 101)
+       
 
 prairie.prep <- sp %>% 
   # filter(!subplot == 10 ) %>%
@@ -69,14 +81,25 @@ prairie.prep <- sp %>%
   unite("treat_id" , nutrients, invasion, Grass.forbs, remove= FALSE) %>%
   unite("samp_id",  plot, subplot, block, sep="_", remove = FALSE) %>%
   # remove graminoid
-  filter(!species == "graminoid") %>%
+  filter(!species == "graminoid",
+         Assembly == "Both first") %>%
+  select(-Assembly) %>%
     mutate(species = str_replace(species, "Lespedeza juncea var. sericea", "Lespedeza juncea"))
 
+View(prairie.prep)
 head(prairie.prep)
 nrow(prairie.prep)
 
-prairie.prep %>% select(subplot) %>% distinct()
+prairie.prep %>% select(treat_id) %>% distinct()
 
+prairie.prep %>% select(samp_id) %>% distinct() # 320
+
+prairie.prep %>% select(plot) %>% distinct() # 32
+
+prairie.prep %>% select(samp_id, block, plot, subplot, treat_id) %>% distinct()
+
+prairie.prep %>% select(samp_id, block, plot, subplot, treat_id) %>% distinct() %>% filter(treat_id == "1_l_b")
+  
 levels(prairie.prep$species)
 
 #prairie.info <- prairie.prep %>% select(treat_id)
@@ -84,13 +107,13 @@ levels(prairie.prep$species)
 #write.csv(prairie.prep, "~/Dropbox/_Projects/Prairie_Priority/Data/3D_prep.csv", row.names=FALSE)
 
 prairie.prep.treats <- prairie.prep %>% 
-  gather(Treatment_cat, Treatment_type, "Nutrients":"Assembly") %>%
-  unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F)
+  #gather(Treatment_cat, Treatment_type, "Nutrients":"Invasion") %>%
+  unite(Treatment, Nutrients, Invasion, sep="_", remove= F)
 
 head(prairie.prep.treats)
 
 
-prairie_info <- prairie.prep.treats %>% select(Treatment, Treatment_cat, Treatment_type) %>%
+prairie_info <- prairie.prep.treats %>% select(Treatment) %>%
   distinct() %>% mutate(Assemblage = as.character(Treatment))
 
 
@@ -112,12 +135,12 @@ View(prairie.matrix.list)
 
 # ========================================================================================================== #
 #  Taxonomic diversity
+??iNEXT3D
 
-
-TD_treat_out <- iNEXT3D(data = prairie.matrix.list, diversity = 'TD', q = c(0,1,2), datatype = 'incidence_raw', #base = 'size',
-                  size = c(1:600), 
+TD_treat_out <- iNEXT3D(data = prairie.matrix.list, diversity = 'TD', q = c(0,2), datatype = 'incidence_raw', #base = 'size',
+                  size = c(1:120), 
                   #endpoint = 160, knots =1,
-                  nboot = 0)
+                  nboot = 50)
 
 TD_treat_out
 
@@ -130,18 +153,20 @@ load(file = "TD_treat_sep_out.Rdata")
 prairie.TD.df <- TD_treat_out %>% 
   purrr::pluck("iNextEst", "size_based")
 
-View(prairie.TD.df)
+head(prairie.TD.df)
 
 head(prairie.prep)
 
 
 prairie.hill.TD <- prairie.TD.df %>% left_join(prairie_info) %>%
   mutate( Order.q  = case_when(Order.q  == "0" ~ "q = 0",
-                               Order.q == "1" ~ "q = 1",
+                               #Order.q == "1" ~ "q = 1",
                                Order.q == "2" ~ "q = 2") )
   
 head(prairie.hill.TD)
 View(prairie.hill.TD)
+
+View(prairie.hill.TD %>% filter(Method == "Observed"))
 
 write.csv(prairie.hill.TD, "~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/prairie.hill.treats.sep.TD.csv", row.names=FALSE)
 
@@ -152,14 +177,14 @@ head(prairie.hill.TD)
 
 prairie.hill.TD %>% filter(Method == "Observed")
 
-prairie.hill.TD$Treatment_cat <- factor(prairie.hill.TD$Treatment_cat, levels = c("Nutrients",  "Assembly", "Invasion"))
+prairie.hill.TD$Assemblage <- factor(prairie.hill.TD$Assemblage, levels = c("Control_Early",  "Nutrients_Early",  "Control_Late", "Nutrients_Late" ))
 
-prairie.hill.TD$Treatment_type<- as.factor(prairie.hill.TD$Treatment_type)
-levels(prairie.hill.TD$Treatment_type)
-prairie.hill.TD$Treatment_type <- factor(prairie.hill.TD$Treatment_type, 
-                                         levels = c("Control", "Nutrients", 
-                                                    "Both first", "Forbs first", "Grass first",
-                                                    "Early", "Late"))
+#prairie.hill.TD$Treatment_type<- as.factor(prairie.hill.TD$Treatment_type)
+# levels(prairie.hill.TD$Treatment_type)
+# prairie.hill.TD$Treatment_type <- factor(prairie.hill.TD$Treatment_type, 
+#                                          levels = c("Control", "Nutrients", 
+#                                                     #"Both first", "Forbs first", "Grass first",
+#                                                     "Early", "Late"))
 
 prairie.hill.TD0 <- prairie.hill.TD %>% filter(Order.q == "q = 0") 
 prairie.hill.TD2 <- prairie.hill.TD %>% filter(Order.q == "q = 2") 
@@ -176,49 +201,69 @@ df.lineTD2 <- prairie.hill.TD2[which(prairie.hill.TD2$Method!="Observed"),]
 df.lineTD2$Method <- factor(df.lineTD2$Method, 
                           c("Rarefaction", "Extrapolation"))
 
+
+MetBrewer::colorblind_palettes
+display_all()
+display_all(colorblind_only = T)
+
 # make an iNext style plot
-prairie.TD.fig <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Treatment_type)) +
-  facet_grid(~Treatment_cat)+
+prairie.TD.fig0 <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointTD0) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.lineTD0) +
+  labs(x="Number of sampling units", y="Taxonomic diversity",title="") +
+  #scale_color_viridis(discrete = T, option="D")  +
+  scale_color_manual(values=met.brewer("Tam", 4),
+                    #values = c("#04a3bd",  "#931e18", "#da7901", "#247d3f", "#20235b") 
+                    )+
+  # scale_colour_manual( values = c("#31688e","#35b779",
+  #                                 #"#443983","#90d743","#21918c",
+  #                                 "#fde725", "#440154") ) +  
+  labs(title='Taxonomic diversity', subtitle = 'q = 0', tag = "a)" )+
+  xlim(0,120)+ 
+  theme_classic(base_size=18) +    theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
+  guides(col = guide_legend(ncol = 7)) 
+
+prairie.TD.fig0
+
+
+prairie.TD.fig2 <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointTD2) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.lineTD2) +
-  labs(x="Number of sampling units", y="Taxonomic Diversity",title="") +
+  labs(x="Number of sampling units", y="Taxonomic diversity",title="") +
   #scale_color_viridis(discrete = T, option="D")  + 
-  scale_colour_manual( values = c("#31688e","#35b779", "#443983","#90d743","#21918c","#fde725", "#440154") ) +  
-  labs(title='Taxonomic Diversity', color="Treatment", x= "")+
-  #xlim(0,20)+ 
-  theme_classic() +   theme(legend.direction = "horizontal", legend.position = "bottom") +
-  guides(col = guide_legend(ncol = 7)) +
-  annotate(
-    "text", label = "q = 0",
-    x = 550, y = 120, size = 5, colour = "black"
-  ) +   annotate(
-    "text", label = "q = 2",
-    x = 550, y = 29, size = 5, colour = "black"
-  ) 
+  scale_color_manual(values=met.brewer("Tam", 4))+
+  # scale_colour_manual( values = c("#31688e","#35b779",
+  #                                 #"#443983","#90d743","#21918c",
+  #                                 "#fde725", "#440154") ) +  
+  labs(title='', subtitle = 'q = 2', tag= "b)")+
+  xlim(0,120)+ 
+  theme_classic(base_size=18) +   theme(legend.direction = "horizontal", legend.position = "none",
+                            axis.title.y = element_blank(), plot.subtitle = element_text(hjust = 0.5) ) +
+  guides(col = guide_legend(ncol = 7)) 
+
+prairie.TD.fig <- (prairie.TD.fig0 +  prairie.TD.fig2)
 
 
-prairie.TD.fig 
-
-
-
+prairie.TD.fig
 
 
 # ========================================================================================================== #
 # Phylogenetic diversity
-setwd("~/Dropbox//_Projects/Prairie_Priority/Data")
+setwd("~/Dropbox/_Projects/Prairie_Priority/Data")
 
 phylo.prep <- read.csv("phylo_prep.csv")
 
 head(phylo.prep)
 
-phylo.prep$species[phylo.prep$species == "Lespedeza_juncea"] = "Lespedeza_juncea_var_sericea"
 
 phylo.prep.treats <- phylo.prep %>% 
   #filter(!subplot == 10 ) %>%
-  gather(Treatment_cat, Treatment_type, "Nutrients":"Assembly") %>%
-  unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F) %>%
+  mutate(species = str_replace(species, "Lespedeza_juncea_var_sericea", "Lespedeza_cuneata")) %>%
+  filter(Assembly == "Both first") %>%
+  select(-Assembly) %>%
+  #gather(Treatment_cat, Treatment_type, "Nutrients":"Invasion") %>%
+ # unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F) %>%
+  unite(Treatment, Nutrients, Invasion, sep="_", remove= F) %>%
   filter(!grepl("_spp",species))
 
 head(phylo.prep.treats)
@@ -245,12 +290,12 @@ tree <- read.tree("phylo.tree.txt")
 # need sp names to have underscores instead of space because phylo package does this
 head(tree)
 #variety is messing up the tree with an error. change the species name. do the same above to match,
-tree$tip.label[tree$tip.label == "Lespedeza_juncea"] = "Lespedeza_juncea_var_sericea"
+#tree$tip.label[tree$tip.label == "Lespedeza_juncea"] = "Lespedeza_juncea_var_sericea"
 
-PD_treat_out <- iNEXT3D(data = phylo.matrix.list, diversity = 'PD', q = c(0, 1, 2), datatype = 'incidence_raw', #base = 'size',
-                  size = c(1:600),
+PD_treat_out <- iNEXT3D(data = phylo.matrix.list, diversity = 'PD', q = c(0, 2), datatype = 'incidence_raw', #base = 'size',
+                  size = c(1:120),
                   # OR  # endpoint = 20, knots = 1,
-                  nboot = 0,  PDtree = tree, PDtype = "meanPD") 
+                  nboot = 50,  PDtree = tree, PDtype = "meanPD") 
 
  PD_treat_out
 
@@ -268,7 +313,7 @@ View(prairie.PD.df)
 
 prairie.hill.PD <- prairie.PD.df %>% left_join(prairie_info)%>%
   mutate( Order.q  = case_when(Order.q  == "0" ~ "q = 0",
-                               Order.q == "1" ~ "q = 1",
+                              # Order.q == "1" ~ "q = 1",
                                Order.q == "2" ~ "q = 2") )
 
 
@@ -278,14 +323,14 @@ prairie.hill.PD <- read.csv("prairie.hill.treats.sep.PD.csv",  header= TRUE)
 
 head(prairie.hill.PD)
 
-prairie.hill.PD$Treatment_cat <- factor(prairie.hill.PD$Treatment_cat, levels = c("Nutrients", "Assembly",  "Invasion"))
+prairie.hill.PD$Assemblage <- factor(prairie.hill.PD$Assemblage, levels = c("Control_Early",  "Nutrients_Early",  "Control_Late", "Nutrients_Late" ))
 
-prairie.hill.PD$Treatment_type<- as.factor(prairie.hill.PD$Treatment_type)
-levels(prairie.hill.PD$Treatment_type)
-prairie.hill.PD$Treatment_type <- factor(prairie.hill.PD$Treatment_type, 
-                                         levels = c("Control", "Nutrients", 
-                                                    "Both first", "Forbs first", "Grass first", 
-                                                    "Early", "Late"))
+# prairie.hill.PD$Treatment_type<- as.factor(prairie.hill.PD$Treatment_type)
+# levels(prairie.hill.PD$Treatment_type)
+# prairie.hill.PD$Treatment_type <- factor(prairie.hill.PD$Treatment_type, 
+#                                          levels = c("Control", "Nutrients", 
+#                                                     "Both first", "Forbs first", "Grass first", 
+#                                                     "Early", "Late"))
 
 
 prairie.hill.PD0 <- prairie.hill.PD %>% filter(Order.q == "q = 0") 
@@ -301,29 +346,45 @@ df.linePD2 <- prairie.hill.PD2[which(prairie.hill.PD2$Method!="Observed"),]
 df.linePD2$Method <- factor(df.linePD2$Method, 
                           c("Rarefaction", "Extrapolation"))
 
-# make an iNext style plot
-prairie.PD.fig <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Treatment_type)) +
-  facet_wrap(~Treatment_cat)+
+prairie.PD.fig0 <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointPD0) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.linePD0) +
+  labs(x="Number of sampling units", y="Phylogenetic diversity",title="") +
+  #scale_color_viridis(discrete = T, option="D")  + 
+  scale_color_manual(values=met.brewer("Tam", 4))+
+  # scale_colour_manual( values = c("#31688e","#35b779",
+  #                                 #"#443983","#90d743","#21918c",
+  #                                 "#fde725", "#440154") ) +  
+  labs(title='Phylogenetic diversity', #subtitle = 'q = 0'
+       tag= "c)"
+       )+
+  xlim(0,120)+  
+  theme_classic(base_size=18) +     theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
+  guides(col = guide_legend(ncol = 7)) 
+
+prairie.PD.fig2 <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointPD2) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.linePD2) +
-  labs(x="Number of sampling units", y="Phylogenetic Diversity",title="") +
-  scale_colour_manual( values = c("#31688e","#35b779", "#443983","#90d743","#21918c","#fde725", "#440154") ) +  
-  labs(title='Phylogenetic Diversity', color = "Treatment", x = "")+
-  #xlim(0,20)+ 
-  theme_classic() +   theme(legend.direction = "horizontal",legend.position = "bottom") +
-  guides(col = guide_legend(ncol = 7)) +
-  annotate(
-    "text", label = "q = 0",
-    x = 550, y = 17, size = 6, colour = "black"
-  ) +   annotate(
-    "text", label = "q = 2",
-    x = 550, y = 8, size = 6, colour = "black"
-  )
+  labs(x="Number of sampling units", y="Phylogenetic diversity",title="") +
+  #scale_color_viridis(discrete = T, option="D")  + 
+  scale_color_manual(values=met.brewer("Tam", 4))+
+  # scale_colour_manual( values = c("#31688e","#35b779",
+  #                                 #"#443983","#90d743","#21918c",
+  #                                 "#fde725", "#440154") ) +  
+  labs(title='', #subtitle = 'q = 2'
+       tag= "d)"
+       )+
+  xlim(0,120)+ 
+  theme_classic(base_size=18) +     theme(legend.direction = "horizontal", legend.position = "none",
+                            axis.title.y = element_blank(), plot.subtitle = element_text(hjust = 0.5) ) +
+  guides(col = guide_legend(ncol = 7)) 
+
+prairie.PD.fig <- (prairie.PD.fig0 +  prairie.PD.fig2)
 
 
 prairie.PD.fig
+
+
 
 
 # ========================================================================================================== #
@@ -373,8 +434,11 @@ head(trait.prep)
 
 trait.prep.treats <- trait.prep %>% 
   #filter(!subplot == 10 ) %>%
-  gather(Treatment_cat, Treatment_type, "Nutrients":"Assembly") %>%
-  unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F)
+  # filter(Assembly == "Both first") %>%
+  # select(-Assembly) %>%
+  #gather(Treatment_cat, Treatment_type, "Nutrients":"Invasion") %>%
+  # unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F) %>%
+  unite(Treatment, Nutrients, Invasion, sep="_", remove= F) 
 
 head(trait.prep.treats)
 
@@ -403,11 +467,11 @@ distM <- cluster::daisy(x = traits, metric = "gower") %>% as.matrix()
 
 
 
-FD_treat_out <- iNEXT3D(data = trait.matrix.list, diversity = 'FD', q = c(0, 1, 2), datatype = 'incidence_raw', #base = 'size',
-                  #size = c(1:188), 
-                  endpoint = 600, #knots = 1,
-                  nboot = 0,  FDdistM = distM, FDtype = 'tau_values', 
-                  FDtau = NULL)
+FD_treat_out <- iNEXT3D(data = trait.matrix.list, diversity = 'FD', q = c(0, 2), datatype = 'incidence_raw', #base = 'size',
+                  size = c(1:120), 
+                  endpoint = 120, #knots = 1,
+                  nboot = 50,  FDdistM = distM, FDtype = 'tau_values', 
+                  FDtau = NULL )
 
 FD_treat_out
 setwd("~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/")
@@ -424,7 +488,7 @@ View(prairie.FD.df)
 
 prairie.hill.FD <- prairie.FD.df %>% left_join(prairie_info) %>%
   mutate( Order.q  = case_when(Order.q  == "0" ~ "q = 0",
-                               Order.q == "1" ~ "q = 1",
+                              # Order.q == "1" ~ "q = 1",
                                Order.q == "2" ~ "q = 2") )
 
 
@@ -438,14 +502,14 @@ head(prairie.hill.FD)
 
 is.numeric(prairie.hill.FD$Assemblage)
 
-prairie.hill.FD$Treatment_cat <- factor(prairie.hill.FD$Treatment_cat, levels = c("Nutrients",  "Assembly", "Invasion"))
+prairie.hill.FD$Assemblage <- factor(prairie.hill.FD$Assemblage, levels = c("Control_Early",  "Nutrients_Early",  "Control_Late", "Nutrients_Late" ))
 
-prairie.hill.FD$Treatment_type<- as.factor(prairie.hill.FD$Treatment_type)
-levels(prairie.hill.FD$Treatment_type)
-prairie.hill.FD$Treatment_type <- factor(prairie.hill.FD$Treatment_type, 
-                                         levels = c("Control", "Nutrients", 
-                                                    "Both first", "Forbs first", "Grass first",
-                                                    "Early", "Late"))
+# prairie.hill.FD$Treatment_type<- as.factor(prairie.hill.FD$Treatment_type)
+# levels(prairie.hill.FD$Treatment_type)
+# prairie.hill.FD$Treatment_type <- factor(prairie.hill.FD$Treatment_type, 
+#                                          levels = c("Control", "Nutrients", 
+#                                                     "Both first", "Forbs first", "Grass first",
+#                                                     "Early", "Late"))
 
 
 prairie.hill.FD0 <- prairie.hill.FD %>% filter(Order.q == "q = 0") 
@@ -461,30 +525,44 @@ df.lineFD2 <- prairie.hill.FD2[which(prairie.hill.FD2$Method!="Observed"),]
 df.lineFD2$Method <- factor(df.lineFD2$Method, 
                           c("Rarefaction", "Extrapolation"))
 
-# make an iNext style plot
-prairie.FD.fig <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Treatment_type)) +
-  facet_wrap(~Treatment_cat)+
+
+prairie.FD.fig0 <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointFD0) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.lineFD0) +
+  labs(x="Number of sampling units", y="Functional diversity",title="") +
+  #scale_color_viridis(discrete = T, option="D")  + 
+  scale_color_manual(values=met.brewer("Tam", 4))+
+  # scale_colour_manual( values = c("#31688e","#35b779",
+  #                                 #"#443983","#90d743","#21918c",
+  #                                 "#fde725", "#440154") ) +  
+  labs(title='Functional diversity', #subtitle = 'q = 0'
+       tag= "e)"
+       )+
+  xlim(0,120)+ 
+  theme_classic(base_size=18) +      theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
+  guides(col = guide_legend(ncol = 7)) 
+
+prairie.FD.fig2 <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointFD2) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.lineFD2) +
-  labs(x="Number of sampling units", y="Functional Diversity",title="") +
-  scale_colour_manual( values = c("#31688e","#35b779", "#443983","#90d743","#21918c","#fde725", "#440154") ) +  
-  labs(title='Functional Trait Diversity', color="Treatment")+
-  theme_classic() +   theme(legend.direction = "horizontal",legend.position = "bottom") +
-  guides(col = guide_legend(ncol = 15)) +
-  annotate(
-    "text", label = "q = 0",
-    x = 550, y = 22, size = 6, colour = "black"
-  ) +   annotate(
-    "text", label = "q = 2",
-    x = 550, y = 15, size = 6, colour = "black"
-  )
+  labs(x="Number of sampling units", y="Functional diversity",title="") +
+  #scale_color_viridis(discrete = T, option="D")  + 
+  scale_color_manual(values=met.brewer("Tam", 4))+
+  # scale_colour_manual( values = c("#31688e","#35b779",
+  #                                 #"#443983","#90d743","#21918c",
+  #                                 "#fde725", "#440154") ) +  
+  labs(title='', #subtitle = 'q = 2'
+       tag= "f)"
+       )+
+  xlim(0,120)+ 
+  theme_classic(base_size=18) +     theme(legend.direction = "horizontal", legend.position = "none",
+                            axis.title.y = element_blank(), plot.subtitle = element_text(hjust = 0.5) ) +
+  guides(col = guide_legend(ncol = 7)) 
+
+prairie.FD.fig <- (prairie.FD.fig0 +  prairie.FD.fig2)
 
 
 prairie.FD.fig
-
-
 
 g_legend<-function(a.gplot){
   tmp <- ggplot_gtable(ggplot_build(a.gplot))
@@ -505,18 +583,26 @@ line.leg <- ggplot() +
 
 line.legend <- g_legend(line.leg)
 
-# olf field colors
+# "Control_Early",  "Nutrients_Early",  "Control_Late", "Nutrients_Late" 
 trt.leg <- ggplot() +
   geom_line(data = prairie.hill.FD, aes(x = nt, y = qFD,   color = Assemblage), lwd = 1) +
   labs(x="Number of sampling units", y="Species richness",title="") +
-  scale_color_viridis(discrete = T, option="C")  + 
-  labs(title='Multi-scale',subtitle="Average Accumulation for Year Since Abandonment", color="Restoration Treatments")+
+  #scale_color_viridis(discrete = T, option="C")  +
+  scale_color_manual(values=met.brewer("Tam", 4),
+                     labels=c("Control early invasion", "Nutrients early invasion", 
+                              "Control late invasion", "Nutrients late invasion"
+                              ))+
+  # scale_colour_manual( values = c("#31688e","#35b779",# "#443983","#90d743","#21918c",
+  #                                 "#fde725", "#440154"),
+  #                      labels=c("Nutrients late invasion", "Control late invasion",
+  #                               "Nutrients early invasion", "Control early invasion")) +  
+  labs( color="Treatments")+
   theme_classic(base_size=18) +   theme(legend.direction = "horizontal",legend.position = "bottom") +
-  guides(col = guide_legend(ncol = 6))
+  guides(col = guide_legend(ncol = 2))
 
 trt.legend <- g_legend(trt.leg)
 
-
- prairie.div <- (prairie.TD.fig / prairie.PD.fig/ prairie.FD.fig  + plot_layout(heights = c(10,10,10))) 
+# 11X13
+ prairie.div <- (prairie.TD.fig  / prairie.PD.fig / ( prairie.FD.fig + theme(legend.position="none") ) / (line.legend) / (trt.legend)   + plot_layout(heights = c(10,10,10,2,2))) 
 
  prairie.div

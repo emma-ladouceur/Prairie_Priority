@@ -20,6 +20,8 @@ head(TD)
 head(PD)
 head(FD)
 
+TD %>% select(Assemblage) %>% distinct()
+
 PD <- PD %>% mutate( qD = qPD, qD.LCL = qPD.LCL, qD.UCL = qPD.UCL ) %>%
   select( -c( qPD,  qPD.LCL, qPD.UCL )) %>%
   mutate(nt = as.factor(nt),
