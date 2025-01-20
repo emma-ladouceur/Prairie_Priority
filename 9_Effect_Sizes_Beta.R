@@ -63,13 +63,13 @@ beta_div <- left_join(
 beta_div
 
 
-beta_q0_fig <- ggplot() +  
+beta_TD_fig <- ggplot() +  
  # geom_hline(yintercept = 0, lty = 2) +
-  facet_wrap(~Div)+
-  geom_point(data = beta_div %>% filter(Order.q == "q = 0"),
+  facet_wrap(~Order.q)+
+  geom_point(data = beta_div %>% filter(Div == "TD"),
              aes(x = Treatment, y = qDb, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Order.q == "q = 0"),
+  geom_errorbar(data = beta_div %>% filter(Div == "TD"),
                 aes(x = Treatment, ymin = qDb_Lower_CI, ymax = qDb_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
@@ -87,7 +87,7 @@ beta_q0_fig <- ggplot() +
   # ) + ylab("q = 0 \n Effect of late invasion")
 
 
-beta_q0_fig
+beta_TD_fig
 
 
 beta_q2_fig <- ggplot() +  
