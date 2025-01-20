@@ -63,7 +63,7 @@ Div.q_Fig <- ggplot()+
   # scale_x_continuous(breaks=c(0, 5, 10, 15, 20, 25)) +
   # scale_y_continuous(breaks=c(0, 10, 20, 30, 40, 50, 60)) +
   scale_color_manual(values=met.brewer("Tam", 4, ), guide = "none" )+
-  scale_shape_discrete(labels=c( (expression(paste(italic(alpha), "-diversity (1 sample)", sep = ' '))) ,
+  scale_shape_discrete(labels=c( (expression(paste(italic(alpha), "-diversity (2 samples)", sep = ' '))) ,
                                  (expression(paste(italic(gamma), "-diversity (80 samples)", sep = ' ')))  ),name="Spatial scale")+
   labs(title= "") +
   ylab("Average D q = 2") +
