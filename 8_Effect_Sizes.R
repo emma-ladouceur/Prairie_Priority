@@ -40,7 +40,7 @@ PD %>% filter(nt %in% c(2, 80)) %>% select(-c(SC, SC.LCL, SC.UCL)) %>%  mutate(n
 
 FD %>%  filter(nt %in% c(2, 80)) %>% select(-c(SC, SC.LCL, SC.UCL)) %>%  mutate(nt = as.factor(nt))  %>% mutate(Div = D)
 ) %>% mutate(n_samples = nt) %>% select(-c(Assemblage, Reftime, Type,Tau, nt, Method)) %>% 
-  mutate(qD_Lower_CI = round(qD.LCL, 2), qD_Upper_CI = round(qD.UCL, 2), qD = round(qD, 2) ) %>%
+  mutate(qD_Lower_CI = round(qD.LCL, 4), qD_Upper_CI = round(qD.UCL, 4), qD = round(qD, 4) ) %>%
   select(Div, Treatment, n_samples, Order.q, qD, qD_Lower_CI, qD_Upper_CI) %>% 
   arrange(rev(Div), n_samples, Order.q, qD)
 
@@ -76,8 +76,8 @@ head(Table_S1)
  Table_S2 <- Div %>% 
   mutate(n_samples = nt,
          Div = D) %>% select(-c( nt, D)) %>% 
-   mutate(Esq_Lower_CI = round(ESqd.LCL, 2), Esqd_Upper_CI = round(ESqd.UCL, 2) , Esqd_Lower_CI_log =  round(ESqd.LCL_log, 2), Esqd_Upper_CI_log= round(ESqd.UCL_log, 2),
-          ESqd = round(ESqd,2), ESqd_log = round(ESqd_log, 2) ) %>%
+   mutate(Esq_Lower_CI = round(ESqd.LCL, 4), Esqd_Upper_CI = round(ESqd.UCL, 4) , Esqd_Lower_CI_log =  round(ESqd.LCL_log, 4), Esqd_Upper_CI_log= round(ESqd.UCL_log, 4),
+          ESqd = round(ESqd,4), ESqd_log = round(ESqd_log, 4) ) %>%
    select(Div, Nutrients, n_samples, Order.q, ESqd , Esq_Lower_CI ,  Esqd_Upper_CI,   ESqd_log, Esqd_Lower_CI_log, Esqd_Upper_CI_log) %>%
    arrange(rev(Div), n_samples, Order.q, ESqd) 
    
@@ -100,7 +100,7 @@ Div$D <- factor(Div$D  , levels=c("TD","PD", "FD"))
 
 
 Div
-
+#Tam = list(c("#ffd353", "#ffb242", "#ef8737", "#de4f33", "#bb292c", "#9f2d55", "#62205f", "#341648"), c(3, 8, 1, 6, 2, 7, 4, 5), colorblind=TRUE),
 q_0_smol <- ggplot() +  
   geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = Div  %>% filter(Order.q ==  "q = 0" ) %>% filter(nt == 2 ) ,
@@ -111,7 +111,7 @@ q_0_smol <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_manual(values=met.brewer("Tam", 4), )+
+  scale_color_manual(values=c("#bb292c", "#62205f"))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -135,7 +135,7 @@ q_0_lorg <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_manual(values=met.brewer("Tam", 4))+
+  scale_color_manual(values=c("#bb292c", "#62205f"))+
   theme_bw(base_size=18) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -158,7 +158,7 @@ q_2_smol <- ggplot() +
                 aes(x = D, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Nutrients, group = Nutrients),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
    labs(tag= "c)") +
-  scale_color_manual(values=met.brewer("Tam", 4))+
+  scale_color_manual(values=c("#bb292c", "#62205f"))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -181,7 +181,7 @@ q_2_lorg <- ggplot() +
                 aes(x = D, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Nutrients, group = Nutrients),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
    labs(tag= "d)") +
-  scale_color_manual(values=met.brewer("Tam", 4))+
+  scale_color_manual(values=c("#bb292c", "#62205f"))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -220,7 +220,7 @@ q_0_smol_log <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_manual(values=met.brewer("Tam", 4))+
+  scale_color_manual(values=c("#bb292c", "#62205f"))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -243,7 +243,7 @@ q_0_lorg_log <- ggplot() +
                 aes(x = D, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(tag= "b)") +
-  scale_color_manual(values=met.brewer("Tam", 4))+
+  scale_color_manual(values=c("#bb292c", "#62205f"))+
   theme_bw(base_size=18) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                  axis.title.x = element_blank(),
                                  plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -266,7 +266,7 @@ q_2_smol_log <- ggplot() +
                 aes(x = D, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(tag= "c)") +
-  scale_color_manual(values=met.brewer("Tam", 4))+
+  scale_color_manual(values=c("#bb292c", "#62205f"))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -290,7 +290,7 @@ q_2_lorg_log <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_manual(values=met.brewer("Tam", 4))+
+  scale_color_manual(values=c("#bb292c", "#62205f"))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),

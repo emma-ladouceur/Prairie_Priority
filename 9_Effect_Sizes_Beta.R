@@ -54,77 +54,16 @@ beta_div <- left_join(
   Table_S1 %>% filter(n_samples == 80) %>%
     mutate(qDg = qD, qDg_Lower_CI = qD_Lower_CI, qDg_Upper_CI = qD_Upper_CI) %>%
     select(Div, Treatment, Order.q, qDg, qDg_Lower_CI, qDg_Upper_CI)
- ) %>% mutate( qDb = qDg / qDa,
-               qDb_Lower_CI = qDg_Lower_CI / qDa_Lower_CI,
-              qDb_Upper_CI = qDg_Upper_CI / qDa_Upper_CI
+ ) %>% mutate( qDb = round(qDg / qDa,3),
+                qDb_Lower_CI = round(qDg_Lower_CI / qDa_Lower_CI, 3),
+               qDb_Upper_CI = round(qDg_Upper_CI / qDa_Upper_CI,3)
                )
   
 
 beta_div
 
 
-beta_TD_fig <- ggplot() +  
- # geom_hline(yintercept = 0, lty = 2) +
-  facet_wrap(~Order.q)+
-  geom_point(data = beta_div %>% filter(Div == "TD"),
-             aes(x = Treatment, y = qDb, colour = Treatment), size = 2,
-             position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "TD"),
-                aes(x = Treatment, ymin = qDb_Lower_CI, ymax = qDb_Upper_CI, colour = Treatment),
-                size = 1, width = 0, position = position_dodge(width = .60)) +
-  # labs(x = '',
-  #      y='') +
-  scale_color_manual(values=met.brewer("Tam", 4), )+
-  theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                               axis.title.x = element_blank(),
-                               plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
-                               plot.title=element_text(size=18, hjust=0.5),
-                               strip.background = element_blank(),legend.position = "bottom") +
-  coord_cartesian() #+
-  #scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
-  # labs( tag= "a)",
-  #       title= (expression(paste(italic(alpha), "-diversity", sep = ' ')))
-  # ) + ylab("q = 0 \n Effect of late invasion")
-
-
-beta_TD_fig
-
-
-beta_q2_fig <- ggplot() +  
-  # geom_hline(yintercept = 0, lty = 2) +
-  facet_wrap(~Div)+
-  geom_point(data = beta_div %>% filter(Order.q == "q = 2"),
-             aes(x = Treatment, y = qDb, colour = Treatment), size = 2,
-             position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Order.q == "q = 2"),
-                aes(x = Treatment, ymin = qDb_Lower_CI, ymax = qDb_Upper_CI, colour = Treatment),
-                size = 1, width = 0, position = position_dodge(width = .60)) +
-  # labs(x = '',
-  #      y='') +
-  scale_color_manual(values=met.brewer("Tam", 4), )+
-  theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                               axis.title.x = element_blank(),
-                               plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
-                               plot.title=element_text(size=18, hjust=0.5),
-                               strip.background = element_blank(),legend.position = "bottom") +
-  coord_cartesian() #+
-#scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
-# labs( tag= "a)",
-#       title= (expression(paste(italic(alpha), "-diversity", sep = ' ')))
-# ) + ylab("q = 0 \n Effect of late invasion")
-
-
-beta_q2_fig
-
-
-
-beta_fig <- (beta_q0_fig / beta_q2_fig)
-beta_fig
-
-# effect size
-
-beta_div
-
+###ES
 
 ES_BDiv <- beta_div %>% 
   separate(Treatment, c("Nutrients", "Invasion"), remove = F) %>% 
@@ -145,6 +84,7 @@ ES_BDiv <- beta_div %>%
   select(-c(Invasion, q, response)) %>% distinct() 
 
 ES_BDiv
+
 
 
 Table_S3 <- ES_BDiv %>% 
