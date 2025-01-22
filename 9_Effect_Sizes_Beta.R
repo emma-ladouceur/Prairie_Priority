@@ -40,7 +40,7 @@ Table_S1 <- bind_rows(
   
   FD %>%  filter(nt %in% c(2, 80)) %>% select(-c(SC, SC.LCL, SC.UCL)) %>%  mutate(nt = as.factor(nt))  %>% mutate(Div = D)
 ) %>% mutate(n_samples = nt) %>% select(-c(Assemblage, Reftime, Type,Tau, nt, Method)) %>% 
-  mutate(qD_Lower_CI = round(qD.LCL, 2), qD_Upper_CI = round(qD.UCL, 2), qD = round(qD, 2) ) %>%
+  mutate(qD_Lower_CI = round(qD.LCL, 4), qD_Upper_CI = round(qD.UCL, 4), qD = round(qD, 4) ) %>%
   select(Div, Treatment, n_samples, Order.q, qD, qD_Lower_CI, qD_Upper_CI) %>% 
   arrange(rev(Div), n_samples, Order.q, qD)
 
@@ -54,9 +54,9 @@ beta_div <- left_join(
   Table_S1 %>% filter(n_samples == 80) %>%
     mutate(qDg = qD, qDg_Lower_CI = qD_Lower_CI, qDg_Upper_CI = qD_Upper_CI) %>%
     select(Div, Treatment, Order.q, qDg, qDg_Lower_CI, qDg_Upper_CI)
- ) %>% mutate( qDb = round(qDg / qDa,3),
-                qDb_Lower_CI = round(qDg_Lower_CI / qDa_Lower_CI, 3),
-               qDb_Upper_CI = round(qDg_Upper_CI / qDa_Upper_CI,3)
+ ) %>% mutate( qDb = round(qDg / qDa,4),
+                qDb_Lower_CI = round(qDg_Lower_CI / qDa_Lower_CI, 4),
+               qDb_Upper_CI = round(qDg_Upper_CI / qDa_Upper_CI,4)
                )
   
 
@@ -97,7 +97,7 @@ Table_S3 <- ES_BDiv %>%
 
 View(Table_S3)
 
-write.csv(Table_S3, "Tables/Table_S2.csv")
+write.csv(Table_S3, "Tables/Table_S3.csv")
 
 
 # reorder Div's
@@ -116,12 +116,12 @@ q_0_b <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_manual(values=met.brewer("Tam", 4), )+
+  scale_color_manual(values=c("#bb292c", "#62205f"))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
                                plot.title=element_text(size=18, hjust=0.5),
-                               strip.background = element_blank(),legend.position = "none") +
+                               strip.background = element_blank(),legend.position = "bottom") +
   coord_cartesian() +
   #scale_x_discrete(labels = function(x) str_wrap(x, width = 11) )+
   labs( tag= "a)",
@@ -141,7 +141,7 @@ q_2_b <- ggplot() +
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   # labs(x = '',
   #      y='') +
-  scale_color_manual(values=met.brewer("Tam", 4), )+
+  scale_color_manual(values=c("#bb292c", "#62205f"))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -155,7 +155,16 @@ q_2_b <- ggplot() +
 
 q_2_b
 
-B_ES_Fig <- (q_0_b / q_2_b)
-B_ES_Fig
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)}
+
+esb_legend <- g_legend(q_0_b)
+
+( (( (q_0_b + theme(legend.position="none") ) ) / (q_2_b) ) / esb_legend ) + plot_layout(heights = c(10, 10, 2))
+
+
 
 
