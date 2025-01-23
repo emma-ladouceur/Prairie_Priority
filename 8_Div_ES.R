@@ -3,9 +3,6 @@
 
 
 library(tidyverse)
-library(brms)
-library(viridis)
-library(viridisLite)
 library(patchwork)
 library(MetBrewer)
 library(grid)
@@ -148,11 +145,12 @@ ES_Div_Dat <- Div %>% bind_rows(ES_BDiv)
 Table_S3 <- ES_BDiv %>% 
   # mutate(n_samples = nt,
   #        Div = D) %>% select(-c( nt, D)) %>% 
-  mutate(Esq_Lower_CI = round(ESqdb.LCL, 2), ESqdb_Upper_CI = round(ESqdb.UCL, 2) , ESqdb_Lower_CI_log =  round(ESqdb.LCL_log, 2), ESqdb_Upper_CI_log= round(ESqdb.UCL_log, 2),
-         ESqdb = round(ESqdb,2), ESqdb_log = round(ESqdb_log, 2) ) %>%
-  select(Div, Nutrients,  Order.q, ESqdb , Esq_Lower_CI ,  ESqdb_Upper_CI,   ESqdb_log, ESqdb_Lower_CI_log, ESqdb_Upper_CI_log) %>%
-  arrange(rev(Div),  Order.q, ESqdb) 
+  mutate(Esqd_Lower_CI = round(ESqd.LCL, 2), ESqd_Upper_CI = round(ESqd.UCL, 2) , ESqd_Lower_CI_log =  round(ESqd.LCL_log, 2), ESqd_Upper_CI_log= round(ESqd.UCL_log, 2),
+         ESqd = round(ESqd,2), ESqd_log = round(ESqd_log, 2) ) %>%
+  select(D, Nutrients,  Order.q, ESqd , Esqd_Lower_CI ,  ESqd_Upper_CI,   ESqd_log, ESqd_Lower_CI_log, ESqd_Upper_CI_log) %>%
+  arrange(rev(D),  Order.q, ESqd) 
 
+Table_S3
 View(Table_S3)
 
 write.csv(Table_S3, "Tables/Table_S3.csv")
@@ -815,4 +813,185 @@ FD2
                   theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) +
   plot_layout(heights = c(10,10,1,1))
 
+
+# ES log
+
+
+ES_Div_Dat
+
+#TD
+ES_TD0_log <- ggplot() +  
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_point(data = ES_Div_Dat  %>% filter(D == "TD") %>% filter(Order.q ==  "q = 0" ) ,
+             aes(x = scale, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
+             position = position_dodge(width = .60) ) +
+  geom_errorbar(data = ES_Div_Dat  %>% filter(D == "TD") %>% filter(Order.q ==  "q = 0" ) ,
+                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
+                size = 1, width = 0, position = position_dodge(width = .60)) +
+  scale_color_manual(values=c("#bb292c", "#62205f"))+
+  theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                               axis.title.x = element_blank(),
+                               plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
+                               plot.title=element_text(size=18, margin = margin(b = -10)),
+                               plot.subtitle = element_text(hjust = 0.5, margin = margin(b = 1)),
+                               strip.background = element_blank(),legend.position = "none") +
+  labs( title= "a)",
+        subtitle= "q = 0"
+  ) + ylab("log[ Effect of late invasion ] ")
+
+ES_TD0_log
+
+ES_TD2_log <- ggplot() +  
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_point(data = ES_Div_Dat  %>% filter(D == "TD") %>% filter(Order.q ==  "q = 2" ) ,
+             aes(x = scale, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
+             position = position_dodge(width = .60) ) +
+  geom_errorbar(data = ES_Div_Dat  %>% filter(D == "TD") %>% filter(Order.q ==  "q = 2" ) ,
+                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
+                size = 1, width = 0, position = position_dodge(width = .60)) +
+  scale_color_manual(values=c("#bb292c", "#62205f"), name = "Effect size", labels=c("Control", "Nutrients" ))+
+  theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                               axis.title.x = element_blank(),
+                               plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
+                               plot.title=element_text(size=18, margin = margin(b = 1)),
+                               plot.subtitle = element_text(hjust = 0.5, margin = margin(b = 1)),
+                               strip.background = element_blank(),legend.position = "bottom") +
+  coord_cartesian() +
+  labs( title= "b)", subtitle = "q = 2"
+  ) + ylab("")
+
+ES_TD2_log
+
+secondary_labelTD <- ggplot() +
+  theme_void() +  # Remove all default elements
+  annotate("text", x = 1, y = 0.5, label = "Taxonomic Diversity", 
+           angle = 90,  size= 6, hjust = 0.5)
+
+
+ES_TD_log <- secondary_labelTD  + (ES_TD0_log) + (ES_TD2_log + theme(legend.position="none") )+  # Adjust the relative widths
+  # plot_annotation(title = "Taxonomic Diversity",
+  #                 theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) +
+  plot_layout(widths = c(2, 10,10))
+
+ES_TD_log
+
+#PD
+ES_PD0_log <- ggplot() +  
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_point(data = ES_Div_Dat  %>% filter(D == "PD") %>% filter(Order.q ==  "q = 0" ) ,
+             aes(x = scale, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
+             position = position_dodge(width = .60) ) +
+  geom_errorbar(data = ES_Div_Dat  %>% filter(D == "PD") %>% filter(Order.q ==  "q = 0" ) ,
+                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
+                size = 1, width = 0, position = position_dodge(width = .60)) +
+  scale_color_manual(values=c("#bb292c", "#62205f"))+
+  theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                               axis.title.x = element_blank(),
+                               plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
+                               plot.title=element_text(size=18, margin = margin(b = -10)),
+                               plot.subtitle = element_text(hjust = 0.5, margin = margin(b = 1)),
+                               strip.background = element_blank(),legend.position = "none") +
+  labs( title= "c)",
+  ) + ylab("log[ Effect of late invasion ]")
+
+ES_PD0_log
+
+ES_PD2_log <- ggplot() +  
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_point(data = ES_Div_Dat  %>% filter(D == "PD") %>% filter(Order.q ==  "q = 2" ) ,
+             aes(x = scale, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
+             position = position_dodge(width = .60) ) +
+  geom_errorbar(data = ES_Div_Dat  %>% filter(D == "PD") %>% filter(Order.q ==  "q = 2" ) ,
+                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
+                size = 1, width = 0, position = position_dodge(width = .60)) +
+  scale_color_manual(values=c("#bb292c", "#62205f"), name = "Effect size", labels=c("Control", "Nutrients" ))+
+  theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                               axis.title.x = element_blank(),
+                               plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
+                               plot.title=element_text(size=18, margin = margin(b = 1)),
+                               plot.subtitle = element_text(hjust = 0.5, margin = margin(b = 1)),
+                               strip.background = element_blank(),legend.position = "none") +
+  coord_cartesian() +
+  labs( title= "d)",
+  ) + ylab("")
+
+ES_PD2_log
+
+secondary_labelPD <- ggplot() +
+  theme_void() +  # Remove all default elements
+  annotate("text", x = 1, y = 0.5, label = "Phylogenetic Diversity", 
+           angle = 90,  size= 6, hjust = 0.5)
+
+
+ES_PD_log <- secondary_labelPD + (ES_PD0_log) + (ES_PD2_log)+  # Adjust the relative widths
+  # plot_annotation(title = "Phylogenetic Diversity",
+  #                 theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) +
+  plot_layout(widths = c(2, 10,10))
+
+ES_PD_log
+#FD
+ES_FD0_log <- ggplot() +  
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_point(data = ES_Div_Dat  %>% filter(D == "FD") %>% filter(Order.q ==  "q = 0" ) ,
+             aes(x = scale, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
+             position = position_dodge(width = .60) ) +
+  geom_errorbar(data = ES_Div_Dat  %>% filter(D == "FD") %>% filter(Order.q ==  "q = 0" ) ,
+                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
+                size = 1, width = 0, position = position_dodge(width = .60)) +
+  scale_color_manual(values=c("#bb292c", "#62205f"))+
+  theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                               axis.title.x = element_blank(),
+                               plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
+                               plot.title=element_text(size=18, margin = margin(b = -10)),
+                               plot.subtitle = element_text(hjust = 0.5, margin = margin(b = 1)),
+                               strip.background = element_blank(),legend.position = "none") +
+  labs( title= "e)",
+  ) + ylab("log[ Effect of late invasion ]")
+
+ES_FD0_log
+
+ES_FD2_log <- ggplot() +  
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_point(data = ES_Div_Dat  %>% filter(D == "FD") %>% filter(Order.q ==  "q = 2" ) ,
+             aes(x = scale, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
+             position = position_dodge(width = .60) ) +
+  geom_errorbar(data = ES_Div_Dat  %>% filter(D == "FD") %>% filter(Order.q ==  "q = 2" ) ,
+                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
+                size = 1, width = 0, position = position_dodge(width = .60)) +
+  scale_color_manual(values=c("#bb292c", "#62205f"), name = "Effect size", labels=c("Control", "Nutrients" ))+
+  theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                               axis.title.x = element_blank(),
+                               plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
+                               plot.title=element_text(size=18, margin = margin(b = 1)),
+                               plot.subtitle = element_text(hjust = 0.5, margin = margin(b = 1)),
+                               strip.background = element_blank(),legend.position = "none") +
+  coord_cartesian() +
+  labs( title= "f)",
+  ) + ylab("")
+
+ES_FD2_log
+
+secondary_labelFD <- ggplot() +
+  theme_void() +  # Remove all default elements
+  annotate("text", x = 1, y = 0.5, label = "Functional Diversity", 
+           angle = 90,  size= 6, hjust = 0.5)
+
+ES_FD_log <- secondary_labelFD + (ES_FD0_log) + (ES_FD2_log)+  # Adjust the relative widths
+  # plot_annotation(title = "Phylogenetic Diversity",
+  #                 theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) +
+  plot_layout(widths = c(2, 10,10))
+
+ES_FD_log
+
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)}
+
+ES_l <- g_legend(ES_TD2_log)
+
+
+(ES_TD_log)/(ES_PD_log)/(ES_FD_log)/(ES_l) +
+  plot_layout(heights = c(12,12,12,2))
 
