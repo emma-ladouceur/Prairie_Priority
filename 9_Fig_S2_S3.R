@@ -276,5 +276,5 @@ g_legend<-function(a.gplot){
 
 Fig_S3_l <- g_legend(Fig_S3_legend)
 
-# normal protrait
+# normal portrait
 (Fig_S3_top_row / Fig_S3_middle_row / Fig_S3_bottom_row / Fig_S3_l + plot_layout(heights = c(10,10,10,2) )  )

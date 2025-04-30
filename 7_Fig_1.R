@@ -8,14 +8,7 @@ library(ggpubr)
 library(gg.gap)
 library(patchwork)
 library(MetBrewer)
-
-# check for updates ?
- # install.packages("remotes")
- # library(remotes)
- # remotes::install_github("KaiHsiangHu/iNEXT.3D")
 library(iNEXT.3D)
-# cite 
-citation("iNEXT.3D")
 
 setwd("~/Dropbox/_Projects/Prairie_Priority/Data")
 # cover and presence combined species data
@@ -126,20 +119,20 @@ View(prairie.matrix.list)
 # ========================================================================================================== #
 #  Taxonomic diversity
 
-TD_treat_out <- iNEXT3D(data = prairie.matrix.list, diversity = 'TD', q = c(0,2), datatype = 'incidence_raw', #base = 'size',
+TD_3D <- iNEXT3D(data = prairie.matrix.list, diversity = 'TD', q = c(0,2), datatype = 'incidence_raw', #base = 'size',
                   size = c(1:120), 
                   #endpoint = 160, knots =1,
                   nboot = 50)
 
-TD_treat_out
+TD_3D
 
 setwd("~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/")
-save(TD_treat_out, file = "TD_treat_sep_out.Rdata")
+save(TD_3D, file = "TD_3D.Rdata")
 
-load(file = "TD_treat_sep_out.Rdata")
+load(file = "TD_3D.Rdata")
 
 #$iNextEst$size_based
-prairie.TD.df <- TD_treat_out %>% 
+prairie.TD.df <- TD_3D %>% 
   purrr::pluck("iNextEst", "size_based")
 
 head(prairie.TD.df)
@@ -157,10 +150,10 @@ View(prairie.hill.TD)
 
 View(prairie.hill.TD %>% filter(Method == "Observed"))
 
-write.csv(prairie.hill.TD, "~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/prairie.hill.treats.sep.TD.csv", row.names=FALSE)
+write.csv(prairie.hill.TD, "~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/prairie.hill.TD.csv", row.names=FALSE)
 
 setwd("~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/")
-prairie.hill.TD <- read.csv("prairie.hill.treats.sep.TD.csv",  header= TRUE)
+prairie.hill.TD <- read.csv("prairie.hill.TD.csv",  header= TRUE)
 
 head(prairie.hill.TD)
 
@@ -263,21 +256,21 @@ head(tree)
 #variety is messing up the tree with an error. change the species name. do the same above to match,
 #tree$tip.label[tree$tip.label == "Lespedeza_juncea"] = "Lespedeza_juncea_var_sericea"
 
-PD_treat_out <- iNEXT3D(data = phylo.matrix.list, diversity = 'PD', q = c(0, 2), datatype = 'incidence_raw', #base = 'size',
+PD_3D <- iNEXT3D(data = phylo.matrix.list, diversity = 'PD', q = c(0, 2), datatype = 'incidence_raw', #base = 'size',
                   size = c(1:120),
                   # OR  # endpoint = 20, knots = 1,
                   nboot = 50,  PDtree = tree, PDtype = "meanPD") 
 
- PD_treat_out
+ PD_3D
 
 setwd("~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/")
-save(PD_treat_out, file = "PD_treat_sep_out.Rdata")
+save(PD_3D, file = "PD_3D.Rdata")
 
 
-load(file = "PD_treat_sep_out.Rdata")
+load(file = "PD_3D.Rdata")
 
 #$PDiNextEst$size_based
-prairie.PD.df <- PD_treat_out %>% 
+prairie.PD.df <- PD_3D %>% 
   purrr::pluck("PDiNextEst", "size_based")
 
 View(prairie.PD.df)
@@ -288,9 +281,9 @@ prairie.hill.PD <- prairie.PD.df %>% left_join(prairie_info)%>%
                                Order.q == "2" ~ "q = 2") )
 
 
-write.csv(prairie.hill.PD, "~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/prairie.hill.treats.sep.PD.csv", row.names=FALSE)
+write.csv(prairie.hill.PD, "~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/prairie.hill.PD.csv", row.names=FALSE)
 
-prairie.hill.PD <- read.csv("prairie.hill.treats.sep.PD.csv",  header= TRUE)
+prairie.hill.PD <- read.csv("prairie.hill.PD.csv",  header= TRUE)
 
 head(prairie.hill.PD)
 
@@ -419,21 +412,21 @@ distM <- cluster::daisy(x = traits, metric = "gower") %>% as.matrix()
 
 
 
-FD_treat_out <- iNEXT3D(data = trait.matrix.list, diversity = 'FD', q = c(0, 2), datatype = 'incidence_raw', #base = 'size',
+FD_3D <- iNEXT3D(data = trait.matrix.list, diversity = 'FD', q = c(0, 2), datatype = 'incidence_raw', #base = 'size',
                   size = c(1:120), 
                   endpoint = 120, #knots = 1,
                   nboot = 50,  FDdistM = distM, FDtype = 'tau_values', 
                   FDtau = NULL )
 
-FD_treat_out
+FD_3D
 setwd("~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/")
-save(FD_treat_out, file = "FD_treat_sep_out.Rdata")
+save(FD_3D, file = "FD_3D.Rdata")
 
 
-load(file = "FD_treat_sep_out.Rdata")
+load(file = "FD_3D.Rdata")
 
 #$AUCiNextEst$size_based
-prairie.FD.df <- FD_treat_out %>% 
+prairie.FD.df <- FD_3D %>% 
   purrr::pluck("FDiNextEst", "size_based")
 
 View(prairie.FD.df)
@@ -444,10 +437,10 @@ prairie.hill.FD <- prairie.FD.df %>% left_join(prairie_info) %>%
                                Order.q == "2" ~ "q = 2") )
 
 
-write.csv(prairie.hill.FD, "~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/prairie.hill.treats.sep.FD.csv", row.names=FALSE)
+write.csv(prairie.hill.FD, "~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/prairie.hill.FD.csv", row.names=FALSE)
 
 
-prairie.hill.FD <- read.csv("prairie.hill.treats.sep.FD.csv",  header= TRUE)
+prairie.hill.FD <- read.csv("prairie.hill.FD.csv",  header= TRUE)
 
 
 head(prairie.hill.FD)
