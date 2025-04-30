@@ -17,12 +17,6 @@ library(iNEXT.3D)
 # cite 
 citation("iNEXT.3D")
 
-
-
-
-#met.brewer("Greek", 3))
-
-#setwd("~/Dropbox/_Projects/Prairie_Priority/Data/Treat Sep/")
 setwd("~/Dropbox/_Projects/Prairie_Priority/Data")
 # cover and presence combined species data
 sp <- read.csv("pres_and_cover_plot.csv", header= TRUE)
@@ -102,10 +96,6 @@ prairie.prep %>% select(samp_id, block, plot, subplot, treat_id) %>% distinct() 
   
 levels(prairie.prep$species)
 
-#prairie.info <- prairie.prep %>% select(treat_id)
-
-#write.csv(prairie.prep, "~/Dropbox/_Projects/Prairie_Priority/Data/3D_prep.csv", row.names=FALSE)
-
 prairie.prep.treats <- prairie.prep %>% 
   #gather(Treatment_cat, Treatment_type, "Nutrients":"Invasion") %>%
   unite(Treatment, Nutrients, Invasion, sep="_", remove= F)
@@ -135,7 +125,6 @@ View(prairie.matrix.list)
 
 # ========================================================================================================== #
 #  Taxonomic diversity
-??iNEXT3D
 
 TD_treat_out <- iNEXT3D(data = prairie.matrix.list, diversity = 'TD', q = c(0,2), datatype = 'incidence_raw', #base = 'size',
                   size = c(1:120), 
@@ -179,13 +168,6 @@ prairie.hill.TD %>% filter(Method == "Observed")
 
 prairie.hill.TD$Assemblage <- factor(prairie.hill.TD$Assemblage, levels = c("Control_Early",  "Nutrients_Early",  "Control_Late", "Nutrients_Late" ))
 
-#prairie.hill.TD$Treatment_type<- as.factor(prairie.hill.TD$Treatment_type)
-# levels(prairie.hill.TD$Treatment_type)
-# prairie.hill.TD$Treatment_type <- factor(prairie.hill.TD$Treatment_type, 
-#                                          levels = c("Control", "Nutrients", 
-#                                                     #"Both first", "Forbs first", "Grass first",
-#                                                     "Early", "Late"))
-
 prairie.hill.TD0 <- prairie.hill.TD %>% filter(Order.q == "q = 0") 
 prairie.hill.TD2 <- prairie.hill.TD %>% filter(Order.q == "q = 2") 
 
@@ -211,13 +193,8 @@ Fig_1a <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointTD0) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.lineTD0) +
   labs(x="Number of sampling units", y="Taxonomic diversity",title="") +
-  #scale_color_viridis(discrete = T, option="D")  +
   scale_color_manual(values=met.brewer("Tam", 4),
-                    #values = c("#04a3bd",  "#931e18", "#da7901", "#247d3f", "#20235b") 
                     )+
-  # scale_colour_manual( values = c("#31688e","#35b779",
-  #                                 #"#443983","#90d743","#21918c",
-  #                                 "#fde725", "#440154") ) +  
   labs(title='Taxonomic diversity', subtitle = 'q = 0', tag = "a)" )+
   xlim(0,120)+ 
   theme_classic(base_size=18) +    theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
@@ -230,11 +207,7 @@ Fig_1b <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointTD2) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.lineTD2) +
   labs(x="Number of sampling units", y="Taxonomic diversity",title="") +
-  #scale_color_viridis(discrete = T, option="D")  + 
   scale_color_manual(values=met.brewer("Tam", 4))+
-  # scale_colour_manual( values = c("#31688e","#35b779",
-  #                                 #"#443983","#90d743","#21918c",
-  #                                 "#fde725", "#440154") ) +  
   labs(title='', subtitle = 'q = 2', tag= "b)")+
   xlim(0,120)+ 
   theme_classic(base_size=18) +   theme(legend.direction = "horizontal", legend.position = "none",
@@ -261,8 +234,6 @@ phylo.prep.treats <- phylo.prep %>%
   mutate(species = str_replace(species, "Lespedeza_juncea_var_sericea", "Lespedeza_cuneata")) %>%
   filter(Assembly == "Both first") %>%
   select(-Assembly) %>%
-  #gather(Treatment_cat, Treatment_type, "Nutrients":"Invasion") %>%
- # unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F) %>%
   unite(Treatment, Nutrients, Invasion, sep="_", remove= F) %>%
   filter(!grepl("_spp",species))
 
@@ -325,13 +296,6 @@ head(prairie.hill.PD)
 
 prairie.hill.PD$Assemblage <- factor(prairie.hill.PD$Assemblage, levels = c("Control_Early",  "Nutrients_Early",  "Control_Late", "Nutrients_Late" ))
 
-# prairie.hill.PD$Treatment_type<- as.factor(prairie.hill.PD$Treatment_type)
-# levels(prairie.hill.PD$Treatment_type)
-# prairie.hill.PD$Treatment_type <- factor(prairie.hill.PD$Treatment_type, 
-#                                          levels = c("Control", "Nutrients", 
-#                                                     "Both first", "Forbs first", "Grass first", 
-#                                                     "Early", "Late"))
-
 
 prairie.hill.PD0 <- prairie.hill.PD %>% filter(Order.q == "q = 0") 
 prairie.hill.PD2 <- prairie.hill.PD %>% filter(Order.q == "q = 2") 
@@ -352,9 +316,6 @@ Fig_1c <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Assemblage)) +
   labs(x="Number of sampling units", y="Phylogenetic diversity",title="") +
   #scale_color_viridis(discrete = T, option="D")  + 
   scale_color_manual(values=met.brewer("Tam", 4))+
-  # scale_colour_manual( values = c("#31688e","#35b779",
-  #                                 #"#443983","#90d743","#21918c",
-  #                                 "#fde725", "#440154") ) +  
   labs(title='Phylogenetic diversity', #subtitle = 'q = 0'
        tag= "c)"
        )+
@@ -366,11 +327,7 @@ Fig_1d <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointPD2) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.linePD2) +
   labs(x="Number of sampling units", y="Phylogenetic diversity",title="") +
-  #scale_color_viridis(discrete = T, option="D")  + 
   scale_color_manual(values=met.brewer("Tam", 4))+
-  # scale_colour_manual( values = c("#31688e","#35b779",
-  #                                 #"#443983","#90d743","#21918c",
-  #                                 "#fde725", "#440154") ) +  
   labs(title='', #subtitle = 'q = 2'
        tag= "d)"
        )+
@@ -433,11 +390,6 @@ write.csv(traits_fixed, "~/Dropbox/_Projects/Prairie_Priority/Data/imputed_trait
 head(trait.prep)
 
 trait.prep.treats <- trait.prep %>% 
-  #filter(!subplot == 10 ) %>%
-  # filter(Assembly == "Both first") %>%
-  # select(-Assembly) %>%
-  #gather(Treatment_cat, Treatment_type, "Nutrients":"Invasion") %>%
-  # unite(Treatment, Treatment_cat, Treatment_type, sep="_", remove= F) %>%
   unite(Treatment, Nutrients, Invasion, sep="_", remove= F) 
 
 head(trait.prep.treats)
@@ -504,13 +456,6 @@ is.numeric(prairie.hill.FD$Assemblage)
 
 prairie.hill.FD$Assemblage <- factor(prairie.hill.FD$Assemblage, levels = c("Control_Early",  "Nutrients_Early",  "Control_Late", "Nutrients_Late" ))
 
-# prairie.hill.FD$Treatment_type<- as.factor(prairie.hill.FD$Treatment_type)
-# levels(prairie.hill.FD$Treatment_type)
-# prairie.hill.FD$Treatment_type <- factor(prairie.hill.FD$Treatment_type, 
-#                                          levels = c("Control", "Nutrients", 
-#                                                     "Both first", "Forbs first", "Grass first",
-#                                                     "Early", "Late"))
-
 
 prairie.hill.FD0 <- prairie.hill.FD %>% filter(Order.q == "q = 0") 
 prairie.hill.FD2 <- prairie.hill.FD %>% filter(Order.q == "q = 2") 
@@ -530,11 +475,7 @@ Fig_1e <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointFD0) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.lineFD0) +
   labs(x="Number of sampling units", y="Functional diversity",title="") +
-  #scale_color_viridis(discrete = T, option="D")  + 
   scale_color_manual(values=met.brewer("Tam", 4))+
-  # scale_colour_manual( values = c("#31688e","#35b779",
-  #                                 #"#443983","#90d743","#21918c",
-  #                                 "#fde725", "#440154") ) +  
   labs(title='Functional diversity', #subtitle = 'q = 0'
        tag= "e)"
        )+
@@ -546,11 +487,7 @@ Fig_1f <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointFD2) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.lineFD2) +
   labs(x="Number of sampling units", y="Functional diversity",title="") +
-  #scale_color_viridis(discrete = T, option="D")  + 
   scale_color_manual(values=met.brewer("Tam", 4))+
-  # scale_colour_manual( values = c("#31688e","#35b779",
-  #                                 #"#443983","#90d743","#21918c",
-  #                                 "#fde725", "#440154") ) +  
   labs(title='', #subtitle = 'q = 2'
        tag= "f)"
        )+
@@ -592,10 +529,6 @@ trt.leg <- ggplot() +
                      labels=c("Control early invasion", "Nutrients early invasion", 
                               "Control late invasion", "Nutrients late invasion"
                               ))+
-  # scale_colour_manual( values = c("#31688e","#35b779",# "#443983","#90d743","#21918c",
-  #                                 "#fde725", "#440154"),
-  #                      labels=c("Nutrients late invasion", "Control late invasion",
-  #                               "Nutrients early invasion", "Control early invasion")) +  
   labs( color="Treatments")+
   theme_classic(base_size=18) +   theme(legend.direction = "horizontal",legend.position = "bottom") +
   guides(col = guide_legend(ncol = 2))

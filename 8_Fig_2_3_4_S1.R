@@ -110,7 +110,7 @@ Div_Dat <- left_join(
 
 
 head(Div_Dat)
-Div_Dat$Treatment <- factor(Div_Dat$Treatment, levels = c("Control_Early",  "Treatment_Early",  "Control_Late", "Treatment_Late" ))
+Div_Dat$Treatment <- factor(Div_Dat$Treatment, levels = c("Control_Early",  "Nutrients_Early",  "Control_Late", "Nutrients_Late" ))
 
 ###ES
 
@@ -275,7 +275,7 @@ secondary_label <- ggplot() +
   annotate("text", x = 1, y = 0.5, label = "q = 0", 
            angle = 0, size = 6, hjust = 0.5)
 
-Fig_2ad <- ( secondary_label + (Fig_2a + theme(legend.position="none")) + Fig_2b + Fig_2bc + Fig_2d ) + 
+Fig_2ad <- ( secondary_label + (Fig_2a + theme(legend.position="none")) + Fig_2b + Fig_2c + Fig_2d ) + 
   plot_layout(widths = c(2.2, 10, 10, 10, 10))+  # Adjust the relative widths
   plot_annotation(title = "Taxonomic Diversity", 
                   theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) 
@@ -379,11 +379,11 @@ Fig_2eh <- (secondary_label + Fig_2e + Fig_2f + Fig_2g + (Fig_2h + theme(legend.
 Fig_2eh
 
 
-(Fig_2ad)/(Fig_2eh)/(Fig2_l_div)/(Fig2_l_es)+  # Adjust the relative widths
+Fig_2 <- (Fig_2ad)/(Fig_2eh)/(Fig2_l_div)/(Fig2_l_es)+  # Adjust the relative widths
   plot_annotation(title = "Taxonomic Diversity",
                   theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) +
   plot_layout(heights = c(10,10,1,1))
-
+Fig_2
 
 # PD
 
@@ -596,13 +596,13 @@ Fig_3eh <- (secondary_label + Fig_3e + Fig_3f + Fig_3g + (Fig_3h + theme(legend.
 Fig_3eh
 
 
-(Fig_3ad)/(Fig_3eh)/(Fig3_l_div)/(Fig3_l_es)+  # Adjust the relative widths
+Fig_3 <- (Fig_3ad)/(Fig_3eh)/(Fig3_l_div)/(Fig3_l_es)+  # Adjust the relative widths
   plot_annotation(title = "Phylogenetic Diversity",
                   theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) +
   plot_layout(heights = c(10,10,1,1))
 
 
-
+Fig_3
 # FD
 
 Fig_4a <- ggplot() +  
@@ -712,7 +712,7 @@ secondary_label <- ggplot() +
 
 Fig_4ad <- ( secondary_label + (Fig_4a + theme(legend.position="none")) + Fig_4b + Fig_4c + Fig_4d ) + 
   plot_layout(widths = c(2.2, 10, 10, 10, 10))+  # Adjust the relative widths
-  plot_annotation(title = "Taxonomic Diversity",
+  plot_annotation(title = "Functional Diversity",
                   theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) 
 Fig_4ad
 
@@ -814,12 +814,12 @@ Fig_4eh <- (secondary_label + Fig_4e + Fig_4f + Fig_4g + (Fig_4h + theme(legend.
 Fig_4eh
 
 
-(Fig_4ad)/(Fig_4eh)/(Fig4_l_div)/(Fig4_l_es)+  # Adjust the relative widths
+Fig_4 <- (Fig_4ad)/(Fig_4eh)/(Fig4_l_div)/(Fig4_l_es)+  # Adjust the relative widths
   plot_annotation(title = "Functional Diversity",
                   theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) +
   plot_layout(heights = c(10,10,1,1))
 
-
+Fig_4
 # ES log
 head(ES_Div_Dat)
 

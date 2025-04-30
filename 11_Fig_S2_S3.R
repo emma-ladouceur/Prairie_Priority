@@ -47,7 +47,7 @@ Div.q$D <- factor(Div.q$D  , levels=c("TD","PD", "FD"))
 Div$Treatment <- factor(Div$Treatment, levels = c("Control_Early",  "Nutrients_Early",  "Control_Late", "Nutrients_Late" ))
 
 
-Div.q_Fig <- ggplot()+
+Fig_S2_top_row <- ggplot()+
   geom_vline(xintercept = 0,linetype="longdash") + geom_hline(yintercept = 0,linetype="longdash") +
   facet_wrap(~D, scales="free") +
   # overall effects
@@ -73,7 +73,7 @@ Div.q_Fig <- ggplot()+
         strip.background = element_rect(colour="black", fill="white"),legend.position="bottom")# +
 #guides(shape=guide_legend(title="Spatial scale"))
 
-Div.q_Fig
+Fig_S2_top_row
 
 
 
@@ -91,7 +91,7 @@ head(Div.s)
 Div.s$D <- factor(Div.s$D  , levels=c("TD","PD", "FD"))
 
 
-Div.s_Fig <- ggplot()+
+Fig_S2_bottom_row <- ggplot()+
   geom_vline(xintercept = 0,linetype="longdash") + geom_hline(yintercept = 0,linetype="longdash") +
   facet_wrap(~D, scales="free") +
   # overall effects
@@ -115,10 +115,10 @@ Div.s_Fig <- ggplot()+
         strip.background = element_rect(colour="black", fill="white"), legend.position="bottom") +
 guides(shape = guide_legend(title="Order of q") )
 
-Div.s_Fig
+Fig_S2_bottom_row
 
 
-Div.legend <- ggplot()+
+Fig_S2_legend <- ggplot()+
   geom_vline(xintercept = 0,linetype="longdash") + geom_hline(yintercept = 0,linetype="longdash") +
   facet_wrap(~D, scales="free") +
   # overall effects
@@ -139,7 +139,7 @@ Div.legend <- ggplot()+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
         strip.background = element_rect(colour="black", fill="white"), legend.position="bottom") +   guides(col = guide_legend(ncol = 2))
 
-Div.legend
+Fig_S2_legend
 
 
 g_legend<-function(a.gplot){
@@ -148,12 +148,13 @@ g_legend<-function(a.gplot){
   legend <- tmp$grobs[[leg]]
   return(legend)}
 
-quads.legend <- g_legend(Div.legend)
+Fig_S2_l <- g_legend(Fig_S2_legend)
 
 # normal landscape dimensions
 
-(Div.q_Fig / Div.s_Fig/ quads.legend + plot_layout(heights = c(10,10,2) ) )
+Fig_S2 <- (Fig_S2_top_row / Fig_S2_bottom_row / Fig_S2_l + plot_layout(heights = c(10,10,2) ) )
 
+Fig_S2
 
 # Ds
 
@@ -173,7 +174,7 @@ nt_names <- c(
 )
 
 
-Div.tpd_Fig <- ggplot()+
+Fig_S3_top_row <- ggplot()+
   geom_vline(xintercept = 0,linetype="longdash") + geom_hline(yintercept = 0,linetype="longdash") +
   facet_wrap(~nt, scales="free",
              labeller = labeller(nt  = as_labeller(nt_names,  label_parsed)) )  +
@@ -185,23 +186,18 @@ Div.tpd_Fig <- ggplot()+
                 aes(x = `TD_qD`, ymin = `PD_qD.LCL`, ymax = `PD_qD.UCL`,  colour = Treatment, group=Order.q )) +
   geom_errorbarh(data = Div.d,
                  aes(y =`PD_qD`, xmin = `TD_qD.LCL`, xmax =  `TD_qD.UCL`,  colour = Treatment, group=Order.q  )) +
-  # xlim(40,80) +
-  # ylim(20,50) +
-  # scale_x_continuous(breaks=c(0, 5, 10, 15, 20, 25)) +
-  # scale_y_continuous(breaks=c(0, 10, 20, 30, 40, 50, 60)) +
   scale_color_manual(values=met.brewer("Tam", 4) )+
   labs(title= "")+
   ylab("Average PD") +
   xlab("Average TD") +
   theme_classic(base_size = 16) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-        strip.background = element_rect(colour="black", fill="white"),legend.position="none") #+
-#guides(color=guide_legend(title="Treatment", ncol = 3))
+        strip.background = element_rect(colour="black", fill="white"),legend.position="none") 
 
-Div.tpd_Fig
+Fig_S3_top_row
 
 
-Div.tfd_Fig <- ggplot()+
+Fig_S3_middle_row <- ggplot()+
   geom_vline(xintercept = 0,linetype="longdash") + geom_hline(yintercept = 0,linetype="longdash") +
   facet_wrap(~nt, scales="free",
              labeller = labeller(nt  = as_labeller(nt_names,  label_parsed)) )  +
@@ -213,24 +209,19 @@ Div.tfd_Fig <- ggplot()+
                 aes(x = `TD_qD`, ymin = `FD_qD.LCL`, ymax = `FD_qD.UCL`,  colour = Treatment, group=Order.q )) +
   geom_errorbarh(data = Div.d,
                  aes(y =`FD_qD`, xmin = `TD_qD.LCL`, xmax =  `TD_qD.UCL`,  colour = Treatment, group=Order.q  )) +
-  # xlim(40,80) +
-  # ylim(20,50) +
-  # scale_x_continuous(breaks=c(0, 5, 10, 15, 20, 25)) +
-  # scale_y_continuous(breaks=c(0, 10, 20, 30, 40, 50, 60)) +
   scale_color_manual(values=met.brewer("Tam", 4), guide = "none" )+
   labs(title= "")+
   ylab("Average FD") +
   xlab("Average TD") +
   theme_classic(base_size = 16) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-        strip.background = element_rect(colour="black", fill="white"),legend.position="none") #+
-#guides(color=guide_legend(title="Treatment", ncol = 3))
+        strip.background = element_rect(colour="black", fill="white"),legend.position="none") 
 
-Div.tfd_Fig
-
+Fig_S3_middle_row
 
 
-Div.pfd_Fig <- ggplot()+
+
+Fig_S3_bottom_row <- ggplot()+
   geom_vline(xintercept = 0,linetype="longdash") + geom_hline(yintercept = 0,linetype="longdash") +
   facet_wrap(~nt, scales="free",
              labeller = labeller(nt  = as_labeller(nt_names,  label_parsed)) )  +
@@ -242,10 +233,6 @@ Div.pfd_Fig <- ggplot()+
                 aes(x = `PD_qD`, ymin = `FD_qD.LCL`, ymax = `FD_qD.UCL`,  colour = Treatment, group=Order.q )) +
   geom_errorbarh(data = Div.d,
                  aes(y =`FD_qD`, xmin = `PD_qD.LCL`, xmax =  `PD_qD.UCL`,  colour = Treatment, group=Order.q  )) +
-  # xlim(40,80) +
-  # ylim(20,50) +
-  # scale_x_continuous(breaks=c(0, 5, 10, 15, 20, 25)) +
-  # scale_y_continuous(breaks=c(0, 10, 20, 30, 40, 50, 60)) +
   scale_color_manual(values=met.brewer("Tam", 4), guide = "none" )+
   labs(title= "")+
   ylab("Average FD") +
@@ -255,10 +242,10 @@ Div.pfd_Fig <- ggplot()+
         strip.background = element_rect(colour="black", fill="white"),legend.position="bottom") +
 guides(shape = guide_legend(title="Order of q") )
 
-Div.pfd_Fig
+Fig_S3_bottom_row
 
 
-Div_D_legend <- ggplot()+
+Fig_S3_legend <- ggplot()+
   geom_vline(xintercept = 0,linetype="longdash") + geom_hline(yintercept = 0,linetype="longdash") +
   facet_wrap(~nt, scales="free") +
   # overall effects
@@ -279,7 +266,7 @@ Div_D_legend <- ggplot()+
         strip.background = element_rect(colour="black", fill="white"),legend.position="bottom") +
   guides(shape = guide_legend(title="Order of q") ) +   guides(col = guide_legend(ncol = 2))
 
-Div_D_legend
+Fig_S3_legend
 
 g_legend<-function(a.gplot){
   tmp <- ggplot_gtable(ggplot_build(a.gplot))
@@ -287,7 +274,7 @@ g_legend<-function(a.gplot){
   legend <- tmp$grobs[[leg]]
   return(legend)}
 
-quads.D.legend <- g_legend(Div_D_legend)
+Fig_S3_l <- g_legend(Fig_S3_legend)
 
 # normal protrait
-(Div.tpd_Fig / Div.tfd_Fig/ Div.pfd_Fig/quads.D.legend + plot_layout(heights = c(10,10,10,2) )  )
+(Fig_S3_top_row / Fig_S3_middle_row / Fig_S3_bottom_row / Fig_S3_l + plot_layout(heights = c(10,10,10,2) )  )

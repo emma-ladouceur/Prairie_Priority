@@ -176,31 +176,4 @@ View(trait_wide)
 write.csv(trait_wide, "~/Dropbox//_Projects/Prairie_Priority/Data/trait_matrix.csv")
 
 
-# method 1: impute traits with a pca
-# nb_dim  <- missMDA::estim_ncpPCA(trait_wide[, 3:12], ncp.min=3, ncp.max=5, 
-#                                    scale= T, method.cv="loo", nbsim=9, verbose=FALSE) #E stimate the number of dimensions for the Principal Component Analysis by cross-validation
-# 
-# trait_imp <- missMDA::imputePCA(  # Impute the missing values of the dataset with the Principal Components Analysis model. 
-#   trait_wide[, 3:12], ncp=nb_dim$ncp) 
-# 
-# trait_imp   <- trait_imp$completeObs
-# trait_imp   <- as.data.frame(trait_imp)
-# trait_imp = cbind(trait_imp, trait_wide$AccSpeciesName)
-# row.names(trait_imp) = trait_imp$`trait_wide$AccSpeciesName`
-# trait_imp$`trait_wide$AccSpeciesName` = NULL
-# 
-# View(trait_imp)
-# 
-# save(trait_imp, file = "~/GRP GAZP Dropbox/Emma Ladouceur/_Projects/Prairie_Priority/Data/pca_imputed_traits.Rdata")
-# 
-# 
-# pca_res <- prcomp(trait_imp, scale. = TRUE)
-# autoplot(pca_res, 
-#          loadings = TRUE, loadings.label = TRUE,loadings.label.size = 3,
-#          label = TRUE, label.size = 3
-# )
-
-
-
-# method 2: see 11_Impute
 
