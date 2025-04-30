@@ -207,7 +207,7 @@ display_all()
 display_all(colorblind_only = T)
 
 # make an iNext style plot
-prairie.TD.fig0 <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Assemblage)) +
+Fig_1a <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointTD0) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.lineTD0) +
   labs(x="Number of sampling units", y="Taxonomic diversity",title="") +
@@ -223,10 +223,10 @@ prairie.TD.fig0 <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Assemb
   theme_classic(base_size=18) +    theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
 
-prairie.TD.fig0
+Fig_1a
 
 
-prairie.TD.fig2 <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Assemblage)) +
+Fig_1b <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointTD2) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.lineTD2) +
   labs(x="Number of sampling units", y="Taxonomic diversity",title="") +
@@ -241,10 +241,10 @@ prairie.TD.fig2 <- ggplot(prairie.hill.TD0, aes(x = nt, y = qD,   color = Assemb
                             axis.title.y = element_blank(), plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
 
-prairie.TD.fig <- (prairie.TD.fig0 +  prairie.TD.fig2)
+Fig_1ab <- (Fig_1a +  Fig_1b)
 
 
-prairie.TD.fig
+Fig_1ab
 
 
 # ========================================================================================================== #
@@ -346,7 +346,7 @@ df.linePD2 <- prairie.hill.PD2[which(prairie.hill.PD2$Method!="Observed"),]
 df.linePD2$Method <- factor(df.linePD2$Method, 
                           c("Rarefaction", "Extrapolation"))
 
-prairie.PD.fig0 <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Assemblage)) +
+Fig_1c <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointPD0) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.linePD0) +
   labs(x="Number of sampling units", y="Phylogenetic diversity",title="") +
@@ -362,7 +362,7 @@ prairie.PD.fig0 <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Assem
   theme_classic(base_size=18) +     theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
 
-prairie.PD.fig2 <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Assemblage)) +
+Fig_1d <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointPD2) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.linePD2) +
   labs(x="Number of sampling units", y="Phylogenetic diversity",title="") +
@@ -379,10 +379,10 @@ prairie.PD.fig2 <- ggplot(prairie.hill.PD0, aes(x = nt, y = qPD,   color = Assem
                             axis.title.y = element_blank(), plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
 
-prairie.PD.fig <- (prairie.PD.fig0 +  prairie.PD.fig2)
+Fig_1cd <- (Fig_1c +  Fig_1d)
 
 
-prairie.PD.fig
+Fig_1cd
 
 
 
@@ -526,7 +526,7 @@ df.lineFD2$Method <- factor(df.lineFD2$Method,
                           c("Rarefaction", "Extrapolation"))
 
 
-prairie.FD.fig0 <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Assemblage)) +
+Fig_1e <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointFD0) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.lineFD0) +
   labs(x="Number of sampling units", y="Functional diversity",title="") +
@@ -542,7 +542,7 @@ prairie.FD.fig0 <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Assem
   theme_classic(base_size=18) +      theme(legend.direction = "horizontal", legend.position = "none", plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
 
-prairie.FD.fig2 <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Assemblage)) +
+Fig_1f <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Assemblage)) +
   geom_point(aes(), shape = 1, size=2, data = df.pointFD2) +
   geom_line(aes(linetype = Method), lwd=1.5, data = df.lineFD2) +
   labs(x="Number of sampling units", y="Functional diversity",title="") +
@@ -559,10 +559,10 @@ prairie.FD.fig2 <- ggplot(prairie.hill.FD0, aes(x = nt, y = qFD,   color = Assem
                             axis.title.y = element_blank(), plot.subtitle = element_text(hjust = 0.5) ) +
   guides(col = guide_legend(ncol = 7)) 
 
-prairie.FD.fig <- (prairie.FD.fig0 +  prairie.FD.fig2)
+Fig_1ef <- (Fig_1e +  Fig_1f)
 
 
-prairie.FD.fig
+Fig_1ef
 
 g_legend<-function(a.gplot){
   tmp <- ggplot_gtable(ggplot_build(a.gplot))
@@ -603,6 +603,6 @@ trt.leg <- ggplot() +
 trt.legend <- g_legend(trt.leg)
 
 # 11X13
- prairie.div <- (prairie.TD.fig  / prairie.PD.fig / ( prairie.FD.fig + theme(legend.position="none") ) / (line.legend) / (trt.legend)   + plot_layout(heights = c(10,10,10,2,2))) 
+Figure_1 <- (Fig_1ab  / Fig_1cd / ( Fig_1ef + theme(legend.position="none") ) / (line.legend) / (trt.legend)   + plot_layout(heights = c(10,10,10,2,2))) 
 
- prairie.div
+Figure_1

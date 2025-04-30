@@ -33,7 +33,8 @@ FD <- FD %>% mutate( qD = qFD, qD.LCL = qFD.LCL, qD.UCL = qFD.UCL ) %>%
          D = "FD") 
 
 # Tables
-Table_S1 <- bind_rows( 
+# Table_S1
+ag_Div_Dat <- bind_rows( 
 TD %>% filter(nt %in% c(2, 80)) %>% select(-c(SC, SC.LCL, SC.UCL)) %>%  mutate(nt = as.character(as.factor(nt)), Div = "TD"),
 
 PD %>% filter(nt %in% c(2, 80)) %>% select(-c(SC, SC.LCL, SC.UCL)) %>%  mutate(nt = as.factor(nt)) %>% mutate(Div = D),
@@ -44,17 +45,17 @@ FD %>%  filter(nt %in% c(2, 80)) %>% select(-c(SC, SC.LCL, SC.UCL)) %>%  mutate(
   select(Div, Treatment, n_samples, Order.q, qD, qD_Lower_CI, qD_Upper_CI) %>% 
   arrange(rev(Div), n_samples, Order.q, qD)
 
-View(Table_S1)
+head(ag_Div_Dat)
 
-write.csv(Table_S1, "Tables/Table_S1.csv")
+#write.csv(Table_S1, "Tables/Table_S1.csv")
 
 
-
-Div  <- TD %>% mutate(nt = as.factor(nt),  D = "TD") %>%
+#Div 
+Effect_Size_Dat  <- TD %>% mutate(nt = as.factor(nt),  D = "TD") %>%
   bind_rows(FD, PD) %>%  
   filter(nt %in% c(2, 80)) %>% 
-  separate(Treatment, c("Nutrients", "Invasion"), remove = F) %>% 
-  select(c(Order.q, nt, Nutrients, Invasion, D, qD , qD.LCL, qD.UCL)) %>%
+  separate(Treatment, c("Treatment", "Invasion"), remove = F) %>% 
+  select(c(Order.q, nt, Treatment, Invasion, D, qD , qD.LCL, qD.UCL)) %>%
   gather(variable, value, -(Order.q:D)) %>%
   unite(temp, Invasion, variable) %>%
   spread(temp, value) %>%
@@ -77,29 +78,29 @@ Div  <- TD %>% mutate(nt = as.factor(nt),  D = "TD") %>%
     )
   ) %>% select(-nt)
 
-head(Div)
-head(Table_S1)
+head(Effect_Size_Dat)
+head(ag_Div_Dat)
 
- Table_S2 <- Div %>% 
-  mutate(n_samples = nt,
-         Div = D) %>% select(-c( nt, D)) %>% 
-   mutate(Esq_Lower_CI = round(ESqd.LCL, 4), Esqd_Upper_CI = round(ESqd.UCL, 4) , Esqd_Lower_CI_log =  round(ESqd.LCL_log, 4), Esqd_Upper_CI_log= round(ESqd.UCL_log, 4),
-          ESqd = round(ESqd,4), ESqd_log = round(ESqd_log, 4) ) %>%
-   select(Div, Nutrients, n_samples, Order.q, ESqd , Esq_Lower_CI ,  Esqd_Upper_CI,   ESqd_log, Esqd_Lower_CI_log, Esqd_Upper_CI_log) %>%
-   arrange(rev(Div), n_samples, Order.q, ESqd) 
-   
-View(Table_S2)
-
-write.csv(Table_S2, "Tables/Table_S2.csv")
+#  Table_S2 <- Div %>% 
+#   mutate(n_samples = nt,
+#          Div = D) %>% select(-c( nt, D)) %>% 
+#    mutate(Esq_Lower_CI = round(ESqd.LCL, 4), Esqd_Upper_CI = round(ESqd.UCL, 4) , Esqd_Lower_CI_log =  round(ESqd.LCL_log, 4), Esqd_Upper_CI_log= round(ESqd.UCL_log, 4),
+#           ESqd = round(ESqd,4), ESqd_log = round(ESqd_log, 4) ) %>%
+#    select(Div, Treatment, n_samples, Order.q, ESqd , Esq_Lower_CI ,  Esqd_Upper_CI,   ESqd_log, Esqd_Lower_CI_log, Esqd_Upper_CI_log) %>%
+#    arrange(rev(Div), n_samples, Order.q, ESqd) 
+#    
+# View(Table_S2)
+# 
+# write.csv(Table_S2, "Tables/Table_S2.csv")
 
 View(Div)
 
-
-beta_div <- left_join( 
-  Table_S1 %>% filter(n_samples == 2) %>%
+#Div_Dat
+Div_Dat <- left_join( 
+  ag_Div_Dat %>% filter(n_samples == 2) %>%
     mutate(qDa = qD, qDa_Lower_CI = qD_Lower_CI, qDa_Upper_CI = qD_Upper_CI) %>%
     select(Div, Treatment, Order.q, qDa, qDa_Lower_CI, qDa_Upper_CI),
-  Table_S1 %>% filter(n_samples == 80) %>%
+  ag_Div_Dat %>% filter(n_samples == 80) %>%
     mutate(qDg = qD, qDg_Lower_CI = qD_Lower_CI, qDg_Upper_CI = qD_Upper_CI, D = Div) %>%
     select(Div, Treatment, Order.q, qDg, qDg_Lower_CI, qDg_Upper_CI)
 ) %>% mutate( qDb = round(qDg / qDa,4),
@@ -108,15 +109,14 @@ beta_div <- left_join(
 )
 
 
-beta_div
-beta_div$Treatment <- factor(beta_div$Treatment, levels = c("Control_Early",  "Nutrients_Early",  "Control_Late", "Nutrients_Late" ))
-
+head(Div_Dat)
+Div_Dat$Treatment <- factor(Div_Dat$Treatment, levels = c("Control_Early",  "Treatment_Early",  "Control_Late", "Treatment_Late" ))
 
 ###ES
 
-ES_BDiv <- beta_div %>% 
-  separate(Treatment, c("Nutrients", "Invasion"), remove = F) %>% 
-  select(c(Order.q, Div,   Nutrients, Invasion, qDb , qDb_Lower_CI, qDb_Upper_CI)) %>%
+Effect_Size_BDiv_Dat <- Div_Dat %>% 
+  separate(Treatment, c("Treatment", "Invasion"), remove = F) %>% 
+  select(c(Order.q, Div,   Treatment, Invasion, qDb , qDb_Lower_CI, qDb_Upper_CI)) %>%
   gather(variable, value, -(Order.q:Invasion)) %>%
   unite(temp, Invasion, variable) %>%
   spread(temp, value) %>%
@@ -133,50 +133,56 @@ ES_BDiv <- beta_div %>%
   select(-c(Invasion, q, response)) %>% distinct() %>%
   mutate(scale = "\u03B2") %>% mutate(D = Div) %>% select(-Div)
 
-ES_BDiv
+Effect_Size_BDiv_Dat
 
 # alpha "\u03B1"
 # beta \u03B2
 # gamma \u03B3
 
-ES_Div_Dat <- Div %>% bind_rows(ES_BDiv)
+ES_Div_Dat <- Effect_Size_Dat %>% bind_rows(Effect_Size_BDiv_Dat) %>%
+  mutate(Treatment = Treatment) %>% select(-Treatment) %>%
+  select(D, Order.q, Treatment, scale, ESqd,  ESqd.LCL,  ESqd.UCL,   ESqd_log, ESqd.LCL_log, ESqd.UCL_log)
+          
+head(ES_Div_Dat)
+summary(ES_Div_Dat)
 
-
-Table_S3 <- ES_BDiv %>% 
-  # mutate(n_samples = nt,
-  #        Div = D) %>% select(-c( nt, D)) %>% 
-  mutate(Esqd_Lower_CI = round(ESqd.LCL, 2), ESqd_Upper_CI = round(ESqd.UCL, 2) , ESqd_Lower_CI_log =  round(ESqd.LCL_log, 2), ESqd_Upper_CI_log= round(ESqd.UCL_log, 2),
-         ESqd = round(ESqd,2), ESqd_log = round(ESqd_log, 2) ) %>%
-  select(D, Nutrients,  Order.q, ESqd , Esqd_Lower_CI ,  ESqd_Upper_CI,   ESqd_log, ESqd_Lower_CI_log, ESqd_Upper_CI_log) %>%
-  arrange(rev(D),  Order.q, ESqd) 
-
-Table_S3
-View(Table_S3)
-
-write.csv(Table_S3, "Tables/Table_S3.csv")
-
-
-beta_div$Treatment <- factor(beta_div$Treatment, levels = c("Control_Early",  "Nutrients_Early",  "Control_Late", "Nutrients_Late" ))
+ES_Div_Dat$D <- factor(ES_Div_Dat$D, levels = c("TD", "PD", "FD"))
 ES_Div_Dat$scale <- factor(ES_Div_Dat$scale, levels = c("\u03B1", "\u03B3", "\u03B2"))
 # alpha "\u03B1"
 # beta \u03B2
 # gamma \u03B3
 
-alpha_TD_fig0 <- ggplot() +  
+
+# Table_S3 <- ES_BDiv %>% 
+#   # mutate(n_samples = nt,
+#   #        Div = D) %>% select(-c( nt, D)) %>% 
+#   mutate(Esqd_Lower_CI = round(ESqd.LCL, 2), ESqd_Upper_CI = round(ESqd.UCL, 2) , ESqd_Lower_CI_log =  round(ESqd.LCL_log, 2), ESqd_Upper_CI_log= round(ESqd.UCL_log, 2),
+#          ESqd = round(ESqd,2), ESqd_log = round(ESqd_log, 2) ) %>%
+#   select(D, Treatment,  Order.q, ESqd , Esqd_Lower_CI ,  ESqd_Upper_CI,   ESqd_log, ESqd_Lower_CI_log, ESqd_Upper_CI_log) %>%
+#   arrange(rev(D),  Order.q, ESqd) 
+# 
+# Table_S3
+# View(Table_S3)
+# 
+# write.csv(Table_S3, "Tables/Table_S3.csv")
+
+
+
+Fig_2a <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "TD") %>% filter(Order.q == "q = 0"),
+  geom_point(data = Div_Dat %>% filter(Div == "TD") %>% filter(Order.q == "q = 0"),
              aes(x = Treatment, y = qDa, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "TD")%>% filter(Order.q == "q = 0"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "TD")%>% filter(Order.q == "q = 0"),
                 aes(x = Treatment, ymin = qDa_Lower_CI, ymax = qDa_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression(  paste( italic(alpha), "-diversity", sep = ' '))), 
        title="a)",
        subtitle=(expression( paste(italic(alpha), "-scale", sep = ' ')))) +
   scale_color_manual(values=met.brewer("Tam", 4),
-                     labels=c("Control early invasion", "Nutrients early invasion", 
-                              "Control late invasion", "Nutrients late invasion"
+                     labels=c("Control early invasion", "Treatment early invasion", 
+                              "Control late invasion", "Treatment late invasion"
                      ))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(), axis.text.x = element_blank(),
@@ -187,15 +193,15 @@ alpha_TD_fig0 <- ggplot() +
                                 ) +
   coord_cartesian() 
 
-alpha_TD_fig0
+Fig_2a
 
-gamma_TD_fig0 <- ggplot() +  
+Fig_2b <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "TD") %>% filter(Order.q == "q = 0"),
+  geom_point(data = Div_Dat %>% filter(Div == "TD") %>% filter(Order.q == "q = 0"),
              aes(x = Treatment, y = qDg, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "TD")%>% filter(Order.q == "q = 0"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "TD")%>% filter(Order.q == "q = 0"),
                 aes(x = Treatment, ymin = qDg_Lower_CI, ymax = qDg_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression( paste( italic(gamma), "-diversity", sep = ' '))), 
@@ -209,16 +215,16 @@ gamma_TD_fig0 <- ggplot() +
                                strip.background = element_blank(),legend.position = "none") +
   coord_cartesian() #+
 
-gamma_TD_fig0
+Fig_2b
 
 
-beta_TD_fig0 <- ggplot() +  
+Fig_2c <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "TD") %>% filter(Order.q == "q = 0"),
+  geom_point(data = Div_Dat %>% filter(Div == "TD") %>% filter(Order.q == "q = 0"),
              aes(x = Treatment, y = qDb, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "TD")%>% filter(Order.q == "q = 0"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "TD")%>% filter(Order.q == "q = 0"),
                 aes(x = Treatment, ymin = qDb_Lower_CI, ymax = qDb_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression( paste( italic(beta), "-diversity", sep = ' '))), 
@@ -231,16 +237,16 @@ beta_TD_fig0 <- ggplot() +
                                plot.subtitle = element_text(hjust = 0.5, margin = margin(b = 1)),
                                strip.background = element_blank(),legend.position = "none") +
   coord_cartesian() #+
-beta_TD_fig0
+Fig_2c
 
 
-ES_TD0 <- ggplot() +  
+Fig_2d <- ggplot() +  
   geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = ES_Div_Dat  %>% filter(D == "TD") %>% filter(Order.q ==  "q = 0" ) ,
-             aes(x = scale, y = ESqd, colour = Nutrients, group = Nutrients), size = 2,
+             aes(x = scale, y = ESqd, colour = Treatment, group = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
   geom_errorbar(data = ES_Div_Dat  %>% filter(D == "TD") %>% filter(Order.q ==  "q = 0" ) ,
-                aes(x = scale, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Nutrients, group = Nutrients),
+                aes(x = scale, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Treatment, group = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   scale_color_manual(values=c("#bb292c", "#62205f"))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -253,7 +259,7 @@ ES_TD0 <- ggplot() +
         subtitle= "Effect Sizes"
   ) + ylab("Effect of late invasion")
 
-ES_TD0
+Fig_2d
 
 
 g_legend<-function(a.gplot){
@@ -262,27 +268,27 @@ g_legend<-function(a.gplot){
   legend <- tmp$grobs[[leg]]
   return(legend)}
 
-TD0_l <- g_legend(alpha_TD_fig0)
+Fig2_l_div <- g_legend(Fig_2a)
 
 secondary_label <- ggplot() +
   theme_void() +  # Remove all default elements
   annotate("text", x = 1, y = 0.5, label = "q = 0", 
            angle = 0, size = 6, hjust = 0.5)
 
-TD0 <- ( secondary_label + (alpha_TD_fig0 + theme(legend.position="none")) + gamma_TD_fig0 + beta_TD_fig0 + ES_TD0 ) + 
+Fig_2ad <- ( secondary_label + (Fig_2a + theme(legend.position="none")) + Fig_2b + Fig_2bc + Fig_2d ) + 
   plot_layout(widths = c(2.2, 10, 10, 10, 10))+  # Adjust the relative widths
   plot_annotation(title = "Taxonomic Diversity", 
                   theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) 
-TD0
+Fig_2ad
 
 #q2
-alpha_TD_fig2 <- ggplot() +  
+Fig_2e <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "TD") %>% filter(Order.q == "q = 2"),
+  geom_point(data = Div_Dat %>% filter(Div == "TD") %>% filter(Order.q == "q = 2"),
              aes(x = Treatment, y = qDa, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "TD")%>% filter(Order.q == "q = 2"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "TD")%>% filter(Order.q == "q = 2"),
                 aes(x = Treatment, ymin = qDa_Lower_CI, ymax = qDa_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression(  paste( italic(alpha), "-diversity", sep = ' '))),  title = "e)") +
@@ -295,15 +301,15 @@ alpha_TD_fig2 <- ggplot() +
                                strip.background = element_blank(),legend.position = "none") +
   coord_cartesian() 
 
-alpha_TD_fig2
+Fig_2e
 
-gamma_TD_fig2 <- ggplot() +  
+Fig_2f <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "TD") %>% filter(Order.q == "q = 2"),
+  geom_point(data = Div_Dat %>% filter(Div == "TD") %>% filter(Order.q == "q = 2"),
              aes(x = Treatment, y = qDg, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "TD")%>% filter(Order.q == "q = 2"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "TD")%>% filter(Order.q == "q = 2"),
                 aes(x = Treatment, ymin = qDg_Lower_CI, ymax = qDg_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression( paste( italic(gamma), "-diversity", sep = ' '))),   title = "f)") +
@@ -316,16 +322,16 @@ gamma_TD_fig2 <- ggplot() +
                                strip.background = element_blank(),legend.position = "none") +
   coord_cartesian() #+
 
-gamma_TD_fig2
+Fig_2f
 
 
-beta_TD_fig2 <- ggplot() +  
+Fig_2g <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "TD") %>% filter(Order.q == "q = 2"),
+  geom_point(data = Div_Dat %>% filter(Div == "TD") %>% filter(Order.q == "q = 2"),
              aes(x = Treatment, y = qDb, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "TD")%>% filter(Order.q == "q = 2"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "TD")%>% filter(Order.q == "q = 2"),
                 aes(x = Treatment, ymin = qDb_Lower_CI, ymax = qDb_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression( paste( italic(beta), "-diversity", sep = ' '))),  , title = "g)") +
@@ -337,17 +343,17 @@ beta_TD_fig2 <- ggplot() +
                                plot.subtitle = element_text(hjust = 0.5, margin = margin(b = 1)),
                                strip.background = element_blank(),legend.position = "none") +
   coord_cartesian() #+
-beta_TD_fig2
+Fig_2g
 
-ES_TD2 <- ggplot() +  
+Fig_2h <- ggplot() +  
   geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = ES_Div_Dat  %>% filter(D == "TD") %>% filter(Order.q ==  "q = 2" ) ,
-             aes(x = scale, y = ESqd, colour = Nutrients, group = Nutrients), size = 2,
+             aes(x = scale, y = ESqd, colour = Treatment, group = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
   geom_errorbar(data = ES_Div_Dat  %>% filter(D == "TD") %>% filter(Order.q ==  "q = 2" ) ,
-                aes(x = scale, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Nutrients, group = Nutrients),
+                aes(x = scale, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Treatment, group = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
-  scale_color_manual(values=c("#bb292c", "#62205f"), name = "Effect size", labels=c("Control", "Nutrients" ))+
+  scale_color_manual(values=c("#bb292c", "#62205f"), name = "Effect size", labels=c("Control", "Treatment" ))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -358,22 +364,22 @@ ES_TD2 <- ggplot() +
   labs( title= "h)",
   ) + ylab("Effect of late invasion")
 
-ES_TD2
+Fig_2h
 
 
-ES_TD2_l <- g_legend(ES_TD2)
+Fig2_l_es <- g_legend(Fig_2h)
 
 secondary_label <- ggplot() +
   theme_void() +  # Remove all default elements
   annotate("text", x = 1, y = 0.5, label = "q = 2", 
            angle = 0,  size= 6, hjust = 0.5)
 
-TD2 <- (secondary_label + alpha_TD_fig2 + gamma_TD_fig2 + beta_TD_fig2 + (ES_TD2 + theme(legend.position="none"))  ) + 
+Fig_2eh <- (secondary_label + Fig_2e + Fig_2f + Fig_2g + (Fig_2h + theme(legend.position="none"))  ) + 
   plot_layout(widths = c(2.2, 10, 10, 10, 10))
-TD2
+Fig_2eh
 
 
-(TD0)/(TD2)/(TD0_l)/(ES_TD2_l)+  # Adjust the relative widths
+(Fig_2ad)/(Fig_2eh)/(Fig2_l_div)/(Fig2_l_es)+  # Adjust the relative widths
   plot_annotation(title = "Taxonomic Diversity",
                   theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) +
   plot_layout(heights = c(10,10,1,1))
@@ -381,20 +387,20 @@ TD2
 
 # PD
 
-alpha_PD_fig0 <- ggplot() +  
+Fig_3a <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "PD") %>% filter(Order.q == "q = 0"),
+  geom_point(data = Div_Dat %>% filter(Div == "PD") %>% filter(Order.q == "q = 0"),
              aes(x = Treatment, y = qDa, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "PD")%>% filter(Order.q == "q = 0"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "PD")%>% filter(Order.q == "q = 0"),
                 aes(x = Treatment, ymin = qDa_Lower_CI, ymax = qDa_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression(  paste( italic(alpha), "-diversity", sep = ' '))), 
        subtitle=(expression( paste(italic(alpha), "-scale", sep = ' '))), title = "a)") +
   scale_color_manual(values=met.brewer("Tam", 4),
-                     labels=c("Control early invasion", "Nutrients early invasion", 
-                              "Control late invasion", "Nutrients late invasion"
+                     labels=c("Control early invasion", "Treatment early invasion", 
+                              "Control late invasion", "Treatment late invasion"
                      ))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(), axis.text.x = element_blank(),
@@ -404,15 +410,15 @@ alpha_PD_fig0 <- ggplot() +
                                strip.background = element_blank(),legend.position = "bottom") +
   coord_cartesian() 
 
-alpha_PD_fig0
+Fig_3a
 
-gamma_PD_fig0 <- ggplot() +  
+Fig_3b <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "PD") %>% filter(Order.q == "q = 0"),
+  geom_point(data = Div_Dat %>% filter(Div == "PD") %>% filter(Order.q == "q = 0"),
              aes(x = Treatment, y = qDg, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "PD")%>% filter(Order.q == "q = 0"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "PD")%>% filter(Order.q == "q = 0"),
                 aes(x = Treatment, ymin = qDg_Lower_CI, ymax = qDg_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression( paste( italic(gamma), "-diversity", sep = ' '))), 
@@ -426,16 +432,16 @@ gamma_PD_fig0 <- ggplot() +
                                strip.background = element_blank(),legend.position = "none") +
   coord_cartesian() #+
 
-gamma_PD_fig0
+Fig_3b
 
 
-beta_PD_fig0 <- ggplot() +  
+Fig_3c <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "PD") %>% filter(Order.q == "q = 0"),
+  geom_point(data = Div_Dat %>% filter(Div == "PD") %>% filter(Order.q == "q = 0"),
              aes(x = Treatment, y = qDb, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "PD")%>% filter(Order.q == "q = 0"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "PD")%>% filter(Order.q == "q = 0"),
                 aes(x = Treatment, ymin = qDb_Lower_CI, ymax = qDb_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression( paste( italic(beta), "-diversity", sep = ' '))), 
@@ -448,16 +454,16 @@ beta_PD_fig0 <- ggplot() +
                                plot.subtitle = element_text(hjust = 0.5, margin = margin(b = 1)),
                                strip.background = element_blank(),legend.position = "none") +
   coord_cartesian() #+
-beta_PD_fig0
+Fig_3c
 
 
-ES_PD0 <- ggplot() +  
+Fig_3d <- ggplot() +  
   geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = ES_Div_Dat  %>% filter(D == "PD") %>% filter(Order.q ==  "q = 0" ) ,
-             aes(x = scale, y = ESqd, colour = Nutrients, group = Nutrients), size = 2,
+             aes(x = scale, y = ESqd, colour = Treatment, group = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
   geom_errorbar(data = ES_Div_Dat  %>% filter(D == "PD") %>% filter(Order.q ==  "q = 0" ) ,
-                aes(x = scale, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Nutrients, group = Nutrients),
+                aes(x = scale, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Treatment, group = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   scale_color_manual(values=c("#bb292c", "#62205f"))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -470,7 +476,7 @@ ES_PD0 <- ggplot() +
         subtitle= "Effect Sizes"
   ) + ylab("Effect of late invasion")
 
-ES_PD0
+Fig_3d
 
 
 g_legend<-function(a.gplot){
@@ -479,27 +485,27 @@ g_legend<-function(a.gplot){
   legend <- tmp$grobs[[leg]]
   return(legend)}
 
-PD0_l <- g_legend(alpha_PD_fig0)
+Fig3_l_div <- g_legend(Fig_3a)
 
 secondary_label <- ggplot() +
   theme_void() +  # Remove all default elements
   annotate("text", x = 1, y = 0.5, label = "q = 0", 
            angle = 0, size = 6, hjust = 0.5)
 
-PD0 <- ( secondary_label + (alpha_PD_fig0 + theme(legend.position="none")) + gamma_PD_fig0 + beta_PD_fig0 + ES_PD0 ) + 
+Fig_3ad <- ( secondary_label + (Fig_3a + theme(legend.position="none")) + Fig_3b + Fig_3c + Fig_3d ) + 
   plot_layout(widths = c(2.2, 10, 10, 10, 10))+  # Adjust the relative widths
   plot_annotation(title = "Taxonomic Diversity",
                   theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) 
-PD0
+Fig_3ad
 
 #q2
-alpha_PD_fig2 <- ggplot() +  
+Fig_3e <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "PD") %>% filter(Order.q == "q = 2"),
+  geom_point(data = Div_Dat %>% filter(Div == "PD") %>% filter(Order.q == "q = 2"),
              aes(x = Treatment, y = qDa, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "PD")%>% filter(Order.q == "q = 2"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "PD")%>% filter(Order.q == "q = 2"),
                 aes(x = Treatment, ymin = qDa_Lower_CI, ymax = qDa_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression(  paste( italic(alpha), "-diversity", sep = ' '))),  title = "e)") +
@@ -512,15 +518,15 @@ alpha_PD_fig2 <- ggplot() +
                                strip.background = element_blank(),legend.position = "none") +
   coord_cartesian() 
 
-alpha_PD_fig2
+Fig_3e
 
-gamma_PD_fig2 <- ggplot() +  
+Fig_3f <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "PD") %>% filter(Order.q == "q = 2"),
+  geom_point(data = Div_Dat %>% filter(Div == "PD") %>% filter(Order.q == "q = 2"),
              aes(x = Treatment, y = qDg, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "PD")%>% filter(Order.q == "q = 2"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "PD")%>% filter(Order.q == "q = 2"),
                 aes(x = Treatment, ymin = qDg_Lower_CI, ymax = qDg_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression( paste( italic(gamma), "-diversity", sep = ' '))),   title = "f)") +
@@ -533,16 +539,16 @@ gamma_PD_fig2 <- ggplot() +
                                strip.background = element_blank(),legend.position = "none") +
   coord_cartesian() #+
 
-gamma_PD_fig2
+Fig_3f
 
 
-beta_PD_fig2 <- ggplot() +  
+Fig_3g <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "PD") %>% filter(Order.q == "q = 2"),
+  geom_point(data = Div_Dat %>% filter(Div == "PD") %>% filter(Order.q == "q = 2"),
              aes(x = Treatment, y = qDb, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "PD")%>% filter(Order.q == "q = 2"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "PD")%>% filter(Order.q == "q = 2"),
                 aes(x = Treatment, ymin = qDb_Lower_CI, ymax = qDb_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression( paste( italic(beta), "-diversity", sep = ' '))),  , title = "g)") +
@@ -554,17 +560,17 @@ beta_PD_fig2 <- ggplot() +
                                plot.subtitle = element_text(hjust = 0.5, margin = margin(b = 1)),
                                strip.background = element_blank(),legend.position = "none") +
   coord_cartesian() #+
-beta_PD_fig2
+Fig_3g
 
-ES_PD2 <- ggplot() +  
+Fig_3h <- ggplot() +  
   geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = ES_Div_Dat  %>% filter(D == "PD") %>% filter(Order.q ==  "q = 2" ) ,
-             aes(x = scale, y = ESqd, colour = Nutrients, group = Nutrients), size = 2,
+             aes(x = scale, y = ESqd, colour = Treatment, group = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
   geom_errorbar(data = ES_Div_Dat  %>% filter(D == "PD") %>% filter(Order.q ==  "q = 2" ) ,
-                aes(x = scale, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Nutrients, group = Nutrients),
+                aes(x = scale, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Treatment, group = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
-  scale_color_manual(values=c("#bb292c", "#62205f"), name = "Effect size", labels=c("Control", "Nutrients" ))+
+  scale_color_manual(values=c("#bb292c", "#62205f"), name = "Effect size", labels=c("Control", "Treatment" ))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -575,22 +581,22 @@ ES_PD2 <- ggplot() +
   labs( title= "h)",
   ) + ylab("Effect of late invasion")
 
-ES_PD2
+Fig_3h
 
 
-ES_PD2_l <- g_legend(ES_PD2)
+Fig3_l_es <- g_legend(Fig_3h)
 
 secondary_label <- ggplot() +
   theme_void() +  # Remove all default elements
   annotate("text", x = 1, y = 0.5, label = "q = 2", 
            angle = 0,  size= 6, hjust = 0.5)
 
-PD2 <- (secondary_label + alpha_PD_fig2 + gamma_PD_fig2 + beta_PD_fig2 + (ES_PD2 + theme(legend.position="none"))  ) + 
+Fig_3eh <- (secondary_label + Fig_3e + Fig_3f + Fig_3g + (Fig_3h + theme(legend.position="none"))  ) + 
   plot_layout(widths = c(2.2, 10, 10, 10, 10))
-PD2
+Fig_3eh
 
 
-(PD0)/(PD2)/(PD0_l)/(ES_PD2_l)+  # Adjust the relative widths
+(Fig_3ad)/(Fig_3eh)/(Fig3_l_div)/(Fig3_l_es)+  # Adjust the relative widths
   plot_annotation(title = "Phylogenetic Diversity",
                   theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) +
   plot_layout(heights = c(10,10,1,1))
@@ -599,20 +605,20 @@ PD2
 
 # FD
 
-alpha_FD_fig0 <- ggplot() +  
+Fig_4a <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "FD") %>% filter(Order.q == "q = 0"),
+  geom_point(data = Div_Dat %>% filter(Div == "FD") %>% filter(Order.q == "q = 0"),
              aes(x = Treatment, y = qDa, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "FD")%>% filter(Order.q == "q = 0"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "FD")%>% filter(Order.q == "q = 0"),
                 aes(x = Treatment, ymin = qDa_Lower_CI, ymax = qDa_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression(  paste( italic(alpha), "-diversity", sep = ' '))), 
        subtitle=(expression( paste(italic(alpha), "-scale", sep = ' '))), title = "a)") +
   scale_color_manual(values=met.brewer("Tam", 4),
-                     labels=c("Control early invasion", "Nutrients early invasion", 
-                              "Control late invasion", "Nutrients late invasion"
+                     labels=c("Control early invasion", "Treatment early invasion", 
+                              "Control late invasion", "Treatment late invasion"
                      ))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(), axis.text.x = element_blank(),
@@ -622,15 +628,15 @@ alpha_FD_fig0 <- ggplot() +
                                strip.background = element_blank(),legend.position = "bottom") +
   coord_cartesian() 
 
-alpha_FD_fig0
+Fig_4a
 
-gamma_FD_fig0 <- ggplot() +  
+Fig_4b <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "FD") %>% filter(Order.q == "q = 0"),
+  geom_point(data = Div_Dat %>% filter(Div == "FD") %>% filter(Order.q == "q = 0"),
              aes(x = Treatment, y = qDg, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "FD")%>% filter(Order.q == "q = 0"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "FD")%>% filter(Order.q == "q = 0"),
                 aes(x = Treatment, ymin = qDg_Lower_CI, ymax = qDg_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression( paste( italic(gamma), "-diversity", sep = ' '))), 
@@ -644,16 +650,16 @@ gamma_FD_fig0 <- ggplot() +
                                strip.background = element_blank(),legend.position = "none") +
   coord_cartesian() #+
 
-gamma_FD_fig0
+Fig_4b
 
 
-beta_FD_fig0 <- ggplot() +  
+Fig_4c <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "FD") %>% filter(Order.q == "q = 0"),
+  geom_point(data = Div_Dat %>% filter(Div == "FD") %>% filter(Order.q == "q = 0"),
              aes(x = Treatment, y = qDb, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "FD")%>% filter(Order.q == "q = 0"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "FD")%>% filter(Order.q == "q = 0"),
                 aes(x = Treatment, ymin = qDb_Lower_CI, ymax = qDb_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression( paste( italic(beta), "-diversity", sep = ' '))), 
@@ -666,16 +672,16 @@ beta_FD_fig0 <- ggplot() +
                                plot.subtitle = element_text(hjust = 0.5, margin = margin(b = 1)),
                                strip.background = element_blank(),legend.position = "none") +
   coord_cartesian() #+
-beta_FD_fig0
+Fig_4c
 
 
-ES_FD0 <- ggplot() +  
+Fig_4d <- ggplot() +  
   geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = ES_Div_Dat  %>% filter(D == "FD") %>% filter(Order.q ==  "q = 0" ) ,
-             aes(x = scale, y = ESqd, colour = Nutrients, group = Nutrients), size = 2,
+             aes(x = scale, y = ESqd, colour = Treatment, group = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
   geom_errorbar(data = ES_Div_Dat  %>% filter(D == "FD") %>% filter(Order.q ==  "q = 0" ) ,
-                aes(x = scale, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Nutrients, group = Nutrients),
+                aes(x = scale, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Treatment, group = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   scale_color_manual(values=c("#bb292c", "#62205f"))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -688,7 +694,7 @@ ES_FD0 <- ggplot() +
         subtitle= "Effect Sizes"
   ) + ylab("Effect of late invasion")
 
-ES_FD0
+Fig_4d
 
 
 g_legend<-function(a.gplot){
@@ -697,27 +703,27 @@ g_legend<-function(a.gplot){
   legend <- tmp$grobs[[leg]]
   return(legend)}
 
-FD0_l <- g_legend(alpha_FD_fig0)
+Fig4_l_div <- g_legend(Fig_4a)
 
 secondary_label <- ggplot() +
   theme_void() +  # Remove all default elements
   annotate("text", x = 1, y = 0.5, label = "q = 0", 
            angle = 0, size = 6, hjust = 0.5)
 
-FD0 <- ( secondary_label + (alpha_FD_fig0 + theme(legend.position="none")) + gamma_FD_fig0 + beta_FD_fig0 + ES_FD0 ) + 
+Fig_4ad <- ( secondary_label + (Fig_4a + theme(legend.position="none")) + Fig_4b + Fig_4c + Fig_4d ) + 
   plot_layout(widths = c(2.2, 10, 10, 10, 10))+  # Adjust the relative widths
   plot_annotation(title = "Taxonomic Diversity",
                   theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) 
-FD0
+Fig_4ad
 
 #q2
-alpha_FD_fig2 <- ggplot() +  
+Fig_4e <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "FD") %>% filter(Order.q == "q = 2"),
+  geom_point(data = Div_Dat %>% filter(Div == "FD") %>% filter(Order.q == "q = 2"),
              aes(x = Treatment, y = qDa, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "FD")%>% filter(Order.q == "q = 2"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "FD")%>% filter(Order.q == "q = 2"),
                 aes(x = Treatment, ymin = qDa_Lower_CI, ymax = qDa_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression(  paste( italic(alpha), "-diversity", sep = ' '))),  title = "e)") +
@@ -730,15 +736,15 @@ alpha_FD_fig2 <- ggplot() +
                                strip.background = element_blank(),legend.position = "none") +
   coord_cartesian() 
 
-alpha_FD_fig2
+Fig_4e
 
-gamma_FD_fig2 <- ggplot() +  
+Fig_4f <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "FD") %>% filter(Order.q == "q = 2"),
+  geom_point(data = Div_Dat %>% filter(Div == "FD") %>% filter(Order.q == "q = 2"),
              aes(x = Treatment, y = qDg, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "FD")%>% filter(Order.q == "q = 2"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "FD")%>% filter(Order.q == "q = 2"),
                 aes(x = Treatment, ymin = qDg_Lower_CI, ymax = qDg_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression( paste( italic(gamma), "-diversity", sep = ' '))),   title = "f)") +
@@ -751,16 +757,16 @@ gamma_FD_fig2 <- ggplot() +
                                strip.background = element_blank(),legend.position = "none") +
   coord_cartesian() #+
 
-gamma_FD_fig2
+Fig_4f
 
 
-beta_FD_fig2 <- ggplot() +  
+Fig_4g <- ggplot() +  
   # geom_hline(yintercept = 0, lty = 2) +
   #facet_wrap(~Order.q, scales="free")+
-  geom_point(data = beta_div %>% filter(Div == "FD") %>% filter(Order.q == "q = 2"),
+  geom_point(data = Div_Dat %>% filter(Div == "FD") %>% filter(Order.q == "q = 2"),
              aes(x = Treatment, y = qDb, colour = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
-  geom_errorbar(data = beta_div %>% filter(Div == "FD")%>% filter(Order.q == "q = 2"),
+  geom_errorbar(data = Div_Dat %>% filter(Div == "FD")%>% filter(Order.q == "q = 2"),
                 aes(x = Treatment, ymin = qDb_Lower_CI, ymax = qDb_Upper_CI, colour = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   labs(x="", y=(expression( paste( italic(beta), "-diversity", sep = ' '))),  , title = "g)") +
@@ -772,17 +778,17 @@ beta_FD_fig2 <- ggplot() +
                                plot.subtitle = element_text(hjust = 0.5, margin = margin(b = 1)),
                                strip.background = element_blank(),legend.position = "none") +
   coord_cartesian() #+
-beta_FD_fig2
+Fig_4g
 
-ES_FD2 <- ggplot() +  
+Fig_4h <- ggplot() +  
   geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = ES_Div_Dat  %>% filter(D == "FD") %>% filter(Order.q ==  "q = 2" ) ,
-             aes(x = scale, y = ESqd, colour = Nutrients, group = Nutrients), size = 2,
+             aes(x = scale, y = ESqd, colour = Treatment, group = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
   geom_errorbar(data = ES_Div_Dat  %>% filter(D == "FD") %>% filter(Order.q ==  "q = 2" ) ,
-                aes(x = scale, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Nutrients, group = Nutrients),
+                aes(x = scale, ymin = ESqd.LCL, ymax = ESqd.UCL, colour = Treatment, group = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
-  scale_color_manual(values=c("#bb292c", "#62205f"), name = "Effect size", labels=c("Control", "Nutrients" ))+
+  scale_color_manual(values=c("#bb292c", "#62205f"), name = "Effect size", labels=c("Control", "Treatment" ))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -793,40 +799,38 @@ ES_FD2 <- ggplot() +
   labs( title= "h)",
   ) + ylab("Effect of late invasion")
 
-ES_FD2
+Fig_4h
 
 
-ES_FD2_l <- g_legend(ES_FD2)
+Fig4_l_es <- g_legend(Fig_4h)
 
 secondary_label <- ggplot() +
   theme_void() +  # Remove all default elements
   annotate("text", x = 1, y = 0.5, label = "q = 2", 
            angle = 0,  size= 6, hjust = 0.5)
 
-FD2 <- (secondary_label + alpha_FD_fig2 + gamma_FD_fig2 + beta_FD_fig2 + (ES_FD2 + theme(legend.position="none"))  ) + 
+Fig_4eh <- (secondary_label + Fig_4e + Fig_4f + Fig_4g + (Fig_4h + theme(legend.position="none"))  ) + 
   plot_layout(widths = c(2.2, 10, 10, 10, 10))
-FD2
+Fig_4eh
 
 
-(FD0)/(FD2)/(FD0_l)/(ES_FD2_l)+  # Adjust the relative widths
+(Fig_4ad)/(Fig_4eh)/(Fig4_l_div)/(Fig4_l_es)+  # Adjust the relative widths
   plot_annotation(title = "Functional Diversity",
                   theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) +
   plot_layout(heights = c(10,10,1,1))
 
 
 # ES log
-
-
-ES_Div_Dat
+head(ES_Div_Dat)
 
 #TD
-ES_TD0_log <- ggplot() +  
+Fig_S1a <- ggplot() +  
   geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = ES_Div_Dat  %>% filter(D == "TD") %>% filter(Order.q ==  "q = 0" ) ,
-             aes(x = scale, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
+             aes(x = scale, y = ESqd_log, colour = Treatment, group = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
   geom_errorbar(data = ES_Div_Dat  %>% filter(D == "TD") %>% filter(Order.q ==  "q = 0" ) ,
-                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
+                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Treatment, group = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   scale_color_manual(values=c("#bb292c", "#62205f"))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -839,17 +843,17 @@ ES_TD0_log <- ggplot() +
         subtitle= "q = 0"
   ) + ylab("log[ Effect of late invasion ] ")
 
-ES_TD0_log
+Fig_S1a
 
-ES_TD2_log <- ggplot() +  
+Fig_S1b <- ggplot() +  
   geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = ES_Div_Dat  %>% filter(D == "TD") %>% filter(Order.q ==  "q = 2" ) ,
-             aes(x = scale, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
+             aes(x = scale, y = ESqd_log, colour = Treatment, group = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
   geom_errorbar(data = ES_Div_Dat  %>% filter(D == "TD") %>% filter(Order.q ==  "q = 2" ) ,
-                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
+                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Treatment, group = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
-  scale_color_manual(values=c("#bb292c", "#62205f"), name = "Effect size", labels=c("Control", "Nutrients" ))+
+  scale_color_manual(values=c("#bb292c", "#62205f"), name = "Effect size", labels=c("Control", "Treatment" ))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -860,7 +864,7 @@ ES_TD2_log <- ggplot() +
   labs( title= "b)", subtitle = "q = 2"
   ) + ylab("")
 
-ES_TD2_log
+Fig_S1b
 
 secondary_labelTD <- ggplot() +
   theme_void() +  # Remove all default elements
@@ -868,21 +872,21 @@ secondary_labelTD <- ggplot() +
            angle = 90,  size= 6, hjust = 0.5)
 
 
-ES_TD_log <- secondary_labelTD  + (ES_TD0_log) + (ES_TD2_log + theme(legend.position="none") )+  # Adjust the relative widths
+Fig_S1ab <- secondary_labelTD  + (Fig_S1a) + (Fig_S1b + theme(legend.position="none") )+  # Adjust the relative widths
   # plot_annotation(title = "Taxonomic Diversity",
   #                 theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) +
   plot_layout(widths = c(2, 10,10))
 
-ES_TD_log
+Fig_S1ab
 
 #PD
-ES_PD0_log <- ggplot() +  
+Fig_S1c <- ggplot() +  
   geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = ES_Div_Dat  %>% filter(D == "PD") %>% filter(Order.q ==  "q = 0" ) ,
-             aes(x = scale, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
+             aes(x = scale, y = ESqd_log, colour = Treatment, group = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
   geom_errorbar(data = ES_Div_Dat  %>% filter(D == "PD") %>% filter(Order.q ==  "q = 0" ) ,
-                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
+                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Treatment, group = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   scale_color_manual(values=c("#bb292c", "#62205f"))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -894,17 +898,17 @@ ES_PD0_log <- ggplot() +
   labs( title= "c)",
   ) + ylab("log[ Effect of late invasion ]")
 
-ES_PD0_log
+Fig_S1c
 
-ES_PD2_log <- ggplot() +  
+Fig_S1d <- ggplot() +  
   geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = ES_Div_Dat  %>% filter(D == "PD") %>% filter(Order.q ==  "q = 2" ) ,
-             aes(x = scale, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
+             aes(x = scale, y = ESqd_log, colour = Treatment, group = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
   geom_errorbar(data = ES_Div_Dat  %>% filter(D == "PD") %>% filter(Order.q ==  "q = 2" ) ,
-                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
+                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Treatment, group = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
-  scale_color_manual(values=c("#bb292c", "#62205f"), name = "Effect size", labels=c("Control", "Nutrients" ))+
+  scale_color_manual(values=c("#bb292c", "#62205f"), name = "Effect size", labels=c("Control", "Treatment" ))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -915,7 +919,7 @@ ES_PD2_log <- ggplot() +
   labs( title= "d)",
   ) + ylab("")
 
-ES_PD2_log
+Fig_S1d
 
 secondary_labelPD <- ggplot() +
   theme_void() +  # Remove all default elements
@@ -923,20 +927,20 @@ secondary_labelPD <- ggplot() +
            angle = 90,  size= 6, hjust = 0.5)
 
 
-ES_PD_log <- secondary_labelPD + (ES_PD0_log) + (ES_PD2_log)+  # Adjust the relative widths
+Fig_S1cd <- secondary_labelPD + (Fig_S1c) + (Fig_S1d)+  # Adjust the relative widths
   # plot_annotation(title = "Phylogenetic Diversity",
   #                 theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) +
   plot_layout(widths = c(2, 10,10))
 
-ES_PD_log
+Fig_S1cd
 #FD
-ES_FD0_log <- ggplot() +  
+Fig_S1e <- ggplot() +  
   geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = ES_Div_Dat  %>% filter(D == "FD") %>% filter(Order.q ==  "q = 0" ) ,
-             aes(x = scale, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
+             aes(x = scale, y = ESqd_log, colour = Treatment, group = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
   geom_errorbar(data = ES_Div_Dat  %>% filter(D == "FD") %>% filter(Order.q ==  "q = 0" ) ,
-                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
+                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Treatment, group = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
   scale_color_manual(values=c("#bb292c", "#62205f"))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -948,17 +952,17 @@ ES_FD0_log <- ggplot() +
   labs( title= "e)",
   ) + ylab("log[ Effect of late invasion ]")
 
-ES_FD0_log
+Fig_S1e
 
-ES_FD2_log <- ggplot() +  
+Fig_S1f <- ggplot() +  
   geom_hline(yintercept = 0, lty = 2) +
   geom_point(data = ES_Div_Dat  %>% filter(D == "FD") %>% filter(Order.q ==  "q = 2" ) ,
-             aes(x = scale, y = ESqd_log, colour = Nutrients, group = Nutrients), size = 2,
+             aes(x = scale, y = ESqd_log, colour = Treatment, group = Treatment), size = 2,
              position = position_dodge(width = .60) ) +
   geom_errorbar(data = ES_Div_Dat  %>% filter(D == "FD") %>% filter(Order.q ==  "q = 2" ) ,
-                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Nutrients, group = Nutrients),
+                aes(x = scale, ymin = ESqd.LCL_log, ymax = ESqd.UCL_log, colour = Treatment, group = Treatment),
                 size = 1, width = 0, position = position_dodge(width = .60)) +
-  scale_color_manual(values=c("#bb292c", "#62205f"), name = "Effect size", labels=c("Control", "Nutrients" ))+
+  scale_color_manual(values=c("#bb292c", "#62205f"), name = "Effect size", labels=c("Control", "Treatment" ))+
   theme_bw(base_size=18)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                axis.title.x = element_blank(),
                                plot.margin= margin(t = 0.2, r = 0.2, b = -0.2, l = 0.2, unit = "cm"),
@@ -969,19 +973,19 @@ ES_FD2_log <- ggplot() +
   labs( title= "f)",
   ) + ylab("")
 
-ES_FD2_log
+Fig_S1f
 
 secondary_labelFD <- ggplot() +
   theme_void() +  # Remove all default elements
   annotate("text", x = 1, y = 0.5, label = "Functional Diversity", 
            angle = 90,  size= 6, hjust = 0.5)
 
-ES_FD_log <- secondary_labelFD + (ES_FD0_log) + (ES_FD2_log)+  # Adjust the relative widths
+Fig_S1ef <- secondary_labelFD + (Fig_S1e) + (Fig_S1f)+  # Adjust the relative widths
   # plot_annotation(title = "Phylogenetic Diversity",
   #                 theme = theme(plot.title = element_text(hjust = 0.5, size= 18))) +
   plot_layout(widths = c(2, 10,10))
 
-ES_FD_log
+Fig_S1ef
 
 g_legend<-function(a.gplot){
   tmp <- ggplot_gtable(ggplot_build(a.gplot))
@@ -989,9 +993,9 @@ g_legend<-function(a.gplot){
   legend <- tmp$grobs[[leg]]
   return(legend)}
 
-ES_l <- g_legend(ES_TD2_log)
+FigS1_l <- g_legend(Fig_S1b)
 
 
-(ES_TD_log)/(ES_PD_log)/(ES_FD_log)/(ES_l) +
+(Fig_S1ab)/(Fig_S1cd)/(Fig_S1ef)/(FigS1_l) +
   plot_layout(heights = c(12,12,12,2))
 
