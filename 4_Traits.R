@@ -19,7 +19,7 @@ colnames(try_traits)
 
 
 try_traits <- all_traits %>% bind_rows(lc_traits %>% 
-                                           mutate(OrigUncertaintyStr = as.character(OrigUncertaintyStr))) %>%
+                                           mutate(OrigUncertaintyStr = as.character(OrigUncertaintyStr))) 
   
 
 sp_trait_sum <- try_traits %>% bind_rows(lc_traits %>% 
@@ -143,7 +143,7 @@ mutate(OrigValueStr = as.numeric(OrigValueStr)) %>%
         
 
 View(sp_trait_means)
-colnames(sp_trait_means)
+head(sp_trait_means)
 
 # check work
 sp_trait_means %>% filter(AccSpeciesName == "Lespedeza cuneata")
@@ -158,7 +158,7 @@ sp_trait_means %>% group_by(Std_Name, UnitName) %>% summarise(count = n ())
   summarise(n = n())
   
 View(trait_abund)
-
+head(trait_abund)
 trait_abund %>% summarise(mean(n))
 # about 6.48 traits per sp
 

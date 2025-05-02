@@ -8,10 +8,6 @@ require(phytools)
 require(ape)
 require(pez)
 
-citation("adephylo")
-citation("missForest")
-??missForest
-
 # Reads: trait imputation 
 # https://www.sciencedirect.com/science/article/abs/pii/S1574954121001060
 # https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12232

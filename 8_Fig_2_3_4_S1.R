@@ -11,7 +11,6 @@ library(ggtext)
 
 setwd("~/Dropbox/_Projects/Prairie_Priority/")
 
-# 14 3D_treat_block.R
 TD <- read.csv("Data/Treat Sep/prairie.hill.TD.csv", header= TRUE)
 PD <- read.csv("Data/Treat Sep/prairie.hill.PD.csv", header= TRUE)
 FD <- read.csv("Data/Treat Sep/prairie.hill.FD.csv", header= TRUE)
