@@ -8,6 +8,9 @@ require(phytools)
 require(ape)
 require(pez)
 
+
+sessionInfo()
+
 # Reads: trait imputation 
 # https://www.sciencedirect.com/science/article/abs/pii/S1574954121001060
 # https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12232
@@ -36,7 +39,6 @@ trait_0$`spp$species` = NULL
 prairie.tree <- read.tree('~/Dropbox/_Projects/Prairie_Priority/Data/phylo.tree.txt')
 
 
-# check by creating a new column what spp are or aren't in the tree 
 phyo_match <- tibble(species = prairie.tree$tip.label, in_tree = 1) %>% left_join(spp, . , by = "species") 
 
 phyo_match
@@ -49,32 +51,28 @@ phyo_match$species <- phyo_match$phyo_match
 
 phyo_match
 
-setdiff( trait_0$species , phyo_match$species) # the 0 species missing
+setdiff( trait_0$species , phyo_match$species) 
 
-trait_1 <- plyr::join(phyo_match, trait_0,  by = "species")   # this is spp by traits but only spp in tree matrix
+trait_1 <- plyr::join(phyo_match, trait_0,  by = "species")   
 trait_1$phyo_match = NULL
 
 trait_1 <- tibble::remove_rownames(trait_1)
-trait_1 <- tibble::column_to_rownames(trait_1, var="species") # converts row names back-and-forth between an explicit column (rownames_to_column() and column_to_rownames()).
+trait_1 <- tibble::column_to_rownames(trait_1, var="species") 
 
-#_______________________________________________________________ TRAIT IMPUTATION  
-# I calculate Moran eigenvetors to use phylogenetic correlation structure to predict traits
-# Eigenvectors eliminate features that have a strong correlation between them and also help in reducing over-fitting.
 
-# create phylogenetic proximity table
-prox.Ab.all <- adephylo::proxTips(prairie.tree, method = "Abouheif", normalize="none") # proxTips computes a given proximity between a set of tips of a phylogeny.
+prox.Ab.all <- adephylo::proxTips(prairie.tree, method = "Abouheif", normalize="none") 
 dim(prox.Ab.all) # 104
 
 prox <- prop.table(prox.Ab.all, 1) #standardize by row
 prox <- 0.5 * (prox + t(prox)) #make matrix symetric
 
-ME <- adephylo::me.phylo(prox = prox) # create Moran's eigenvectors based on phylogenetic distance matrix. closely related species will have similar ME values 
+ME <- adephylo::me.phylo(prox = prox) 
 # dim(ME)
 # head(ME)
 
 ME <- ME[rownames(trait_1),]
 
-trait.imp <- cbind(trait_1, ME[,1:30]) # This is the Morans Eigenvectors (I take the first 30) plus species x traits matrix (with column_to_rownames). 
+trait.imp <- cbind(trait_1, ME[,1:30]) 
 
 # _______________________________________________________________ missForest
 colnames(trait)
@@ -83,8 +81,8 @@ dfk <- data.frame(matrix(NA, nrow = 30, ncol = 11)) # 10 traits + k = 11
 colnames(dfk) <- c("k", "OOB_LA","OOB_LDMC","OOB_LN","OOB_PH", "OOB_SDM", "OOB_SGR", "OOB_SLA", "OOB_SN", "OOB_SSBL", "OOB_SSD") # 10 traits + k = 11
 
 for (n in 1:30) {
-  dfimp <- trait.imp[, 1: (10+n)] # for each trait I ran a loop (for each phylogenetic Eigenvector) (4 is the number of traits I want to impute, untill 30) 
-  o <- missForest(dfimp, maxiter = 25, ntree = 100 , variablewise = TRUE) # One can put higher number of iterations
+  dfimp <- trait.imp[, 1: (10+n)] 
+  o <- missForest(dfimp, maxiter = 25, ntree = 100 , variablewise = TRUE) 
   dfk[n, 1] <- n
   dfk[n,2] <- o$OOBerror[1] # save OOBerror for target traits only. OOB, is out-of-bag imputation error estimate/OBB is a method of measuring the prediction error of random forests
   dfk[n,3] <- o$OOBerror[2]    
@@ -113,11 +111,6 @@ dfk2 <- dfk %>%   # imputation errors per trait
             min_SSD   = min(OOB_SSD),   k_min_SSD   = k[which.min(OOB_SSD)],
             )
 
-
-# In all cases the phylogenetically-informed imputed has similar/lower error rates
-# re-run imputation for number of trees that minimizes OOB error for each trait 
-# One chosses he number of eigenvectors that minimizes the error de imputacion (OOB_RasgoFuncional). CHECK View(dfk2) then use this numbers.
-# Entonces la razon por la diferencia entre leaf area y chlorophyll content es eso, que 7 eigenvectors filogeneticos minimiza el error de imputacion para leaf area mientras para chlorophyll content son 27. 
 
 head(trait.imp)
 head(dfk2)
