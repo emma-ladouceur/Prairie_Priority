@@ -63,12 +63,11 @@ trait_1 <- tibble::column_to_rownames(trait_1, var="species")
 prox.Ab.all <- adephylo::proxTips(prairie.tree, method = "Abouheif", normalize="none") 
 dim(prox.Ab.all) # 104
 
-prox <- prop.table(prox.Ab.all, 1) #standardize by row
-prox <- 0.5 * (prox + t(prox)) #make matrix symetric
+prox <- prop.table(prox.Ab.all, 1) 
+prox <- 0.5 * (prox + t(prox))
 
 ME <- adephylo::me.phylo(prox = prox) 
-# dim(ME)
-# head(ME)
+
 
 ME <- ME[rownames(trait_1),]
 
@@ -77,14 +76,14 @@ trait.imp <- cbind(trait_1, ME[,1:30])
 # _______________________________________________________________ missForest
 colnames(trait)
 
-dfk <- data.frame(matrix(NA, nrow = 30, ncol = 11)) # 10 traits + k = 11
-colnames(dfk) <- c("k", "OOB_LA","OOB_LDMC","OOB_LN","OOB_PH", "OOB_SDM", "OOB_SGR", "OOB_SLA", "OOB_SN", "OOB_SSBL", "OOB_SSD") # 10 traits + k = 11
+dfk <- data.frame(matrix(NA, nrow = 30, ncol = 11)) 
+colnames(dfk) <- c("k", "OOB_LA","OOB_LDMC","OOB_LN","OOB_PH", "OOB_SDM", "OOB_SGR", "OOB_SLA", "OOB_SN", "OOB_SSBL", "OOB_SSD") 
 
 for (n in 1:30) {
   dfimp <- trait.imp[, 1: (10+n)] 
   o <- missForest(dfimp, maxiter = 25, ntree = 100 , variablewise = TRUE) 
   dfk[n, 1] <- n
-  dfk[n,2] <- o$OOBerror[1] # save OOBerror for target traits only. OOB, is out-of-bag imputation error estimate/OBB is a method of measuring the prediction error of random forests
+  dfk[n,2] <- o$OOBerror[1] 
   dfk[n,3] <- o$OOBerror[2]    
   dfk[n,4] <- o$OOBerror[3]
   dfk[n,5] <- o$OOBerror[4]

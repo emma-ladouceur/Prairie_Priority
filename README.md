@@ -3,7 +3,7 @@
 
 Code for: Invasion timing affects multiple scales, metrics and facets of biodiversity outcomes in ecological restoration experiments
 
-*Emma Ladouceur, Michael Wohlwend, Michele R. Schutzenhofer, Jonathan M. Chase, Tiffany M. Knight (2025) Invasion timing affects multiple scales, metrics and facets of biodiversity outcomes in ecological restoration experiments. Ecological Applications. Article DOI: []() & Data DOI: [doi.org/10.6073/pasta/503e6ffe01cf9b94de4ac31d202f5e7a](https://doi.org/10.6073/pasta/503e6ffe01cf9b94de4ac31d202f5e7a)**
+*Emma Ladouceur, Michael Wohlwend, Michele R. Schutzenhofer, Jonathan M. Chase, Tiffany M. Knight (2025) Invasion timing affects multiple scales, metrics and facets of biodiversity outcomes in ecological restoration experiments. Ecological Applications. Article DOI: [doi.org/10.1002/eap.70062](https://doi.org/10.1002/eap.70062) & Data DOI: [doi.org/10.6073/pasta/503e6ffe01cf9b94de4ac31d202f5e7a](https://doi.org/10.6073/pasta/503e6ffe01cf9b94de4ac31d202f5e7a)**
 
 
 ### R Scripts
